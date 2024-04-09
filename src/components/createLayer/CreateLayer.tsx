@@ -28,8 +28,7 @@ function CreateLayer() {
           <label htmlFor="description" className="mr-2 text-lg font-bold">Description:</label>
         </div>
         <div className="row-12 flex justify-center items-center mb-12">
-          <input
-            type="text"
+          <textarea
             id="description"
             value={name}
             onChange={handleNameChange}
@@ -50,8 +49,7 @@ function CreateLayer() {
       </div>
       {/* SparSQL */}
       <div className="row-6 flex  ">
-        <input
-          type="text"
+        <textarea
           id="sparSQL"
           value={name}
           onChange={handleNameChange}
@@ -77,9 +75,8 @@ function CreateLayer() {
       <div className="row-12 flex mb-2">
           <label htmlFor="result" className="mr-2 text-lg font-bold">Query Result:</label>
         </div>
-        <div className="row-12 flex justify-center items-center mb-12">
-          <input
-            type="text"
+        <div className="row-12 flex justify-center items-center mb-12 ">
+          <textarea
             id="result"
             value={name}
             onChange={handleNameChange}
