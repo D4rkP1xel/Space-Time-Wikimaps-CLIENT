@@ -8,7 +8,7 @@ function Home() {
       <>
         <div className="flex">
           <div
-            className="flex w-full px-12 pt-12 z-0"
+            className="flex w-full pr-12 pl-24 pt-12 z-0"
             style={{ width: `calc(100% - 300px)` }}>
             <div className="w-full pr-48 z-10">
               <div className="font-normal text-2xl mb-8">Results:</div>
