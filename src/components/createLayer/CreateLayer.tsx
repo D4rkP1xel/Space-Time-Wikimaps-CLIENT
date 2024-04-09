@@ -56,7 +56,7 @@ function CreateLayer() {
           className="border border-gray-400 px-2 py-1 mb-2 rounded w-1/2 background-gray-400"
           style={{ width: '750px', height: '400px' }}
         />
-      </div>
+      </div>  
       {/* Map */}
       <div className="row-6 flex justify-center items-center mb-12">
         {/* Map */}
@@ -65,7 +65,7 @@ function CreateLayer() {
       {/* Test Query button */}
       <div className="row-12 w-1/2 justify-center flex mb-12 ">
         <button
-          className="bg-cyan-700 hover:bg-cyan-800 text-white font-bold py-2 px-4 rounded"
+          className="bg-cyan-700 hover:bg-cyan-800 text-white font-bold py-2 px-4 rounded-full"
           onClick={() => alert('Layer created!')}>
           Test Query
         </button>
@@ -88,7 +88,7 @@ function CreateLayer() {
       {/* Create Layer button */}
       <div className="row-12 flex justify-center items-center mb-12">
         <button
-          className="bg-cyan-700 hover:bg-cyan-800 text-white font-bold py-2 px-4 rounded"
+          className="bg-cyan-700 hover:bg-cyan-800 text-white font-bold py-2 px-4 rounded-full"
           onClick={() => alert('Layer created!')}>
           Create Layer
         </button>
