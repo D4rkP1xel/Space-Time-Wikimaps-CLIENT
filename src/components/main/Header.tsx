@@ -130,7 +130,7 @@ function Header() {
             )}
 
             <div className="bg-cyan-800 text-white text-center rounded-full py-2 w-1/2 mx-auto font-medium text-lg select-none cursor-pointer mb-2">
-              Login
+              {isRegister ? "Register" : "Login"}
             </div>
             {isRegister ? (
               <div className="text-xs select-none w-fit mb-4 mx-auto flex gap-1">
