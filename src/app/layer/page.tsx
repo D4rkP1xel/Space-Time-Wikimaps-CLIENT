@@ -29,7 +29,7 @@ function Layer() {
 
       <div className="flex">
         <div
-          className="flex w-full pr-12 xl:pl-24 pl-12 pt-12 z-0 xl"
+          className="flex w-full pr-12 xl:pl-24 pl-12 pt-12 z-0"
           style={
             pageWidth > 1280
               ? { width: `calc(100% - 300px)` }
