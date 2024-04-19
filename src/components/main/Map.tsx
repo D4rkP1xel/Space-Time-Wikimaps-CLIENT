@@ -37,7 +37,7 @@ function Map() {
   return (
     <>
       <div
-        className={`flex fixed pr-24 z-40 h-full right-0`}
+        className={`flex fixed xl:pr-24 pr-12 z-40 h-full right-0`}
         style={{ top: handleMapTop() }}
         onScroll={() => setScrollY(window.scrollY)}>
         <div className="ml-auto pb-8" style={{ height: handleMapHeight() }}>
