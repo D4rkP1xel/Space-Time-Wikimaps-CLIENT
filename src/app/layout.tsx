@@ -1,15 +1,16 @@
 "use client"
-
+import { QueryClient, QueryClientProvider } from "react-query"
 import "./globals.css"
 
 export default function RootLayout({
   children,
-}: Readonly<{
-  children: React.ReactNode
-}>) {
+}: Readonly<{ children: React.ReactNode }>) {
+  const queryClient = new QueryClient()
   return (
-    <html lang="en">
-      <body>{children}</body>
-    </html>
+    <QueryClientProvider client={queryClient}>
+      <html lang="en">
+        <body>{children}</body>
+      </html>
+    </QueryClientProvider>
   )
 }

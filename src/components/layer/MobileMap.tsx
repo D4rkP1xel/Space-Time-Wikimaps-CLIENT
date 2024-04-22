@@ -18,7 +18,7 @@ function MobileMap() {
         <MapContainer
           center={[51.505, -0.09]}
           zoom={13}
-          scrollWheelZoom={false}
+          scrollWheelZoom={true}
           style={{ width: "100%", height: "300px" }}>
           <TileLayer
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'

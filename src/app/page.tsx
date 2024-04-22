@@ -4,6 +4,7 @@ import Header from "@/components/main/Header"
 import Map from "@/components/main/Map"
 import Result from "@/components/main/Result"
 import { useEffect, useState } from "react"
+
 function Home() {
   const [pageWidth, setPageWidth] = useState(window.innerWidth)
 
@@ -17,6 +18,7 @@ function Home() {
       window.removeEventListener("resize", handleResize)
     }
   }, [])
+
   return (
     <>
       <Header />

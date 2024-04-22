@@ -1,11 +1,10 @@
 import axios from "axios";
-import dotenv from "dotenv";
+import Cookies from 'js-cookie'
 
-// Load environment variables from .env file
-dotenv.config();
 
 // Access environment variables
-const API_URL = process.env.API_URL;
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
+const access_token = Cookies.get('accessToken')
 
 // Create axios instance with the base URL
-export default axios.create({ baseURL: API_URL });
+export default axios.create({ baseURL: API_URL, headers: { Authorization: `Bearer ${access_token}`, 'Content-Type': 'application/json' } });

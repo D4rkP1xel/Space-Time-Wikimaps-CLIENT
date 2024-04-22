@@ -2,16 +2,29 @@
 import { useState } from "react"
 import { FaSearch } from "react-icons/fa"
 import { FaUser } from "react-icons/fa"
+import { FaUserShield } from "react-icons/fa"
 import { FaSignInAlt } from "react-icons/fa"
 import { FaUserPlus } from "react-icons/fa"
 import { FiX } from "react-icons/fi"
 import { FiMail } from "react-icons/fi"
 import { FiLock } from "react-icons/fi"
-
+import { useUserState } from "../../../utils/stateManagement/user"
+import { FiLogOut } from "react-icons/fi"
+import { TbTablePlus } from "react-icons/tb"
+import { useQuery } from "react-query"
 function Header() {
   const [isMenuOpened, setMenuOpened] = useState(false)
   const [isLogin, setLogin] = useState(false)
   const [isRegister, setRegister] = useState(false)
+  const useUser = useUserState()
+  const [username, setUsername] = useState("")
+  const [password, setPassword] = useState("")
+  const [repeatPassword, setRepeatPassword] = useState("")
+  const [email, setEmail] = useState("")
+
+  const refreshUserQuery = useQuery(["refreshUser"], () =>
+    useUser.refreshUser()
+  )
 
   function setLoginState(state: boolean) {
     setLogin(state)
@@ -23,6 +36,45 @@ function Header() {
     setLogin(false)
     setRegister(state)
     setMenuOpened(false)
+  }
+
+  async function handleSignIn(usernameParam: string, passwordParam: string) {
+    try {
+      await useUser.signInUser(usernameParam, passwordParam)
+      setLogin(false)
+      setRegister(false)
+      setMenuOpened(false)
+      setUsername("")
+      setPassword("")
+    } catch (error) {
+      // console.error(error)
+    }
+  }
+
+  async function handleRegister(
+    usernameParam: string,
+    passwordParam: string,
+    repeatPasswordParam: string,
+    emailParam: string
+  ) {
+    try {
+      const response = await useUser.registerUser(
+        usernameParam,
+        passwordParam,
+        repeatPasswordParam,
+        emailParam
+      )
+      console.log(response)
+      if (response == "Success") {
+        setLogin(false)
+        setRegister(false)
+        setMenuOpened(false)
+        setUsername("")
+        setPassword("")
+      }
+    } catch (error) {
+      // console.error(error)
+    }
   }
 
   return (
@@ -37,24 +89,65 @@ function Header() {
           />
         </div>
         <div
-          className="ml-auto p-2 cursor-pointer"
+          className="ml-auto flex items-center cursor-pointer"
           onClick={() => setMenuOpened(!isMenuOpened)}>
-          <FaUser color="#FFFFFF" size={24} />
+          {useUser.isUserValid() ? (
+            <div className="text-white font-medium text-base select-none">
+              {useUser.user.username}
+            </div>
+          ) : null}
+
+          <div className="p-2">
+            {useUser.isUserValid() && useUser.user.role == "ADMIN" ? (
+              <FaUserShield color="#FFFFFF" size={24} />
+            ) : (
+              <FaUser color="#FFFFFF" size={24} />
+            )}
+          </div>
         </div>
+
         <div className={isMenuOpened ? "relative" : "hidden"}>
           <div className="absolute bg-slate-50 shadow-md shadow-[#828282] rounded-md w-60 right-8 top-3 py-4 px-3 z-50">
-            <div
-              className="flex gap-3 items-center cursor-pointer hover:bg-slate-200 p-1"
-              onClick={() => setLoginState(true)}>
-              <FaSignInAlt color="#000000" size={16} />
-              <div className="font-semibold select-none">Login</div>
-            </div>
-            <div
-              className="flex gap-3 items-center cursor-pointer hover:bg-slate-200 p-1"
-              onClick={() => setRegisterState(true)}>
-              <FaUserPlus color="#000000" size={16} />
-              <div className="font-semibold select-none">Register</div>
-            </div>
+            {useUser.isUserValid() ? (
+              <>
+                <div
+                  className="flex gap-3 items-center cursor-pointer hover:bg-slate-200 p-1"
+                  onClick={() => null}>
+                  <FaUser color="#000000" size={16} />
+                  <div className="font-semibold select-none">Profile</div>
+                </div>
+                <div
+                  className="flex gap-3 items-center cursor-pointer hover:bg-slate-200 p-1"
+                  onClick={() => null}>
+                  <TbTablePlus color="#000000" size={16} />
+                  <div className="font-semibold select-none">Create Layer</div>
+                </div>
+                <div
+                  className="flex gap-3 items-center cursor-pointer hover:bg-slate-200 p-1"
+                  onClick={() => {
+                    useUser.signOutUser()
+                    setMenuOpened(false)
+                  }}>
+                  <FiLogOut color="#000000" size={16} />
+                  <div className="font-semibold select-none">Logout</div>
+                </div>
+              </>
+            ) : (
+              <>
+                <div
+                  className="flex gap-3 items-center cursor-pointer hover:bg-slate-200 p-1"
+                  onClick={() => setLoginState(true)}>
+                  <FaSignInAlt color="#000000" size={16} />
+                  <div className="font-semibold select-none">Login</div>
+                </div>
+                <div
+                  className="flex gap-3 items-center cursor-pointer hover:bg-slate-200 p-1"
+                  onClick={() => setRegisterState(true)}>
+                  <FaUserPlus color="#000000" size={16} />
+                  <div className="font-semibold select-none">Register</div>
+                </div>
+              </>
+            )}
           </div>
         </div>
       </div>
@@ -62,9 +155,13 @@ function Header() {
         <div className="w-screen h-screen bg-gray-900 bg-opacity-50 z-50 fixed top-0 left-0 flex">
           <div
             className="fixed top-16 right-2 p-8 cursor-pointer"
-            onClick={() =>
+            onClick={() => {
               isRegister ? setRegisterState(false) : setLoginState(false)
-            }>
+              setUsername("")
+              setRepeatPassword("")
+              setPassword("")
+              setEmail("")
+            }}>
             <FiX color="#FFFFFF" size={48} />
           </div>
           <div className="bg-white rounded-2xl shadow-lg shadow-[#828282] w-4/12 p-8 mx-auto my-auto flex flex-col">
@@ -79,6 +176,8 @@ function Header() {
                     type="text"
                     placeholder="Email"
                     className="bg-[#EFF6FF] w-full outline-none"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                   />
                 </div>
                 <div className="bg-[#EFF6FF] rounded-full flex items-center gap-2 py-2 px-2 mb-4">
@@ -86,6 +185,8 @@ function Header() {
                   <input
                     type="text"
                     placeholder="Username"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
                     className="bg-[#EFF6FF] w-full outline-none"
                   />
                 </div>
@@ -96,11 +197,12 @@ function Header() {
                 <input
                   type="text"
                   placeholder="Email/Username"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
                   className="bg-[#EFF6FF] w-full outline-none"
                 />
               </div>
             )}
-
             <div
               className={
                 isRegister
@@ -112,6 +214,8 @@ function Header() {
                 type="password"
                 placeholder="Password"
                 className="bg-[#EFF6FF] w-full outline-none"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
               />
             </div>
             {isRegister ? (
@@ -121,6 +225,8 @@ function Header() {
                   type="password"
                   placeholder="Repeat Password"
                   className="bg-[#EFF6FF] w-full outline-none"
+                  value={repeatPassword}
+                  onChange={(e) => setRepeatPassword(e.target.value)}
                 />
               </div>
             ) : (
@@ -128,21 +234,42 @@ function Header() {
                 Forgot Password?
               </div>
             )}
-
-            <div className="bg-cyan-800 text-white text-center rounded-full py-2 w-1/2 mx-auto font-medium text-lg select-none cursor-pointer mb-2">
+            <div
+              onClick={() => {
+                isRegister
+                  ? handleRegister(username, password, repeatPassword, email)
+                  : handleSignIn(username, password)
+              }}
+              className="bg-cyan-800 text-white text-center rounded-full py-2 w-1/2 mx-auto font-medium text-lg select-none cursor-pointer mb-2">
               {isRegister ? "Register" : "Login"}
             </div>
             {isRegister ? (
               <div className="text-xs select-none w-fit mb-4 mx-auto flex gap-1">
                 <div>Already have an account?</div>
-                <div className="text-cyan-800 cursor-pointer font-medium">
+                <div
+                  onClick={() => {
+                    setRegister(false)
+                    setLogin(true)
+                    setUsername("")
+                    setPassword("")
+                    setRepeatPassword("")
+                    setEmail("")
+                  }}
+                  className="text-cyan-800 cursor-pointer font-medium">
                   Login in your account.
                 </div>
               </div>
             ) : (
               <div className="text-xs select-none w-fit mb-4 mx-auto flex gap-1">
                 <div>Don’t have an account?</div>
-                <div className="text-cyan-800 cursor-pointer font-medium">
+                <div
+                  onClick={() => {
+                    setLogin(false)
+                    setRegister(true)
+                    setUsername("")
+                    setPassword("")
+                  }}
+                  className="text-cyan-800 cursor-pointer font-medium">
                   Create an account.
                 </div>
               </div>
