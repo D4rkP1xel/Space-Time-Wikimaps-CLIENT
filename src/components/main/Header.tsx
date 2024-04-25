@@ -2,6 +2,7 @@
 import { useState } from "react"
 import { FaSearch } from "react-icons/fa"
 import { FaUser } from "react-icons/fa"
+import { FiUser } from "react-icons/fi"
 import { FaUserShield } from "react-icons/fa"
 import { FaSignInAlt } from "react-icons/fa"
 import { FaUserPlus } from "react-icons/fa"
@@ -11,8 +12,10 @@ import { FiLock } from "react-icons/fi"
 import { useUserState } from "../../../utils/stateManagement/user"
 import { FiLogOut } from "react-icons/fi"
 import { TbTablePlus } from "react-icons/tb"
-import { useQuery } from "react-query"
+import { useRouter } from "next/navigation"
+import { FaUsers } from "react-icons/fa"
 function Header() {
+  const router = useRouter()
   const [isMenuOpened, setMenuOpened] = useState(false)
   const [isLogin, setLogin] = useState(false)
   const [isRegister, setRegister] = useState(false)
@@ -21,10 +24,6 @@ function Header() {
   const [password, setPassword] = useState("")
   const [repeatPassword, setRepeatPassword] = useState("")
   const [email, setEmail] = useState("")
-
-  const refreshUserQuery = useQuery(["refreshUser"], () =>
-    useUser.refreshUser()
-  )
 
   function setLoginState(state: boolean) {
     setLogin(state)
@@ -80,7 +79,11 @@ function Header() {
   return (
     <>
       <div className="h-20 bg-cyan-700 w-full flex items-center px-8">
-        <div className="font-extrabold text-2xl text-white mr-8">WIKIMAPS</div>
+        <div
+          onClick={() => router.push("/")}
+          className="font-extrabold text-2xl text-white mr-8 select-none cursor-pointer">
+          WIKIMAPS
+        </div>
         <div className="flex gap-4 bg-cyan-900 items-center py-1 pl-4 pr-1 rounded-full">
           <FaSearch color="#FFFFFF" size={16} />
           <input
@@ -91,14 +94,14 @@ function Header() {
         <div
           className="ml-auto flex items-center cursor-pointer"
           onClick={() => setMenuOpened(!isMenuOpened)}>
-          {useUser.isUserValid() ? (
+          {useUser.isUserAuth() ? (
             <div className="text-white font-medium text-base select-none">
-              {useUser.user.username}
+              {useUser.user?.username}
             </div>
           ) : null}
 
           <div className="p-2">
-            {useUser.isUserValid() && useUser.user.role == "ADMIN" ? (
+            {useUser.isUserAuth() && useUser.user?.role == "ADMIN" ? (
               <FaUserShield color="#FFFFFF" size={24} />
             ) : (
               <FaUser color="#FFFFFF" size={24} />
@@ -108,7 +111,7 @@ function Header() {
 
         <div className={isMenuOpened ? "relative" : "hidden"}>
           <div className="absolute bg-slate-50 shadow-md shadow-[#828282] rounded-md w-60 right-8 top-3 py-4 px-3 z-50">
-            {useUser.isUserValid() ? (
+            {useUser.isUserAuth() ? (
               <>
                 <div
                   className="flex gap-3 items-center cursor-pointer hover:bg-slate-200 p-1"
@@ -122,6 +125,16 @@ function Header() {
                   <TbTablePlus color="#000000" size={16} />
                   <div className="font-semibold select-none">Create Layer</div>
                 </div>
+                {useUser.user?.role == "ADMIN" ? (
+                  <div
+                    className="flex gap-3 items-center cursor-pointer hover:bg-slate-200 p-1"
+                    onClick={() => router.push("/dashboard")}>
+                    <FaUsers color="#000000" size={16} />
+                    <div className="font-semibold select-none">
+                      User Dashboard
+                    </div>
+                  </div>
+                ) : null}
                 <div
                   className="flex gap-3 items-center cursor-pointer hover:bg-slate-200 p-1"
                   onClick={() => {
@@ -181,7 +194,7 @@ function Header() {
                   />
                 </div>
                 <div className="bg-[#EFF6FF] rounded-full flex items-center gap-2 py-2 px-2 mb-4">
-                  <FaUser color="#000000" size={16} />
+                  <FiUser color="#000000" size={16} />
                   <input
                     type="text"
                     placeholder="Username"

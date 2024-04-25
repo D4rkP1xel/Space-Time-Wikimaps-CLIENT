@@ -5,18 +5,19 @@ import axiosNoAuth from "../axiosNoAuth"
 
 // TYPES
 interface User {
-    id: number | null
-    username: string | null
-    email: string | null
-    role: string | null
+    id: number
+    username: string
+    email: string
+    role: string
 }
 
 interface userState {
-    user: User
+    user: User | null
+    didFetchUser: boolean
     signInUser: (username: string, password: string) => Promise<void>
     registerUser: (username: string, password: string, repeat_password: string, email: string) => Promise<string>
     signOutUser: () => void
-    isUserValid: () => boolean
+    isUserAuth: () => boolean
     refreshUser: () => Promise<void>
 }
 
@@ -43,7 +44,7 @@ async function refreshUser() {
     try {
         const id = Cookies.get('userId')
         const response = await axios.get("/users/id/" + id)
-        console.log(response)
+        //console.log(response)
         return response.data;
     } catch (error) {
         console.error(error)
@@ -83,7 +84,8 @@ function cleanTokens() {
 
 // USER STATE
 const useUserState = create<userState>((set, get) => ({
-    user: { id: null, username: null, email: null, role: null },
+    user: null,
+    didFetchUser: false,
     registerUser: async (username: string, password: string, repeat_password: string, email: string) => {
         const response = await registerUser(username, password, repeat_password, email)
         return response
@@ -101,10 +103,11 @@ const useUserState = create<userState>((set, get) => ({
     signOutUser: () => {
         signOut()
         set(() => {
-            return { user: { id: null, username: null, email: null, role: null } }
+            return { user: null }
         })
     },
     refreshUser: async () => {
+
         if (Cookies.get("userId") != null) {
             const data = await refreshUser()
             if (data) {
@@ -114,20 +117,24 @@ const useUserState = create<userState>((set, get) => ({
                     email: data.email,
                     role: data.role,
                 }
-                set(() => {
-                    return { user: user }
+                return set(() => {
+                    return { user: user, didFetchUser: true }
                 })
             }
         }
+        set(() => {
+            return { user: null, didFetchUser: true }
+        })
 
     },
-    isUserValid: () => {
+    isUserAuth: () => {
         let user = get().user
-        if (user.id == null || user.username == null || user.email == null || user.role == null) {
+        if (user == null) {
             return false
         }
         return true
-    }
+    },
 }))
 
 export { useUserState }
+export type { User }

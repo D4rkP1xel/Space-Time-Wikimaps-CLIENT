@@ -1,13 +1,15 @@
 "use client"
 import MobileMap from "@/components/layer/MobileMap"
-import Header from "@/components/main/Header"
 import Map from "@/components/main/Map"
 import Result from "@/components/main/Result"
 import { useEffect, useState } from "react"
-
+import { useQuery } from "react-query"
+import { getLayers } from "../../utils/stateManagement/layers"
+import PageCircleLoader from "@/components/loaders/PageCircleLoader"
+import { useRouter } from "next/navigation"
 function Home() {
   const [pageWidth, setPageWidth] = useState(window.innerWidth)
-
+  const router = useRouter()
   useEffect(() => {
     function handleResize() {
       setPageWidth(window.innerWidth)
@@ -19,10 +21,13 @@ function Home() {
     }
   }, [])
 
+  const { data: layers, isLoading: isLoadingLayers } = useQuery(
+    ["layers"],
+    async () => await getLayers()
+  )
+
   return (
     <>
-      <Header />
-
       <div className="flex">
         <div
           className="flex w-full pr-12 xl:pl-24 pl-12 pt-12 z-0"
@@ -37,13 +42,27 @@ function Home() {
             className={pageWidth > 1024 ? "w-full pr-48 z-10" : "w-full z-10"}>
             <div className="font-normal text-2xl mb-2">Results:</div>
             {pageWidth > 1024 ? null : <MobileMap />}
-            <div className="mt-12">
-              <Result />
-              <Result />
-              <Result />
-              <Result />
-              <Result />
-            </div>
+            {isLoadingLayers == true ? (
+              <PageCircleLoader />
+            ) : (
+              <div className="mt-12">
+                {layers != null ? (
+                  layers.map((l) => {
+                    return (
+                      <Result
+                        key={l.id}
+                        name={l.layerName}
+                        description={l.description}
+                        layerId={l.id}
+                        router={router}
+                      />
+                    )
+                  })
+                ) : (
+                  <div>No results found</div>
+                )}
+              </div>
+            )}
           </div>
         </div>
         {pageWidth > 1024 ? <Map /> : null}

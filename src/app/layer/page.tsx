@@ -25,8 +25,6 @@ function Layer() {
 
   return (
     <>
-      <Header />
-
       <div className="flex">
         <div
           className="flex w-full pr-12 xl:pl-24 pl-12 pt-12 z-0"

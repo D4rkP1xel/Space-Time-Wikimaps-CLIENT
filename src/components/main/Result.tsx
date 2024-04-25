@@ -1,15 +1,25 @@
-function Result() {
+import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime"
+
+function Result({
+  name,
+  description,
+  layerId,
+  router,
+}: {
+  name: string
+  description: string
+  layerId: number
+  router: AppRouterInstance
+}) {
   return (
     <div className="block mb-12">
-      <div className="font-bold text-2xl mb-2">Celebridades de Portugal</div>
+      <div
+        onClick={() => router.push("/layer/" + layerId)}
+        className="font-bold text-2xl mb-2 cursor-pointer w-fit">
+        {name}
+      </div>
       <div className="text-gray-500 text-base">
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
-        tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim
-        veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
-        lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
-        tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim
-        veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
-        comm...
+        {description != "" ? description : "No description"}
       </div>
     </div>
   )
