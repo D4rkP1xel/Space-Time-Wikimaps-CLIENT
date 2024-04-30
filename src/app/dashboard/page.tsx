@@ -5,6 +5,9 @@ import { FaSearch } from "react-icons/fa"
 import { useRouter } from "next/navigation"
 import { useCheckAuth } from "../../../utils/customHooks/checkAuth"
 import PageCircleLoader from "@/components/loaders/PageCircleLoader"
+import { useQuery } from "react-query"
+import { getAllUsers } from "../../../utils/stateManagement/dashboard"
+import { User } from "../../../utils/stateManagement/user"
 
 function Dashboard() {
   const router = useRouter()
@@ -13,6 +16,16 @@ function Dashboard() {
     setSelectedOption(event.target.value)
   }
   const checkAuth = useCheckAuth(router, ["ADMIN"])
+
+  const { data: users, isLoading: isLoadingUsers } = useQuery(
+    ["users"],
+    async () => {
+      console.log("Getting users...")
+
+      return await getAllUsers()
+    },
+    { enabled: checkAuth.isRenderLoader() == false }
+  )
 
   if (checkAuth.isRenderLoader()) {
     return <PageCircleLoader />
@@ -47,9 +60,15 @@ function Dashboard() {
               </div>
             </div>
             <div className="flex flex-col mt-8">
-              {/*Results*/}
-              <DashboardResult />
-              <DashboardResult />
+              {isLoadingUsers ? (
+                <PageCircleLoader />
+              ) : users == null || users.length == 0 ? (
+                "No users found"
+              ) : (
+                users.map((u: User) => (
+                  <DashboardResult role={u.role} name={u.username} />
+                ))
+              )}
             </div>
           </div>
         </div>
