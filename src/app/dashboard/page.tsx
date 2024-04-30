@@ -8,6 +8,7 @@ import PageCircleLoader from "@/components/loaders/PageCircleLoader"
 import { useQuery } from "react-query"
 import { getAllUsers } from "../../../utils/stateManagement/dashboard"
 import { User } from "../../../utils/stateManagement/user"
+import DarkBlueButton from "@/components/buttons/DarkBlueButton"
 
 function Dashboard() {
   const router = useRouter()
@@ -16,13 +17,15 @@ function Dashboard() {
     setSelectedOption(event.target.value)
   }
   const checkAuth = useCheckAuth(router, ["ADMIN"])
-
-  const { data: users, isLoading: isLoadingUsers } = useQuery(
+  const [name, setName] = useState("")
+  const {
+    data: users,
+    isLoading: isLoadingUsers,
+    refetch: refetchUsers,
+  } = useQuery(
     ["users"],
     async () => {
-      console.log("Getting users...")
-
-      return await getAllUsers()
+      return await getAllUsers(selectedOption, name)
     },
     { enabled: checkAuth.isRenderLoader() == false }
   )
@@ -44,6 +47,7 @@ function Dashboard() {
                   type="text"
                   className="bg-gray-100 lg:w-80 md:w-60 w-40 text-black border-none outline-none font-medium"
                   placeholder="Name"
+                  onChange={(e) => setName(e.target.value)}
                 />
               </div>
               <div className="flex ml-12 items-center">
@@ -52,11 +56,18 @@ function Dashboard() {
                   value={selectedOption}
                   onChange={handleOptionChange}
                   className="border-black border-2 outline-none w-32">
-                  <option value="all">All</option>
-                  <option value="users">Users</option>
-                  <option value="editors">Editors</option>
-                  <option value="admins">Admins</option>
+                  <option value="">All</option>
+                  <option value="USER">Users</option>
+                  <option value="EDITOR">Editors</option>
+                  <option value="ADMIN">Admins</option>
                 </select>
+              </div>
+              <div className="ml-auto">
+                <DarkBlueButton
+                  onClick={() => refetchUsers()}
+                  logoComponent={<FaSearch color="#FFFFFF" size={16} />}
+                  buttonText="Search"
+                />
               </div>
             </div>
             <div className="flex flex-col mt-8">
@@ -66,7 +77,7 @@ function Dashboard() {
                 "No users found"
               ) : (
                 users.map((u: User) => (
-                  <DashboardResult role={u.role} name={u.username} />
+                  <DashboardResult key={u.id} role={u.role} name={u.username} />
                 ))
               )}
             </div>

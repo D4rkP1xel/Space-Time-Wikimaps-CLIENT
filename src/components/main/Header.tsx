@@ -121,7 +121,7 @@ function Header() {
                 </div>
                 <div
                   className="flex gap-3 items-center cursor-pointer hover:bg-slate-200 p-1"
-                  onClick={() => null}>
+                  onClick={() => router.push("/createLayer")}>
                   <TbTablePlus color="#000000" size={16} />
                   <div className="font-semibold select-none">Create Layer</div>
                 </div>
