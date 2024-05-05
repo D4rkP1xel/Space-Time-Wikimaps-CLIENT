@@ -13,11 +13,15 @@ import {
 } from "../../../../utils/stateManagement/layers"
 import PageCircleLoader from "@/components/loaders/PageCircleLoader"
 import LayerResultDiv from "@/components/layer/LayerResult"
+import DarkBlueButton from "@/components/buttons/DarkBlueButton"
+import { FaRegEdit } from "react-icons/fa"
+import EditButton from "@/components/buttons/EditButton"
+import { useUserState } from "../../../../utils/stateManagement/user"
 
 function Layer({ params }: { params: { id: string } }) {
   const router = useRouter()
   const [pageWidth, setPageWidth] = useState(window.innerWidth)
-
+  const useUser = useUserState()
   useEffect(() => {
     function handleResize() {
       setPageWidth(window.innerWidth)
@@ -80,7 +84,18 @@ function Layer({ params }: { params: { id: string } }) {
               <FaAngleLeft size={24} />
               <div className="text-md">Go Back</div>
             </div>
-            <div className="text-3xl mt-8 font-medium">{layer?.layerName}</div>
+            <div className="mt-8 flex gap-8">
+              <div className="text-3xl font-medium">{layer?.layerName}</div>
+              {useUser.isUserAuth() &&
+              (useUser.user?.role == "ADMIN" ||
+                useUser.user?.role == "EDITOR") ? (
+                <EditButton
+                  buttonText="Go to Edit Mode"
+                  logoComponent={<FaRegEdit color="#FFFFFF" size={16} />}
+                  onClick={() => router.push("/layer/" + params.id + "/edit")}
+                />
+              ) : null}
+            </div>
             <div className="mt-4 text-lg">{layer?.description}</div>
             {pageWidth > 1024 ? null : <MobileMap />}
 

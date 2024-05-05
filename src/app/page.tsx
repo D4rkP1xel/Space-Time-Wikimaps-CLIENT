@@ -6,10 +6,12 @@ import { useEffect, useState } from "react"
 import { useQuery } from "react-query"
 import { getLayers } from "../../utils/stateManagement/layers"
 import PageCircleLoader from "@/components/loaders/PageCircleLoader"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
+
 function Home() {
   const [pageWidth, setPageWidth] = useState(window.innerWidth)
   const router = useRouter()
+  const searchParams = useSearchParams()
   useEffect(() => {
     function handleResize() {
       setPageWidth(window.innerWidth)
@@ -21,10 +23,18 @@ function Home() {
     }
   }, [])
 
-  const { data: layers, isLoading: isLoadingLayers } = useQuery(
+  const {
+    data: layers,
+    isLoading: isLoadingLayers,
+    refetch: refetchLayers,
+  } = useQuery(
     ["layers"],
-    async () => await getLayers()
+    async () => await getLayers(searchParams.get("search"))
   )
+  useEffect(() => {
+    refetchLayers()
+    console.log("refetching")
+  }, [searchParams.get("search")])
 
   return (
     <>
@@ -40,7 +50,12 @@ function Home() {
           }>
           <div
             className={pageWidth > 1024 ? "w-full pr-48 z-10" : "w-full z-10"}>
-            <div className="font-normal text-2xl mb-2">Results:</div>
+            <div className="font-normal text-2xl mb-2">
+              {searchParams.get("search") == null ||
+              searchParams.get("search") == ""
+                ? null
+                : `Results: (results for: ${searchParams.get("search")})`}
+            </div>
             {pageWidth > 1024 ? null : <MobileMap />}
             {isLoadingLayers == true ? (
               <PageCircleLoader />

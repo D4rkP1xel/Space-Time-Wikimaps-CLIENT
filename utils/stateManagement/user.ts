@@ -29,6 +29,7 @@ async function signIn(username: string, password: string) {
         return response.data;
     } catch (error) {
         console.error(error)
+        signOut()
     }
 }
 
@@ -48,6 +49,7 @@ async function refreshUser() {
         return response.data;
     } catch (error) {
         console.error(error)
+        signOut()
     }
 }
 

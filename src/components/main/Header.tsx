@@ -1,6 +1,6 @@
 "use client"
 import { useState } from "react"
-import { FaSearch } from "react-icons/fa"
+import { FaSearch, FaUserEdit } from "react-icons/fa"
 import { FaUser } from "react-icons/fa"
 import { FiUser } from "react-icons/fi"
 import { FaUserShield } from "react-icons/fa"
@@ -14,6 +14,7 @@ import { FiLogOut } from "react-icons/fi"
 import { TbTablePlus } from "react-icons/tb"
 import { useRouter } from "next/navigation"
 import { FaUsers } from "react-icons/fa"
+
 function Header() {
   const router = useRouter()
   const [isMenuOpened, setMenuOpened] = useState(false)
@@ -24,7 +25,7 @@ function Header() {
   const [password, setPassword] = useState("")
   const [repeatPassword, setRepeatPassword] = useState("")
   const [email, setEmail] = useState("")
-
+  const [search, setSearch] = useState("")
   function setLoginState(state: boolean) {
     setLogin(state)
     setRegister(false)
@@ -76,6 +77,13 @@ function Header() {
     }
   }
 
+  const handleKeyPress = (event: any) => {
+    if (event.key === "Enter") {
+      event.preventDefault() // Prevent form submission
+      router.push("/?search=" + search)
+    }
+  }
+
   return (
     <>
       <div className="h-20 bg-cyan-700 w-full flex items-center px-8">
@@ -85,10 +93,17 @@ function Header() {
           WIKIMAPS
         </div>
         <div className="flex gap-4 bg-cyan-900 items-center py-1 pl-4 pr-1 rounded-full">
-          <FaSearch color="#FFFFFF" size={16} />
+          <FaSearch
+            onClick={() => router.push("/?search=" + search)}
+            className="cursor-pointer"
+            color="#FFFFFF"
+            size={16}
+          />
           <input
             type="text"
             className="bg-cyan-900 lg:w-80 md:w-60 w-40 text-white border-none outline-none"
+            onChange={(e) => setSearch(e.target.value)}
+            onKeyDown={handleKeyPress}
           />
         </div>
         <div
@@ -103,6 +118,8 @@ function Header() {
           <div className="p-2">
             {useUser.isUserAuth() && useUser.user?.role == "ADMIN" ? (
               <FaUserShield color="#FFFFFF" size={24} />
+            ) : useUser.isUserAuth() && useUser.user?.role == "EDITOR" ? (
+              <FaUserEdit color="#FFFFFF" size={24} />
             ) : (
               <FaUser color="#FFFFFF" size={24} />
             )}
