@@ -143,14 +143,24 @@ function Header() {
                   <div className="font-semibold select-none">Create Layer</div>
                 </div>
                 {useUser.user?.role == "ADMIN" ? (
-                  <div
-                    className="flex gap-3 items-center cursor-pointer hover:bg-slate-200 p-1"
-                    onClick={() => router.push("/dashboard")}>
-                    <FaUsers color="#000000" size={16} />
-                    <div className="font-semibold select-none">
-                      User Dashboard
+                  <>
+                    <div
+                      className="flex gap-3 items-center cursor-pointer hover:bg-slate-200 p-1"
+                      onClick={() => router.push("/dashboard")}>
+                      <FaUsers color="#000000" size={16} />
+                      <div className="font-semibold select-none">
+                        User Dashboard
+                      </div>
                     </div>
-                  </div>
+                    <div
+                      className="flex gap-3 items-center cursor-pointer hover:bg-slate-200 p-1"
+                      onClick={() => router.push("/editorRequests")}>
+                      <FaUsers color="#000000" size={16} />
+                      <div className="font-semibold select-none">
+                        Editor Requests
+                      </div>
+                    </div>
+                  </>
                 ) : null}
                 <div
                   className="flex gap-3 items-center cursor-pointer hover:bg-slate-200 p-1"

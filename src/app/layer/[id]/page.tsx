@@ -18,9 +18,15 @@ import { FaRegEdit } from "react-icons/fa"
 import EditButton from "@/components/buttons/EditButton"
 import { useUserState } from "../../../../utils/stateManagement/user"
 
+interface CoordinateInfo {
+  lat: number
+  lon: number
+}
+
 function Layer({ params }: { params: { id: string } }) {
   const router = useRouter()
   const [pageWidth, setPageWidth] = useState(window.innerWidth)
+
   const useUser = useUserState()
   useEffect(() => {
     function handleResize() {
@@ -52,6 +58,7 @@ function Layer({ params }: { params: { id: string } }) {
       try {
         if (layer == null) return
         const data = await getLayerResults(layer.query)
+
         return data
       } catch (error) {
         console.error(error)
