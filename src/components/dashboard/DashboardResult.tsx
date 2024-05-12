@@ -1,5 +1,5 @@
 import React from "react"
-import { FaUserShield } from "react-icons/fa"
+import { FaUserEdit, FaUserShield } from "react-icons/fa"
 import { FaUser } from "react-icons/fa"
 import { FaEye } from "react-icons/fa"
 import DarkBlueButton from "../buttons/DarkBlueButton"
@@ -8,6 +8,8 @@ function DashboardResult({ role, name }: { role: string; name: string }) {
     <div className="flex w-full bg-gray-200 rounded-full shadow-lg py-8 px-12 items-center mb-6">
       {role === "ADMIN" ? (
         <FaUserShield color="#000000" size={32} />
+      ) : role === "EDITOR" ? (
+        <FaUserEdit color="#000000" size={32} />
       ) : (
         <FaUser color="#000000" size={32} />
       )}
