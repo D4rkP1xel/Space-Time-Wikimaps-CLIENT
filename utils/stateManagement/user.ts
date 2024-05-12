@@ -64,6 +64,29 @@ async function getUserByID(id: string): Promise<User | null> {
     }
 }
 
+async function changePasswordUser(id:string ,oldPassword: string, newPassword: string): Promise<string| undefined> {
+    try {
+        const response = await axios.put("/users/" + id + "/password", { oldPassword, newPassword })
+        //console.log(response)
+        alert("Password changed successfully")
+        return response.data;
+    } catch (error) {
+        console.error(error)
+    }
+}
+
+
+async function askToBeEditorUser(message: string): Promise<string| undefined> {
+    try {
+        const response = await axios.post("/upgrade/request", { message })
+        //console.log(response)
+        alert("Request sent successfully")
+        return response.data;
+    } catch (error) {
+        console.error(error)
+    }
+}
+
 async function registerUser(username: string, password: string, repeat_password: string, email: string): Promise<string> {
     if (username == "" || password == "" || repeat_password == "" || email == "") {
         return "One or more camps are empty"
@@ -147,7 +170,8 @@ const useUserState = create<userState>((set, get) => ({
         }
         return true
     },
+   
 }))
 
-export { useUserState, getUserByID }
+export { useUserState, getUserByID , changePasswordUser, askToBeEditorUser}
 export type { User }
