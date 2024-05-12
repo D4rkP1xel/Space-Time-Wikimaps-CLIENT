@@ -40,12 +40,18 @@ async function getAllUsers(role: string | null, name: string | null): Promise<Us
 }
 
 
-async function getAllEditorRequests(name: string | null): Promise<EditorRequest[] | null> {
+async function getAllEditorRequests(name: string | null, selectedStatus: string | null): Promise<EditorRequest[] | null> {
     try {
         let url = "/upgrade/requests"
+        let searchStatus = selectedStatus != null && selectedStatus != ""
         let searchName = name != null && name != ""
-        if (searchName) {
-            url += "?name=" + name
+        if (searchStatus || searchName) {
+            url += "?"
+            if (searchName && searchStatus) {
+                url += "name=" + name + "&status=" + selectedStatus
+            }
+            else if (searchName) url += "name=" + name
+            else if (searchStatus) url += "status=" + selectedStatus
         }
 
         const response = await axios.get(url)

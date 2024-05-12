@@ -13,7 +13,7 @@ import { useUserState } from "../../../utils/stateManagement/user"
 import { FiLogOut } from "react-icons/fi"
 import { TbTablePlus } from "react-icons/tb"
 import { useRouter } from "next/navigation"
-import { FaUsers } from "react-icons/fa"
+import { FaUsers, FaTicketAlt } from "react-icons/fa"
 
 function Header() {
   const router = useRouter()
@@ -155,7 +155,7 @@ function Header() {
                     <div
                       className="flex gap-3 items-center cursor-pointer hover:bg-slate-200 p-1"
                       onClick={() => router.push("/editorRequests")}>
-                      <FaUsers color="#000000" size={16} />
+                      <FaTicketAlt color="#000000" size={16} />
                       <div className="font-semibold select-none">
                         Editor Requests
                       </div>
