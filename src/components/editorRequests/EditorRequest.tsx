@@ -17,12 +17,14 @@ function EditorRequest({
   reason,
   timestamp,
   status,
+  refetchEditorRequests,
 }: {
   requestID: number
   name: string
   reason: string
   timestamp: string
   status: string
+  refetchEditorRequests: any
 }) {
   const [isDetailsOpened, setDetailsOpened] = useState(false)
 
@@ -65,16 +67,28 @@ function EditorRequest({
               {status == StatusEnum.PENDING ? (
                 <div className="flex-col flex gap-3">
                   <AcceptButton
-                    onClick={() =>
-                      updateEditorRequest(requestID, StatusEnum.ACCEPTED)
-                    }
+                    onClick={async () => {
+                      try {
+                        await updateEditorRequest(
+                          requestID,
+                          StatusEnum.ACCEPTED
+                        )
+                        refetchEditorRequests()
+                      } catch (error) {}
+                    }}
                     logoComponent={<FaCheck size={20} />}
                     buttonText="Accept"
                   />
                   <DeclineButton
-                    onClick={() =>
-                      updateEditorRequest(requestID, StatusEnum.DECLINED)
-                    }
+                    onClick={async () => {
+                      try {
+                        await updateEditorRequest(
+                          requestID,
+                          StatusEnum.DECLINED
+                        )
+                        refetchEditorRequests()
+                      } catch (error) {}
+                    }}
                     logoComponent={<IoMdClose size={24} />}
                     buttonText="Decline"
                   />

@@ -9,9 +9,21 @@ const customIcon = new Icon({
     "https://www.hooknortonvets.co.uk/wp-content/uploads/2016/11/map-pointer.png",
   iconSize: [40, 40], // size of the icon
 })
-import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet"
+import {
+  MapContainer,
+  TileLayer,
+  Marker,
+  Popup,
+  useMapEvents,
+} from "react-leaflet"
 import { LayerResult } from "../../../utils/stateManagement/layers"
-function Map({ mapLocations }: { mapLocations: LayerResult[] }) {
+function Map({
+  mapLocations,
+  center,
+}: {
+  mapLocations: LayerResult[] | null | undefined
+  center: [number, number]
+}) {
   const [scrollY, setScrollY] = useState(0)
 
   function handleMapHeight() {
@@ -43,7 +55,8 @@ function Map({ mapLocations }: { mapLocations: LayerResult[] }) {
         onScroll={() => setScrollY(window.scrollY)}>
         <div className="ml-auto pb-8" style={{ height: handleMapHeight() }}>
           <MapContainer
-            center={[51.505, -0.09]}
+            key={center[0] + "-" + center[1]}
+            center={center}
             zoom={13}
             scrollWheelZoom={true}
             style={{ width: "300px", height: "calc(100% - 48px)" }}>
@@ -54,6 +67,22 @@ function Map({ mapLocations }: { mapLocations: LayerResult[] }) {
             {/* <Marker position={[51.5, -0.09]} icon={customIcon}>
               <Popup></Popup>
             </Marker> */}
+            {mapLocations != null && mapLocations.length > 0
+              ? mapLocations.map((ml: LayerResult, index: number) => {
+                  if (ml.lat == null || ml.lon == null) return
+                  return (
+                    <Marker
+                      key={index}
+                      position={[
+                        Number.parseFloat(ml.lat),
+                        Number.parseFloat(ml.lon),
+                      ]}
+                      icon={customIcon}>
+                      <Popup></Popup>
+                    </Marker>
+                  )
+                })
+              : null}
           </MapContainer>
         </div>
       </div>
