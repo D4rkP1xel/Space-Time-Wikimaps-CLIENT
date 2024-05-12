@@ -68,6 +68,7 @@ async function changePasswordUser(id:string ,oldPassword: string, newPassword: s
     try {
         const response = await axios.put("/users/" + id + "/password", { oldPassword, newPassword })
         //console.log(response)
+        alert("Password changed successfully")
         return response.data;
     } catch (error) {
         console.error(error)

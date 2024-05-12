@@ -32,7 +32,7 @@ function Profiles({ params }: { params: { id: string } }) {
 
   async function ChangePassword(oldPasswordParam: string, newPasswordParam: string) {
     try {
-      if (useUser.user == null) return
+      if (useUser.user == null || newPasswordParam.length < 6) return
       await changePasswordUser(useUser.user?.id.toString() ,oldPasswordParam, newPasswordParam)
       setOldPassword("")
       setNewPassword("")
