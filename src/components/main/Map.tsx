@@ -10,7 +10,8 @@ const customIcon = new Icon({
   iconSize: [40, 40], // size of the icon
 })
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet"
-function Map() {
+import { LayerResult } from "../../../utils/stateManagement/layers"
+function Map({ mapLocations }: { mapLocations: LayerResult[] }) {
   const [scrollY, setScrollY] = useState(0)
 
   function handleMapHeight() {
@@ -50,9 +51,9 @@ function Map() {
               attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
-            <Marker position={[51.5, -0.09]} icon={customIcon}>
+            {/* <Marker position={[51.5, -0.09]} icon={customIcon}>
               <Popup></Popup>
-            </Marker>
+            </Marker> */}
           </MapContainer>
         </div>
       </div>
