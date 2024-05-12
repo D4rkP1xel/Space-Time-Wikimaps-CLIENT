@@ -61,7 +61,7 @@ function Home() {
               <PageCircleLoader />
             ) : (
               <div className="mt-12">
-                {layers != null ? (
+                {layers != null && layers.length>0 ? (
                   layers.map((l) => {
                     return (
                       <Result
