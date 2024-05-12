@@ -53,13 +53,14 @@ async function refreshUser() {
     }
 }
 
-async function getUserByID(id: string) {
+async function getUserByID(id: string): Promise<User | null> {
     try {
         const response = await axios.get("/users/id/" + id)
         //console.log(response)
         return response.data;
     } catch (error) {
         console.error(error)
+        return null;
     }
 }
 
