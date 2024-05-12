@@ -53,6 +53,16 @@ async function refreshUser() {
     }
 }
 
+async function getUserByID(id: string) {
+    try {
+        const response = await axios.get("/users/id/" + id)
+        //console.log(response)
+        return response.data;
+    } catch (error) {
+        console.error(error)
+    }
+}
+
 async function registerUser(username: string, password: string, repeat_password: string, email: string): Promise<string> {
     if (username == "" || password == "" || repeat_password == "" || email == "") {
         return "One or more camps are empty"
@@ -138,5 +148,5 @@ const useUserState = create<userState>((set, get) => ({
     },
 }))
 
-export { useUserState }
+export { useUserState, getUserByID }
 export type { User }

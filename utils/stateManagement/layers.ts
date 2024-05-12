@@ -11,11 +11,13 @@ interface Layer {
 
 interface APILayerResult {
     item: string | undefined
-    where: string | undefined
+    coordinates: string | undefined
     itemLabel: string | undefined
+    itemSchemaLabel: string | undefined
     url: string | undefined
 }
 interface LayerResult {
+    title?: string
     lat?: string
     lon?: string
     url?: string
@@ -38,14 +40,21 @@ async function getLayerResults(query: string): Promise<LayerResult[]> {
     console.log(data)
     return data.results.map((r: APILayerResult) => {
         let obj: LayerResult = {}
-        if (r.where) {
-            const startIndex = r.where.indexOf("(") + 1;
-            const endIndex = r.where.indexOf(")");
-            const coordinates: string = r.where.substring(startIndex, endIndex);
+
+        if (r.coordinates) {
+            const startIndex = r.coordinates.indexOf("(") + 1;
+            const endIndex = r.coordinates.indexOf(")");
+            const coordinates: string = r.coordinates.substring(startIndex, endIndex);
             const lat = coordinates.split(" ")[0]
             const lon = coordinates.split(" ")[1]
             obj["lat"] = lat;
             obj["lon"] = lon;
+        }
+        if (r.url) {
+            obj["url"] = r.url;
+        }
+        if (r.itemSchemaLabel) {
+            obj["title"] = r.itemSchemaLabel.split("@")[0];
         }
         return obj
     });
