@@ -138,6 +138,12 @@ function Header() {
                 </div>
                 <div
                   className="flex gap-3 items-center cursor-pointer hover:bg-slate-200 p-1"
+                  onClick={() => router.push("/settings/"+ [useUser.user?.id])}>
+                  <FaUser color="#000000" size={16} />
+                  <div className="font-semibold select-none">Settings</div>
+                </div>
+                <div
+                  className="flex gap-3 items-center cursor-pointer hover:bg-slate-200 p-1"
                   onClick={() => router.push("/createLayer")}>
                   <TbTablePlus color="#000000" size={16} />
                   <div className="font-semibold select-none">Create Layer</div>

@@ -13,7 +13,7 @@ import DeclineButton from '@/components/buttons/DeclineButton';
 
 
 
-function Profiles({ params }: { params: { id: string } }) {
+function Settings({ params }: { params: { id: string } }) {
 
   const router = useRouter()
   const checkAuth = useCheckAuth(router, ["ADMIN", "EDITOR", "USER"])
@@ -77,22 +77,35 @@ function Profiles({ params }: { params: { id: string } }) {
     return (
       <>
         <div className="flex justify-center items-center h-full">
-          <div className="w-full px-12 pt-12 z-0" style={{ width: `calc(100% - 300px)` }}>
+          <div className="w-full px-12 pt-12 z-0" >
             <div className='text-center'>
               <div className="block mb-12">
-                <div className="font-bold text-2xl mb-12">Profile</div>
-                  <div className="flex ml-96 mb-12">
-                    <span className="mr-2 text-lg font-bold text-">Name:</span>
-                      <span className=" px-1 py-1 ">{isProfileOwner() ? useUser.user?.username : isLoadingUser ? null : user?.username}</span>
-                  </div>
-                  <div className="flex  ml-96 mb-12">
-                    <span className="mr-2 text-lg font-bold text-">Email:</span>
-                      <span className=" px-1 py-1 ">{isProfileOwner() ? useUser.user?.email : isLoadingUser ? null : user?.email}</span>
-                  </div>
-                  <div className="flex  ml-96 mb-12">
-                    <span className="mr-2 text-lg font-bold text-">Role:</span>
-                      <span className=" px-1 py-1 ">{isProfileOwner() ? useUser.user?.role : isLoadingUser ? null : user?.role}</span>
-                    <div className="p-2">
+                <div className="font-bold text-4xl mb-12">Settings</div>
+                  <div className="flex flex-row justify-center">
+                    <div className="flex flex-row">
+                      <span className=" text-lg font-bold text ">Name:</span>
+                        <input disabled={!isProfileOwner()}
+                          type="text"
+                          value={username}
+                          onChange={(e) => setUsername(e.target.value)}
+                          className="border border-gray-400 px-2 py-1 rounded w-100 "
+                          placeholder={isProfileOwner() ? useUser.user?.username : isLoadingUser ? "" : user?.username}
+                        />
+                    </div>
+                    <div className="flex flex-row ">
+                      <span className=" text-lg font-bold text-">Email:</span>
+                      <input disabled={!isProfileOwner()}
+                          type="text"
+                          value={email}
+                          onChange={(e) => setEmail(e.target.value)}
+                          className="border border-gray-400 px-2 py-1 rounded w-100"
+                          placeholder={isProfileOwner() ? useUser.user?.email : isLoadingUser ? "" : user?.email}
+                        />
+                    </div>
+                    <div className="flex flex-row">
+                      <span className=" text-lg font-bold text-">Role:</span>
+                        <span className=" px-1 py-1 ">{isProfileOwner() ? useUser.user?.role : isLoadingUser ? null : user?.role}</span>
+                      <div className="p-2">
                         {isProfileOwner() && useUser.user?.role ?
                         useUser.user.role == "ADMIN" ? 
                         <FaUserShield color="#000000" size={24} />
@@ -104,20 +117,37 @@ function Profiles({ params }: { params: { id: string } }) {
                           : user?.role == "EDITOR" ?
                           <FaUserEdit color="#000000" size={24} />
                             : <FaUser color="#000000" size={24} />}
+                      </div>
                     </div>
+                    {isProfileOwner() ? (
+                      <>
+                      <div className="flex flex-row mb-12"> 
+                        <DarkBlueButton logoComponent={null} buttonText="Save"  onClick={() => ("")}/>
+                      </div> 
+                      </>
+                    ) : null}	
                   </div>
-                  {isProfileOwner() ? (             
-                    <div className="flex justify-center mb-12">           
-                      <DarkBlueButton logoComponent={null} buttonText="Change Password"  onClick={() => setChangePasswordState(true)} />
+                  {isProfileOwner() ? (     
+                    <>              
+                    <div className="flex flex-row gap-20 justify-center mb-12">
+                      <div className="flex flex-col ">
+                          <div className="text-lg font-bold">Password Settings:</div>     
+                          <DarkBlueButton logoComponent={null} buttonText="Change Password"  onClick={() => setChangePasswordState(true)} />
+                      </div>
+                          {isProfileOwner() && !(user?.role == "ADMIN" || useUser.user?.role =="ADMIN" )? (
+                            <>
+                            <div className="flex flex-col">
+                              <div className="text-lg font-bold">Editor Settings:</div>         
+                              <DarkBlueButton logoComponent={null} buttonText="Ask To Be an Editor" onClick={() => askToBeEditor(true)} />
+                            </div>
+                            </>
+                          ) : null}
                     </div>
+                    </> 
                   ) : null}
-                    {isProfileOwner() && !(user?.role == "ADMIN" || useUser.user?.role =="ADMIN" )? (
-                    <div className="flex justify-center mb-12">
-                      <DarkBlueButton logoComponent={null} buttonText="Ask To Be an Editor" onClick={() => askToBeEditor(true)} />
-                    </div>     
-                  ) : null}
+                    
                   {isProfileOwner() || (useUser.user?.role == "ADMIN" && !(user?.role == "ADMIN")) ? (
-                    <div className="flex justify-center mb-12">
+                    <div className="flex justify-center">
                       <DeclineButton logoComponent={null} buttonText="Delete Account" onClick={() => {}} />
                     </div>
                   ) : null}
@@ -211,4 +241,4 @@ function Profiles({ params }: { params: { id: string } }) {
   }
 }
 
-export default Profiles;
+export default Settings;
