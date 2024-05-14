@@ -2,8 +2,7 @@
 import DarkBlueButton from "@/components/buttons/DarkBlueButton"
 import MobileMap from "@/components/layer/MobileMap"
 import { useEffect, useState } from "react"
-import { useQuery, useQueryClient } from "react-query"
-import axiosNoAuth from "../../../utils/axiosNoAuth"
+import { useQuery } from "react-query"
 import {
   LayerResult,
   createNewLayer,
@@ -12,13 +11,11 @@ import {
   getLayerResults,
 } from "../../../utils/stateManagement/layers"
 import { useRouter } from "next/navigation"
-import PageLoader from "next/dist/client/page-loader"
 import PageCircleLoader from "../loaders/PageCircleLoader"
 
 function CreateEditLayer({ layerId }: { layerId: string | null }) {
   // When layerId is null, user is creating a layer
   // otherwise it's editing an existing layer
-  const queryClient = useQueryClient()
   const [center, setCenter] = useState<[number, number]>([51.505, -0.09])
   const router = useRouter()
   const [name, setName] = useState("")
@@ -88,8 +85,10 @@ function CreateEditLayer({ layerId }: { layerId: string | null }) {
   ) {
     try {
       await createNewLayer(nameParam, descriptionParam, queryParam)
+      router.push("/")
     } catch (error) {
       console.error(error)
+      alert(error)
     }
   }
 

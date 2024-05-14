@@ -68,7 +68,7 @@ async function getLayerResults(query: string): Promise<LayerResult[]> {
 }
 
 async function createNewLayer(name: string, description: string, query: string): Promise<void> {
-    await axios.post("/layers/create", { name, description, query })
+    await axios.post("/layers", { name, description, query })
 }
 
 async function editLayer(id: string, name: string, description: string, query: string): Promise<void> {
