@@ -81,7 +81,7 @@ function Settings({ params }: { params: { id: string } }) {
             <div className='text-center'>
               <div className="block mb-12">
                 <div className="font-bold text-4xl mb-12">Settings</div>
-                  <div className="flex flex-row justify-center">
+                  <div className="flex flex-row justify-center mb-12">
                     <div className="flex flex-row">
                       <span className=" text-lg font-bold text ">Name:</span>
                         <input disabled={!isProfileOwner()}
@@ -92,6 +92,8 @@ function Settings({ params }: { params: { id: string } }) {
                           placeholder={isProfileOwner() ? useUser.user?.username : isLoadingUser ? "" : user?.username}
                         />
                     </div>
+                  </div>
+                  <div className="flex flex-row justify-center mb-12">
                     <div className="flex flex-row ">
                       <span className=" text-lg font-bold text-">Email:</span>
                       <input disabled={!isProfileOwner()}
@@ -102,6 +104,8 @@ function Settings({ params }: { params: { id: string } }) {
                           placeholder={isProfileOwner() ? useUser.user?.email : isLoadingUser ? "" : user?.email}
                         />
                     </div>
+                  </div>
+                  <div className="flex flex-row justify-center mb-6">
                     <div className="flex flex-row">
                       <span className=" text-lg font-bold text-">Role:</span>
                         <span className=" px-1 py-1 ">{isProfileOwner() ? useUser.user?.role : isLoadingUser ? null : user?.role}</span>
@@ -119,14 +123,16 @@ function Settings({ params }: { params: { id: string } }) {
                             : <FaUser color="#000000" size={24} />}
                       </div>
                     </div>
+                  </div>
                     {isProfileOwner() ? (
                       <>
-                      <div className="flex flex-row mb-12"> 
-                        <DarkBlueButton logoComponent={null} buttonText="Save"  onClick={() => ("")}/>
-                      </div> 
+                      <div className="flex flex-row justify-center mb-12">
+                        <div className="flex flex-row"> 
+                          <DarkBlueButton logoComponent={null} buttonText="Save"  onClick={() => ("")}/>
+                        </div> 
+                      </div>
                       </>
                     ) : null}	
-                  </div>
                   {isProfileOwner() ? (     
                     <>              
                     <div className="flex flex-row gap-20 justify-center mb-12">
