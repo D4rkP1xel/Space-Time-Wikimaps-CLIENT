@@ -85,6 +85,7 @@ function EditorRequests() {
                 reason={u.reason}
                 timestamp={u.timestamp}
                 status={u.status}
+                refetchEditorRequests={refetchEditorRequests}
               />
             ))
           )}

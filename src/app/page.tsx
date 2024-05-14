@@ -12,6 +12,7 @@ function Home() {
   const [pageWidth, setPageWidth] = useState(window.innerWidth)
   const router = useRouter()
   const searchParams = useSearchParams()
+  const [center, setCenter] = useState<[number, number]>([51.505, -0.09])
   useEffect(() => {
     function handleResize() {
       setPageWidth(window.innerWidth)
@@ -56,12 +57,14 @@ function Home() {
                 ? null
                 : `Results: (results for: ${searchParams.get("search")})`}
             </div>
-            {pageWidth > 1024 ? null : <MobileMap />}
+            {pageWidth > 1024 ? null : (
+              <MobileMap center={center} mapLocations={null} />
+            )}
             {isLoadingLayers == true ? (
               <PageCircleLoader />
             ) : (
               <div className="mt-12">
-                {layers != null && layers.length>0 ? (
+                {layers != null && layers.length > 0 ? (
                   layers.map((l) => {
                     return (
                       <Result
@@ -80,7 +83,7 @@ function Home() {
             )}
           </div>
         </div>
-        {pageWidth > 1024 ? <Map /> : null}
+        {pageWidth > 1024 ? <Map center={center} mapLocations={null} /> : null}
       </div>
     </>
   )

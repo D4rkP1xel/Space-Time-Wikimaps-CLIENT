@@ -13,20 +13,14 @@ import {
 } from "../../../../utils/stateManagement/layers"
 import PageCircleLoader from "@/components/loaders/PageCircleLoader"
 import LayerResultDiv from "@/components/layer/LayerResult"
-import DarkBlueButton from "@/components/buttons/DarkBlueButton"
 import { FaRegEdit } from "react-icons/fa"
 import EditButton from "@/components/buttons/EditButton"
 import { useUserState } from "../../../../utils/stateManagement/user"
 
-interface CoordinateInfo {
-  lat: number
-  lon: number
-}
-
 function Layer({ params }: { params: { id: string } }) {
   const router = useRouter()
   const [pageWidth, setPageWidth] = useState(window.innerWidth)
-
+  const [center, setCenter] = useState<[number, number]>([51.505, -0.09])
   const useUser = useUserState()
   useEffect(() => {
     function handleResize() {
@@ -68,6 +62,15 @@ function Layer({ params }: { params: { id: string } }) {
     { enabled: layer != null }
   )
 
+  useEffect(() => {
+    if (results && results.length > 0 && results[0].lat && results[0].lon) {
+      setCenter([
+        Number.parseFloat(results[0].lat),
+        Number.parseFloat(results[0].lon),
+      ])
+    }
+  }, [results])
+
   if (isLoadingLayer) {
     return <PageCircleLoader />
   }
@@ -104,7 +107,9 @@ function Layer({ params }: { params: { id: string } }) {
               ) : null}
             </div>
             <div className="mt-4 text-lg">{layer?.description}</div>
-            {pageWidth > 1024 ? null : <MobileMap />}
+            {pageWidth > 1024 ? null : (
+              <MobileMap mapLocations={results} center={center} />
+            )}
 
             <div className="text-xl mt-8 font-medium">Results:</div>
             {isLoadingResults ? (
@@ -115,12 +120,20 @@ function Layer({ params }: { params: { id: string } }) {
               <div>No Results</div>
             ) : (
               results.map((r: LayerResult, index) => {
-                return <LayerResultDiv key={index} data={r} />
+                return (
+                  <LayerResultDiv
+                    key={index}
+                    result={r}
+                    setCenter={setCenter}
+                  />
+                )
               })
             )}
             <div className="w-full h-20"></div>
           </div>
-          {pageWidth > 1024 ? <Map /> : null}
+          {pageWidth > 1024 ? (
+            <Map mapLocations={results} center={center} />
+          ) : null}
         </div>
       </div>
     </>

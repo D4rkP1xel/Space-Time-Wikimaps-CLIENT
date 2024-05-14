@@ -1,54 +1,82 @@
 "use client"
 import DarkBlueButton from "@/components/buttons/DarkBlueButton"
 import MobileMap from "@/components/layer/MobileMap"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useQuery } from "react-query"
-import axiosNoAuth from "../../../utils/axiosNoAuth"
 import {
+  LayerResult,
   createNewLayer,
   editLayer,
   getLayer,
+  getLayerResults,
 } from "../../../utils/stateManagement/layers"
 import { useRouter } from "next/navigation"
-import PageLoader from "next/dist/client/page-loader"
 import PageCircleLoader from "../loaders/PageCircleLoader"
 
 function CreateEditLayer({ layerId }: { layerId: string | null }) {
+  // When layerId is null, user is creating a layer
+  // otherwise it's editing an existing layer
+  const [center, setCenter] = useState<[number, number]>([51.505, -0.09])
   const router = useRouter()
   const [name, setName] = useState("")
   const [description, setDescription] = useState("")
   const [query, setQuery] = useState("")
-  const [result, setResult] = useState("")
+  const [lastQuery, setLastQuery] = useState("")
+  const [resultString, setResultString] = useState<string>("")
+  const [results, setResults] = useState<LayerResult[]>()
 
-  async function GetSparQlResult(queryParam: string) {
-    try {
-      const response = await axiosNoAuth.post("/sparql", {
-        query: query,
-      })
-      setResult(JSON.stringify(response.data))
-    } catch (error) {
-      console.error(error)
-    }
-  }
-
-  const { data: layer, isLoading: isLoadingLayer } = useQuery(
-    ["layer"],
+  const {
+    data: layer,
+    isLoading: isLoadingLayer,
+    refetch: refetchLayer,
+  } = useQuery(
+    ["editlayer"],
     async () => {
       try {
         if (layerId == null) return
         const data = await getLayer(Number.parseInt(layerId))
-        //console.log(data)
         setName(data.layerName)
         setDescription(data.description)
         setQuery(data.query)
+        setLastQuery(data.query)
+
         return data
       } catch (error) {
         console.error(error)
         router.back()
       }
     },
-    { enabled: layerId != null }
+    {
+      enabled: layerId != null && layerId != "",
+      refetchOnWindowFocus: true,
+      refetchOnMount: "always",
+    }
   )
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const resultsResp = await getLayerResults(lastQuery)
+        console.log(resultsResp)
+        setResultString(JSON.stringify(resultsResp))
+        if (resultsResp[0].lat != null && resultsResp[0].lon != null) {
+          setCenter([
+            Number.parseFloat(resultsResp[0].lat),
+            Number.parseFloat(resultsResp[0].lon),
+          ])
+        }
+        setResults(resultsResp)
+      } catch (error) {
+        console.error(error)
+        setResultString("")
+        setResults([])
+      }
+    }
+
+    if (lastQuery != null && lastQuery !== "") {
+      fetchData()
+    }
+  }, [lastQuery])
 
   async function createLayer(
     nameParam: string,
@@ -57,8 +85,10 @@ function CreateEditLayer({ layerId }: { layerId: string | null }) {
   ) {
     try {
       await createNewLayer(nameParam, descriptionParam, queryParam)
+      router.push("/")
     } catch (error) {
       console.error(error)
+      alert(error)
     }
   }
 
@@ -114,7 +144,7 @@ function CreateEditLayer({ layerId }: { layerId: string | null }) {
 
         <div className="text-lg font-bold mb-2">SparQL Query:</div>
         <div className=" flex justify-center items-center mb-6">
-          <MobileMap />
+          <MobileMap center={center} mapLocations={results} />
         </div>
         <textarea
           value={query}
@@ -126,7 +156,7 @@ function CreateEditLayer({ layerId }: { layerId: string | null }) {
         {/* Test Query button */}
         <div className="justify-center flex mb-12">
           <DarkBlueButton
-            onClick={() => GetSparQlResult(query)}
+            onClick={() => setLastQuery(query)}
             logoComponent={null}
             buttonText="Test Query"
           />
@@ -138,7 +168,7 @@ function CreateEditLayer({ layerId }: { layerId: string | null }) {
         </div>
         <div className=" flex justify-center items-center mb-12 ">
           <textarea
-            value={result}
+            value={resultString}
             disabled
             className="border border-gray-400 px-2 py-1 rounded flex-grow w-full h-36"
           />

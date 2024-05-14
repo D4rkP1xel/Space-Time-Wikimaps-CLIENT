@@ -6,7 +6,14 @@ import CustomLayout from "@/components/CustomLayout"
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
-  const queryClient = new QueryClient()
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      queries: {
+        staleTime: 300000, // 5 min
+        refetchOnWindowFocus: false,
+      },
+    },
+  })
 
   return (
     <QueryClientProvider client={queryClient}>

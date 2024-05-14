@@ -1,5 +1,6 @@
 "use client"
-import { useState } from "react"
+
+import { useEffect, useState } from "react"
 import { FaSearch, FaUserEdit } from "react-icons/fa"
 import { FaUser } from "react-icons/fa"
 import { FiUser } from "react-icons/fi"
@@ -26,6 +27,22 @@ function Header() {
   const [repeatPassword, setRepeatPassword] = useState("")
   const [email, setEmail] = useState("")
   const [search, setSearch] = useState("")
+
+  useEffect(() => {
+    const handleClick = (event: Event) => {
+      event.stopPropagation()
+      if (isMenuOpened) setMenuOpened(false)
+    }
+
+    // Add event listener when component mounts
+    document.addEventListener("click", handleClick)
+
+    // Remove event listener when component unmounts
+    return () => {
+      document.removeEventListener("click", handleClick)
+    }
+  }, [isMenuOpened]) // Empty dependency array to run effect only once
+
   function setLoginState(state: boolean) {
     setLogin(state)
     setRegister(false)

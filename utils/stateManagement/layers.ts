@@ -15,12 +15,15 @@ interface APILayerResult {
     itemLabel: string | undefined
     itemSchemaLabel: string | undefined
     url: string | undefined
+    description: string | undefined
 }
 interface LayerResult {
     title?: string
     lat?: string
     lon?: string
     url?: string
+    description?: string
+    image?: string
 }
 async function getLayers(search: string | null): Promise<Layer[]> {
     if (search == null) search = ""
@@ -45,8 +48,9 @@ async function getLayerResults(query: string): Promise<LayerResult[]> {
             const startIndex = r.coordinates.indexOf("(") + 1;
             const endIndex = r.coordinates.indexOf(")");
             const coordinates: string = r.coordinates.substring(startIndex, endIndex);
-            const lat = coordinates.split(" ")[0]
-            const lon = coordinates.split(" ")[1]
+
+            const lon = coordinates.split(" ")[0]
+            const lat = coordinates.split(" ")[1]
             obj["lat"] = lat;
             obj["lon"] = lon;
         }
@@ -54,14 +58,17 @@ async function getLayerResults(query: string): Promise<LayerResult[]> {
             obj["url"] = r.url;
         }
         if (r.itemSchemaLabel) {
-            obj["title"] = r.itemSchemaLabel.split("@")[0];
+            obj["title"] = r.itemSchemaLabel.split("@")[0]
+        }
+        if (r.description) {
+            obj["description"] = r.description.split("@")[0]
         }
         return obj
     });
 }
 
 async function createNewLayer(name: string, description: string, query: string): Promise<void> {
-    await axios.post("/layers/create", { name, description, query })
+    await axios.post("/layers", { name, description, query })
 }
 
 async function editLayer(id: string, name: string, description: string, query: string): Promise<void> {
