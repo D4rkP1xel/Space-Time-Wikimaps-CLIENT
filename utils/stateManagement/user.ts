@@ -75,6 +75,18 @@ async function changePasswordUser(id:string ,oldPassword: string, newPassword: s
     }
 }
 
+async function changeSettingsUser(username:string ,email: string): Promise<string| undefined> {
+    try {
+        const response = await axios.put("/user", { username, email })
+        storeTokens(response.data.accessToken, response.data.refreshToken, response.data.user.id)
+        console.log(response)
+        alert("Saved successfully")
+        return response.data;
+    } catch (error) {
+        console.error(error)
+    }
+}
+
 
 async function askToBeEditorUser(message: string): Promise<string| undefined> {
     try {
@@ -173,5 +185,5 @@ const useUserState = create<userState>((set, get) => ({
    
 }))
 
-export { useUserState, getUserByID , changePasswordUser, askToBeEditorUser}
+export { useUserState, getUserByID , changePasswordUser, askToBeEditorUser, changeSettingsUser}
 export type { User }

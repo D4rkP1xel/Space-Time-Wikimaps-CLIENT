@@ -1,7 +1,6 @@
 "use client"
 import React, { use, useState } from 'react';
-import Header from '@/components/main/Header';
-import { askToBeEditorUser, changePasswordUser, getUserByID, useUserState } from '../../../../utils/stateManagement/user';
+import { askToBeEditorUser, changePasswordUser, changeSettingsUser, getUserByID, useUserState } from '../../../../utils/stateManagement/user';
 import { FaUser, FaUserEdit, FaUserShield } from 'react-icons/fa';
 import { useQuery } from 'react-query';
 import PageCircleLoader from '@/components/loaders/PageCircleLoader';
@@ -32,8 +31,6 @@ function Settings({ params }: { params: { id: string } }) {
   function askToBeEditor(state: boolean) {
     setAskToBeEditor(state)
   }
-  
-
   const isProfileOwner = () => {
     return useUser.user?.id.toString() == params.id
   }
@@ -44,6 +41,17 @@ function Settings({ params }: { params: { id: string } }) {
       await changePasswordUser(useUser.user?.id.toString() ,oldPasswordParam, newPasswordParam)
       setOldPassword("")
       setNewPassword("")
+    } catch (error) {
+      // console.error(error)
+    }
+  }
+
+  async function ChangeSettings(username: string, email: string) {
+    try {
+      if (useUser.user == null || username.length <= 0 || email.length <= 0) return
+      await changeSettingsUser(username, email)
+      setUsername("")
+      setEmail("")
     } catch (error) {
       // console.error(error)
     }
@@ -127,8 +135,8 @@ function Settings({ params }: { params: { id: string } }) {
                     {isProfileOwner() ? (
                       <>
                       <div className="flex flex-row justify-center mb-12">
-                        <div className="flex flex-row"> 
-                          <DarkBlueButton logoComponent={null} buttonText="Save"  onClick={() => ("")}/>
+                        <div className="flex flex-row "> 
+                          <DarkBlueButton logoComponent={null} buttonText="Save"  onClick={() => ChangeSettings(username, email)}/>
                         </div> 
                       </div>
                       </>
