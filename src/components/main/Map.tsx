@@ -1,5 +1,5 @@
 "use client"
-import { Icon } from "leaflet"
+import { Icon, LatLngBounds } from "leaflet"
 import "leaflet/dist/leaflet.css"
 import { useEffect, useState } from "react"
 
@@ -15,8 +15,10 @@ import {
   Marker,
   Popup,
   useMapEvents,
+  useMap,
 } from "react-leaflet"
 import { LayerResult } from "../../../utils/stateManagement/layers"
+import ZoomHandler from "./ZoomHandler"
 function Map({
   mapLocations,
   center,
@@ -64,6 +66,7 @@ function Map({
               attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
+            <ZoomHandler mapLocations={mapLocations} />
             {/* <Marker position={[51.5, -0.09]} icon={customIcon}>
               <Popup></Popup>
             </Marker> */}

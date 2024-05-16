@@ -15,6 +15,7 @@ import { FiLogOut } from "react-icons/fi"
 import { TbTablePlus } from "react-icons/tb"
 import { useRouter } from "next/navigation"
 import { FaUsers, FaTicketAlt } from "react-icons/fa"
+import toast, { Toaster } from "react-hot-toast"
 
 function Header() {
   const router = useRouter()
@@ -63,7 +64,14 @@ function Header() {
       setMenuOpened(false)
       setUsername("")
       setPassword("")
+      toast.success("Welcome " + usernameParam + "!")
     } catch (error) {
+      if (
+        typeof error === "string" &&
+        error == "Fill in all necessary fields."
+      ) {
+        toast.error(error)
+      } else toast.error("Unknown Error. Try later.")
       // console.error(error)
     }
   }
@@ -82,15 +90,27 @@ function Header() {
         emailParam
       )
       console.log(response)
-      if (response == "Success") {
-        setLogin(false)
-        setRegister(false)
-        setMenuOpened(false)
-        setUsername("")
-        setPassword("")
-      }
+
+      setLogin(false)
+      setRegister(false)
+      setMenuOpened(false)
+      setUsername("")
+      setEmail("")
+      setPassword("")
+      setRepeatPassword("")
+      toast.success("Account created successfully. Log in to your account.")
     } catch (error) {
-      // console.error(error)
+      if (
+        typeof error === "string" &&
+        (error == "One or more camps are empty." ||
+          error == "Passwords do not match." ||
+          error.startsWith("Validation failed:") ||
+          error == "Username already exists." ||
+          error == "Email already registered." ||
+          error == "Unknown Error.")
+      ) {
+        toast.error(error)
+      } else toast.error("Unknown Error. Try later.")
     }
   }
 
@@ -149,13 +169,15 @@ function Header() {
               <>
                 <div
                   className="flex gap-3 items-center cursor-pointer hover:bg-slate-200 p-1"
-                  onClick={() => router.push("/profile/"+ [useUser.user?.id])}>
+                  onClick={() => router.push("/profile/" + [useUser.user?.id])}>
                   <FaUser color="#000000" size={16} />
                   <div className="font-semibold select-none">Profile</div>
                 </div>
                 <div
                   className="flex gap-3 items-center cursor-pointer hover:bg-slate-200 p-1"
-                  onClick={() => router.push("/settings/"+ [useUser.user?.id])}>
+                  onClick={() =>
+                    router.push("/settings/" + [useUser.user?.id])
+                  }>
                   <FaUser color="#000000" size={16} />
                   <div className="font-semibold select-none">Settings</div>
                 </div>

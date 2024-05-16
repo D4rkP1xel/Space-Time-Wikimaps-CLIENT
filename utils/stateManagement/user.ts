@@ -2,6 +2,7 @@ import { create } from "zustand"
 import Cookies from 'js-cookie'
 import axios from "../axiosHandler"
 import axiosNoAuth from "../axiosNoAuth"
+import { AxiosError } from "axios"
 
 // TYPES
 interface User {
@@ -15,7 +16,7 @@ interface userState {
     user: User | null
     didFetchUser: boolean
     signInUser: (username: string, password: string) => Promise<void>
-    registerUser: (username: string, password: string, repeat_password: string, email: string) => Promise<string>
+    registerUser: (username: string, password: string, repeat_password: string, email: string) => Promise<void>
     signOutUser: () => void
     isUserAuth: () => boolean
     refreshUser: () => Promise<void>
@@ -24,12 +25,16 @@ interface userState {
 // SIGN IN / SIGN OUT / REGISTER
 async function signIn(username: string, password: string) {
     try {
+        if (username == "" || password == "") {
+            throw ("Fill in all necessary fields.")
+        }
         const response = await axiosNoAuth.post("/auth/signin", { username, password })
         console.log(response)
         return response.data;
     } catch (error) {
         console.error(error)
         signOut()
+        throw (error)
     }
 }
 
@@ -64,7 +69,7 @@ async function getUserByID(id: string): Promise<User | null> {
     }
 }
 
-async function changePasswordUser(id:string ,oldPassword: string, newPassword: string): Promise<string| undefined> {
+async function changePasswordUser(id: string, oldPassword: string, newPassword: string): Promise<string | undefined> {
     try {
         const response = await axios.put("/users/" + id + "/password", { oldPassword, newPassword })
         //console.log(response)
@@ -75,20 +80,8 @@ async function changePasswordUser(id:string ,oldPassword: string, newPassword: s
     }
 }
 
-async function changeSettingsUser(username:string ,email: string): Promise<string| undefined> {
-    try {
-        const response = await axios.put("/user", { username, email })
-        storeTokens(response.data.accessToken, response.data.refreshToken, response.data.user.id)
-        console.log(response)
-        alert("Saved successfully")
-        return response.data;
-    } catch (error) {
-        console.error(error)
-    }
-}
 
-
-async function askToBeEditorUser(message: string): Promise<string| undefined> {
+async function askToBeEditorUser(message: string): Promise<string | undefined> {
     try {
         const response = await axios.post("/upgrade/request", { message })
         //console.log(response)
@@ -99,19 +92,27 @@ async function askToBeEditorUser(message: string): Promise<string| undefined> {
     }
 }
 
-async function registerUser(username: string, password: string, repeat_password: string, email: string): Promise<string> {
+async function registerUser(username: string, password: string, repeat_password: string, email: string): Promise<void> {
     if (username == "" || password == "" || repeat_password == "" || email == "") {
-        return "One or more camps are empty"
+        throw ("One or more camps are empty.")
     }
     if (password != repeat_password) {
-        return "Passwords do not match"
+        throw ("Passwords do not match.")
     }
     try {
         await axiosNoAuth.post("/auth/signup", { username, password, email })
-        return "Success"
     } catch (error) {
         console.error(error)
-        return "Unknown error"
+        if (error instanceof AxiosError && error.response?.data?.message.startsWith("Validation failed:")) {
+            throw (error.response.data.message.split(";")[0])
+        }
+        else if (error instanceof AxiosError && error.response?.data.message.includes("Username already exists")) {
+            throw ("Username already exists.")
+        }
+        else if (error instanceof AxiosError && error.response?.data.message.includes("Email already registered")) {
+            throw ("Email already registered.")
+        }
+        throw ("Unknown error.")
     }
 }
 
@@ -139,7 +140,13 @@ const useUserState = create<userState>((set, get) => ({
         return response
     },
     signInUser: async (username: string, password: string) => {
-        const data = await signIn(username, password)
+        let data
+        try {
+            data = await signIn(username, password)
+        } catch (error) {
+            throw (error)
+        }
+
         if (data) {
             storeTokens(data.accessToken, data.refreshToken, data.user.id)
             const user = data.user
@@ -182,8 +189,8 @@ const useUserState = create<userState>((set, get) => ({
         }
         return true
     },
-   
+
 }))
 
-export { useUserState, getUserByID , changePasswordUser, askToBeEditorUser, changeSettingsUser}
+export { useUserState, getUserByID, changePasswordUser, askToBeEditorUser }
 export type { User }

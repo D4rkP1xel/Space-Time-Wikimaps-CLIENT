@@ -11,6 +11,7 @@ const customIcon = new Icon({
 })
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet"
 import { LayerResult } from "../../../utils/stateManagement/layers"
+import ZoomHandler from "../main/ZoomHandler"
 
 function MobileMap({
   mapLocations,
@@ -32,6 +33,7 @@ function MobileMap({
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           />
+          <ZoomHandler mapLocations={mapLocations} />
           {/* <Marker position={[51.5, -0.09]} icon={customIcon}>
             <Popup></Popup>
           </Marker> */}
