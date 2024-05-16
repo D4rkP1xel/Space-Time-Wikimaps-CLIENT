@@ -38,6 +38,7 @@ function Layer({ params }: { params: { id: string } }) {
     async () => {
       try {
         const data = await getLayer(Number.parseInt(params.id))
+        console.log(data)
         return data
       } catch (error) {
         console.error(error)
@@ -129,8 +130,10 @@ function Layer({ params }: { params: { id: string } }) {
                 )
               })
             )}
+            <div className="font-semibold">Editor:</div>
             <div className="w-full h-20"></div>
           </div>
+
           {pageWidth > 1024 ? (
             <Map mapLocations={results} center={center} />
           ) : null}
