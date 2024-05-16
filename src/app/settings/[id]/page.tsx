@@ -227,8 +227,7 @@ function Settings({ params }: { params: { id: string } }) {
                   onClick={() => setChangePassword(true)}
                 />
               </div>
-              {isProfileOwner() &&
-              !(user?.role == "ADMIN" || useUser.user?.role == "ADMIN") ? (
+              {isProfileOwner() && useUser.user?.role == "USER" ? (
                 <>
                   <div className="flex flex-col">
                     <div className="text-lg font-bold mb-4">
