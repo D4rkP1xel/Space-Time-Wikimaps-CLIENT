@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react"
 import { FaSearch, FaUserEdit } from "react-icons/fa"
 import { FaUser } from "react-icons/fa"
+import { FaRegUser } from "react-icons/fa"
 import { FiUser } from "react-icons/fi"
 import { FaUserShield } from "react-icons/fa"
 import { FaSignInAlt } from "react-icons/fa"
@@ -15,7 +16,8 @@ import { FiLogOut } from "react-icons/fi"
 import { TbTablePlus } from "react-icons/tb"
 import { useRouter } from "next/navigation"
 import { FaUsers, FaTicketAlt } from "react-icons/fa"
-import toast, { Toaster } from "react-hot-toast"
+import toast from "react-hot-toast"
+import { FiSettings } from "react-icons/fi"
 
 function Header() {
   const router = useRouter()
@@ -173,14 +175,7 @@ function Header() {
                   <FaUser color="#000000" size={16} />
                   <div className="font-semibold select-none">Profile</div>
                 </div>
-                <div
-                  className="flex gap-3 items-center cursor-pointer hover:bg-slate-200 p-1"
-                  onClick={() =>
-                    router.push("/settings/" + [useUser.user?.id])
-                  }>
-                  <FaUser color="#000000" size={16} />
-                  <div className="font-semibold select-none">Settings</div>
-                </div>
+
                 <div
                   className="flex gap-3 items-center cursor-pointer hover:bg-slate-200 p-1"
                   onClick={() => router.push("/createLayer")}>
@@ -207,6 +202,14 @@ function Header() {
                     </div>
                   </>
                 ) : null}
+                <div
+                  className="flex gap-3 items-center cursor-pointer hover:bg-slate-200 p-1"
+                  onClick={() =>
+                    router.push("/settings/" + [useUser.user?.id])
+                  }>
+                  <FiSettings color="#000000" size={16} />
+                  <div className="font-semibold select-none">Settings</div>
+                </div>
                 <div
                   className="flex gap-3 items-center cursor-pointer hover:bg-slate-200 p-1"
                   onClick={() => {

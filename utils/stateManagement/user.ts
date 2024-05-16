@@ -80,6 +80,29 @@ async function changePasswordUser(id: string, oldPassword: string, newPassword: 
     }
 }
 
+async function changeSettingsUser(username: string, email: string): Promise<string | undefined> {
+    if (username == null || username == "" || email == null || email == "") {
+        throw ("One or more camps are empty.")
+    }
+    try {
+        const response = await axios.put("/user", { username, email })
+        storeTokens(response.data.accessToken, response.data.refreshToken, response.data.user.id)
+        return response.data;
+    }
+    catch (error) {
+        //console.error(error)
+        if (error instanceof AxiosError && error.response?.data?.message.startsWith("Validation failed:")) {
+            throw (error.response.data.message.split(";")[0])
+        }
+        else if (error instanceof AxiosError && error.response?.data.message.includes("Username already exists")) {
+            throw ("Username already exists.")
+        }
+        else if (error instanceof AxiosError && error.response?.data.message.includes("Email already registered")) {
+            throw ("Email already registered.")
+        }
+        throw ("Unknown error.")
+    }
+}
 
 async function askToBeEditorUser(message: string): Promise<string | undefined> {
     try {
@@ -192,5 +215,5 @@ const useUserState = create<userState>((set, get) => ({
 
 }))
 
-export { useUserState, getUserByID, changePasswordUser, askToBeEditorUser }
+export { useUserState, getUserByID, changePasswordUser, askToBeEditorUser, changeSettingsUser }
 export type { User }
