@@ -1,6 +1,6 @@
 "use client"
 import React, { use, useState } from 'react';
-import { askToBeEditorUser, changePasswordUser, changeSettingsUser, getUserByID, useUserState } from '../../../../utils/stateManagement/user';
+import {getUserByID, useUserState } from '../../../../utils/stateManagement/user';
 import { FaUser, FaUserEdit, FaUserShield } from 'react-icons/fa';
 import { useQuery } from 'react-query';
 import PageCircleLoader from '@/components/loaders/PageCircleLoader';
@@ -9,6 +9,10 @@ import { useRouter } from 'next/navigation';
 import { FiLock, FiX } from 'react-icons/fi';
 import DarkBlueButton from '@/components/buttons/DarkBlueButton';
 import DeclineButton from '@/components/buttons/DeclineButton';
+import Dashboard from '@/app/dashboard/page';
+import DashboardResult from '@/components/dashboard/DashboardResult';
+import { Layer, getAllLayersByUserId } from '../../../../utils/stateManagement/layers';
+import ProfileLayersResult from '@/components/profile/ProfileLayersResult';
 
 
 
@@ -33,6 +37,21 @@ function Profile({ params }: { params: { id: string } }) {
     },
     { enabled: !checkAuth.isRenderLoader() == false && !isProfileOwner() }
   )
+
+  const {
+    data: layers,
+    isLoading: isLoadingLayers,
+    refetch: refetchLayers,
+  } = useQuery(
+    ["profileLayers"],
+    async () => {
+      return await getAllLayersByUserId(params.id)
+    },
+    { enabled: checkAuth.isRenderLoader() == false }
+  )
+
+
+
   if (checkAuth.isRenderLoader()) {
     return <PageCircleLoader />
   } else {
@@ -73,6 +92,22 @@ function Profile({ params }: { params: { id: string } }) {
                           <FaUserEdit color="#000000" size={24} />
                             : <FaUser color="#000000" size={24} />}
                       </div>
+                    </div>
+                  </div>
+                  <div className="flex flex-row mb-12">
+                    <span className=" text-lg font-bold text ">{isProfileOwner() ? useUser.user?.username : isLoadingUser ? "" : user?.username} Layers:</span>
+                  </div>
+                  <div className="flex flex-row justify-center mb-12">
+                    <div className="flex flex-col mt-8">
+                      {isLoadingLayers ? (
+                        <PageCircleLoader />
+                      ) : layers == null || layers.length == 0 ? (
+                        "No Layers found"
+                      ) : (
+                        layers.map((l: Layer) => (
+                          <ProfileLayersResult key={l.id} name={l.layerName} />
+                        ))
+                      )}
                     </div>
                   </div>
                 </div>

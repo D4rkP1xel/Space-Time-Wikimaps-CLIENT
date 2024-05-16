@@ -38,6 +38,11 @@ async function getLayer(id: number): Promise<Layer> {
     return response.data;
 }
 
+async function getAllLayersByUserId(id: string): Promise<Layer[]> {
+    const response = await axiosNoAuth.get("/users/" + id + "/layers")
+    return response.data;
+}
+
 async function getLayerResults(query: string): Promise<LayerResult[]> {
     const { data } = await axiosNoAuth.post("/sparql", { query })
     console.log(data)
@@ -75,5 +80,5 @@ async function editLayer(id: string, name: string, description: string, query: s
     await axios.put("/layers/" + id, { name, description, query })
 }
 
-export { getLayers, getLayer, getLayerResults, createNewLayer, editLayer }
-export type { LayerResult }
+export { getLayers, getLayer, getLayerResults, createNewLayer, editLayer , getAllLayersByUserId}
+export type { LayerResult, Layer }
