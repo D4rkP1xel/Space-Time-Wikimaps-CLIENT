@@ -132,14 +132,18 @@ function Profile({ params }: { params: { id: string } }) {
             </div>
 
             <div className="flex flex-row justify-center mb-12">
-              <div className="flex flex-col mt-8">
+              <div className="flex flex-col mt-8 w-full">
                 {isLoadingLayers ? (
                   <PageCircleLoader />
                 ) : layers == null || layers.length == 0 ? (
                   "No Layers found"
                 ) : (
                   layers.map((l: Layer) => (
-                    <ProfileLayersResult key={l.id} name={l.layerName} />
+                    <ProfileLayersResult
+                      key={l.id}
+                      name={l.layerName}
+                      id={l.id}
+                    />
                   ))
                 )}
               </div>
