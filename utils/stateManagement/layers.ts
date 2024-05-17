@@ -45,9 +45,40 @@ async function getAllLayersByUserId(id: string): Promise<Layer[]> {
     return response.data;
 }
 
-async function getLayerResults(query: string): Promise<LayerResult[]> {
+async function getLayerResults(layerId: number, startYear: number, endYear: number): Promise<LayerResult[]> {
+    //const { data } = await axiosNoAuth.post("/sparql", { query })
+    const { data } = await axiosNoAuth.get("/layers/" + layerId + "?lat1=-90&lon1=-180&lat2=90&lon2=180&start=" + startYear + "&end=" + endYear)
+    console.log(data)
+    return data.results.map((r: APILayerResult) => {
+        let obj: LayerResult = {}
+
+        if (r.coordinates) {
+            const startIndex = r.coordinates.indexOf("(") + 1;
+            const endIndex = r.coordinates.indexOf(")");
+            const coordinates: string = r.coordinates.substring(startIndex, endIndex);
+
+            const lon = coordinates.split(" ")[0]
+            const lat = coordinates.split(" ")[1]
+            obj["lat"] = lat;
+            obj["lon"] = lon;
+        }
+        if (r.url) {
+            obj["url"] = r.url;
+        }
+        if (r.itemSchemaLabel) {
+            obj["title"] = r.itemSchemaLabel.split("@")[0]
+        }
+        if (r.description) {
+            obj["description"] = r.description.split("@")[0]
+        }
+        return obj
+    });
+}
+
+async function getLayerResultsByQuery(query: string): Promise<LayerResult[]> {
     const { data } = await axiosNoAuth.post("/sparql", { query })
-    //console.log(data)
+
+    console.log(data)
     return data.results.map((r: APILayerResult) => {
         let obj: LayerResult = {}
 
@@ -93,5 +124,5 @@ async function editLayer(id: string, name: string, description: string, query: s
     await axios.put("/layers/" + id, { name, description, query })
 }
 
-export { getLayers, getLayer, getLayerResults, createNewLayer, editLayer, getAllLayersByUserId }
+export { getLayers, getLayer, getLayerResults, createNewLayer, editLayer, getAllLayersByUserId, getLayerResultsByQuery }
 export type { LayerResult, Layer }

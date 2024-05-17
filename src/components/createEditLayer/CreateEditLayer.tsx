@@ -9,6 +9,7 @@ import {
   editLayer,
   getLayer,
   getLayerResults,
+  getLayerResultsByQuery,
 } from "../../../utils/stateManagement/layers"
 import { useRouter } from "next/navigation"
 import PageCircleLoader from "../loaders/PageCircleLoader"
@@ -61,7 +62,7 @@ function CreateEditLayer({ layerId }: { layerId: string | null }) {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const resultsResp = await getLayerResults(lastQuery)
+        const resultsResp = await getLayerResultsByQuery(lastQuery)
         console.log(resultsResp)
         setResultString(JSON.stringify(resultsResp))
         if (resultsResp[0].lat != null && resultsResp[0].lon != null) {

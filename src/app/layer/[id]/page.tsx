@@ -1,6 +1,6 @@
 "use client"
 import { FaAngleLeft } from "react-icons/fa"
-
+import { IoReload } from "react-icons/io5"
 import SideMap from "@/components/main/SideMap"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
@@ -16,12 +16,16 @@ import LayerResultDiv from "@/components/layer/LayerResult"
 import { FaRegEdit } from "react-icons/fa"
 import EditButton from "@/components/buttons/EditButton"
 import { useUserState } from "../../../../utils/stateManagement/user"
+import DarkBlueButton from "@/components/buttons/DarkBlueButton"
 
 function Layer({ params }: { params: { id: string } }) {
   const router = useRouter()
   const [pageWidth, setPageWidth] = useState(window.innerWidth)
   const [center, setCenter] = useState<[number, number] | null>(null)
   const useUser = useUserState()
+  const [startYear, setStartYear] = useState<number>(0)
+  const [endYear, setEndYear] = useState<number>(new Date().getFullYear())
+  const [isLoadingResultsAux, setIsLoadingResultsAux] = useState(false)
   useEffect(() => {
     function handleResize() {
       setPageWidth(window.innerWidth)
@@ -50,13 +54,16 @@ function Layer({ params }: { params: { id: string } }) {
     }
   )
 
-  const { data: results, isLoading: isLoadingResults } = useQuery(
+  const {
+    data: results,
+    isLoading: isLoadingResults,
+    refetch: refetchResults,
+  } = useQuery(
     ["results"],
     async () => {
       try {
         if (layer == null) return
-        const data = await getLayerResults(layer.query)
-
+        const data = await getLayerResults(layer.id, startYear, endYear)
         return data
       } catch (error) {
         console.error(error)
@@ -106,8 +113,36 @@ function Layer({ params }: { params: { id: string } }) {
             {pageWidth > 1024 ? null : (
               <MobileMap mapLocations={results} center={center} />
             )}
+            <div className="flex flex-row items-center mt-8">
+              <div className="text-xl font-medium">Results:</div>
+              <div className="ml-auto flex flex-row gap-3 items-center">
+                <div>Start Year:</div>
+                <input
+                  type="number"
+                  value={startYear}
+                  onChange={(e) => setStartYear(Number(e.target.value))}
+                  className="h-8 w-20 bg-gray-100 outline-none rounded-md"
+                />
+                <div>End Year:</div>
+                <input
+                  type="number"
+                  value={endYear}
+                  onChange={(e) => setEndYear(Number(e.target.value))}
+                  className="h-8 w-20 bg-gray-100 outline-none rounded-md"
+                />
+                <DarkBlueButton
+                  onClick={async () => {
+                    setIsLoadingResultsAux(true)
+                    await refetchResults()
+                    setIsLoadingResultsAux(false)
+                  }}
+                  buttonText="Reload Results"
+                  logoComponent={<IoReload size={20} />}
+                  isLoading={isLoadingResultsAux}
+                />
+              </div>
+            </div>
 
-            <div className="text-xl mt-8 font-medium">Results:</div>
             {isLoadingResults ? (
               <PageCircleLoader />
             ) : results == undefined ||
