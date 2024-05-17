@@ -4,11 +4,17 @@ import { LayerResult } from "../../../utils/stateManagement/layers"
 
 function ZoomHandler({
   mapLocations,
+  center,
 }: {
   mapLocations: LayerResult[] | null | undefined
+  center: [number, number] | null
 }) {
   const map = useMap()
-
+  useEffect(() => {
+    if (center) {
+      map.setView(center, 15)
+    }
+  }, [map, center])
   useEffect(() => {
     if (map != null && mapLocations != null && mapLocations.length > 0) {
       let latHighestValue: number = -180
@@ -40,6 +46,7 @@ function ZoomHandler({
       ])
     }
   }, [map, mapLocations])
+
   return <div></div>
 }
 

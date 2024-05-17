@@ -1,5 +1,5 @@
 "use client"
-import { Icon} from "leaflet"
+import { Icon } from "leaflet"
 import "leaflet/dist/leaflet.css"
 import { useEffect, useState } from "react"
 import Image from "next/image"
@@ -27,7 +27,7 @@ function Map({
   center,
 }: {
   mapLocations: LayerResult[] | null | undefined
-  center: [number, number]
+  center: [number, number] | null
 }) {
   const [scrollY, setScrollY] = useState(0)
 
@@ -60,8 +60,8 @@ function Map({
         onScroll={() => setScrollY(window.scrollY)}>
         <div className="ml-auto pb-8" style={{ height: handleMapHeight() }}>
           <MapContainer
-            key={center[0] + "-" + center[1]}
-            center={center}
+            // key={center[0] + "-" + center[1]}
+            center={center ? center : [51.505, -0.09]}
             zoom={13}
             scrollWheelZoom={true}
             style={{ width: "300px", height: "calc(100% - 48px)" }}>
@@ -69,7 +69,7 @@ function Map({
               attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
-            <ZoomHandler mapLocations={mapLocations} />
+            <ZoomHandler mapLocations={mapLocations} center={center} />
             {/* <Marker position={[51.5, -0.09]} icon={customIcon}>
               <Popup></Popup>
             </Marker> */}

@@ -1,8 +1,9 @@
 import axiosNoAuth from "../axiosNoAuth"
 import axios from "../axiosHandler"
+import { User } from "./user"
 interface Layer {
     id: number
-    username: string
+    userDTO: User
     layerName: string
     description: string
     timestamp: string
@@ -80,5 +81,5 @@ async function editLayer(id: string, name: string, description: string, query: s
     await axios.put("/layers/" + id, { name, description, query })
 }
 
-export { getLayers, getLayer, getLayerResults, createNewLayer, editLayer , getAllLayersByUserId}
+export { getLayers, getLayer, getLayerResults, createNewLayer, editLayer, getAllLayersByUserId }
 export type { LayerResult, Layer }

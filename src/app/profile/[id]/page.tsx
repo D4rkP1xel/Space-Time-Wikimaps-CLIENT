@@ -1,5 +1,5 @@
 "use client"
-import React, { use, useState } from "react"
+import React, { use, useEffect, useState } from "react"
 import {
   getUserByID,
   useUserState,
@@ -43,7 +43,12 @@ function Profile({ params }: { params: { id: string } }) {
   } = useQuery(
     ["profileLayers"],
     async () => {
-      return await getAllLayersByUserId(params.id)
+      try {
+        const data = await getAllLayersByUserId(params.id)
+        return data
+      } catch (error) {
+        console.error(error)
+      }
     },
     {
       enabled:

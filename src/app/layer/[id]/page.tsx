@@ -20,7 +20,7 @@ import { useUserState } from "../../../../utils/stateManagement/user"
 function Layer({ params }: { params: { id: string } }) {
   const router = useRouter()
   const [pageWidth, setPageWidth] = useState(window.innerWidth)
-  const [center, setCenter] = useState<[number, number]>([51.505, -0.09])
+  const [center, setCenter] = useState<[number, number] | null>(null)
   const useUser = useUserState()
   useEffect(() => {
     function handleResize() {
@@ -62,15 +62,6 @@ function Layer({ params }: { params: { id: string } }) {
     },
     { enabled: layer != null }
   )
-
-  useEffect(() => {
-    if (results && results.length > 0 && results[0].lat && results[0].lon) {
-      setCenter([
-        Number.parseFloat(results[0].lat),
-        Number.parseFloat(results[0].lon),
-      ])
-    }
-  }, [results])
 
   if (isLoadingLayer) {
     return <PageCircleLoader />
@@ -130,7 +121,17 @@ function Layer({ params }: { params: { id: string } }) {
                 )
               })
             )}
-            <div className="font-semibold">Editor:</div>
+            <div className="flex flex-row gap-1">
+              <div className="font-bold">Editor:</div>
+              <div
+                onClick={() => {
+                  if (layer) router.push("/profile/" + layer.userDTO.id)
+                }}
+                className="font-medium cursor-pointer hover:text-gray-500 hover:underline">
+                {layer?.userDTO.username}
+              </div>
+            </div>
+
             <div className="w-full h-20"></div>
           </div>
 

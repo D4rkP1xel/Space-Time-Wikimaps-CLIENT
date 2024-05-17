@@ -21,14 +21,13 @@ function MobileMap({
   center,
 }: {
   mapLocations: LayerResult[] | null | undefined
-  center: [number, number]
+  center: [number, number] | null
 }) {
   return (
     <>
       <div className="w-full pt-8">
         <MapContainer
-          key={center[0] + "-" + center[1]}
-          center={center}
+          center={center ? center : [51.505, -0.09]}
           zoom={13}
           scrollWheelZoom={true}
           style={{ width: "100%", height: "300px" }}>
@@ -36,7 +35,7 @@ function MobileMap({
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           />
-          <ZoomHandler mapLocations={mapLocations} />
+          <ZoomHandler mapLocations={mapLocations} center={center} />
           {/* <Marker position={[51.5, -0.09]} icon={customIcon}>
             <Popup></Popup>
           </Marker> */}

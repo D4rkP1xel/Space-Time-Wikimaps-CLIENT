@@ -14,7 +14,7 @@ function LayerResultDiv({
   return (
     <>
       <div className="flex lg:flex-row flex-col gap-8 mt-4 ">
-        <div className="flex h-80 w-80 aspect-square lg:mx-0 mx-auto">
+        <div className="flex h-80 w-80 aspect-square lg:mx-0 mx-auto flex-shrink-0">
           {result.image ? (
             <img className="w-full h-full object-cover" src={result.image} />
           ) : (
