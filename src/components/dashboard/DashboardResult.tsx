@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation"
 import DeclineButton from "../buttons/DeclineButton"
 import { FiX } from "react-icons/fi"
 import { deletingUser } from "../../../utils/stateManagement/user"
+import toast from "react-hot-toast"
 function DashboardResult({ role, name ,id }: { role: string; name: string , id: number}) {
   const router = useRouter()
   const [isDeleting, setDeleting] = React.useState(false)
@@ -66,6 +67,7 @@ function DashboardResult({ role, name ,id }: { role: string; name: string , id: 
             onClick={() => {
               deletingUser(id)
               setDeleting(false)
+              toast.success("User deleted successfully.")
             }}
             className="bg-red-600 text-white text-center rounded-full py-2 w-1/2 mx-auto font-medium text-lg select-none cursor-pointer mb-2">
             {"Delete Account"}
