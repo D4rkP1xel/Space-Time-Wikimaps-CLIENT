@@ -19,21 +19,21 @@ function Profile({ params }: { params: { id: string } }) {
   const router = useRouter()
   const checkAuth = useCheckAuth(router, ["ADMIN", "EDITOR", "USER"])
   const useUser = useUserState()
+  const [isProfileOwner, setIsProfileOwner] = useState(false)
 
-  const isProfileOwner = () => {
-    return useUser.user?.id.toString() == params.id
-  }
-
+  useEffect(() => {
+    setIsProfileOwner(useUser.user?.id.toString() == params.id)
+  }, [useUser.user])
   const {
     data: user,
     isLoading: isLoadingUser,
     refetch: refetchUser,
   } = useQuery(
-    ["user"],
+    ["user", params.id],
     async () => {
       return await getUserByID(params.id)
     },
-    { enabled: !checkAuth.isRenderLoader() == false && !isProfileOwner() }
+    { enabled: !checkAuth.isRenderLoader() == false && !isProfileOwner }
   )
 
   const {
@@ -41,7 +41,7 @@ function Profile({ params }: { params: { id: string } }) {
     isLoading: isLoadingLayers,
     refetch: refetchLayers,
   } = useQuery(
-    ["profileLayers"],
+    ["profileLayers", params.id],
     async () => {
       try {
         const data = await getAllLayersByUserId(params.id)
@@ -53,10 +53,9 @@ function Profile({ params }: { params: { id: string } }) {
     {
       enabled:
         (checkAuth.isRenderLoader() == false &&
-          isProfileOwner() &&
+          isProfileOwner &&
           (useUser.user?.role == "EDITOR" || useUser.user?.role == "ADMIN")) ||
-        (!isProfileOwner() &&
-          (user?.role == "EDITOR" || user?.role == "ADMIN")),
+        (!isProfileOwner && (user?.role == "EDITOR" || user?.role == "ADMIN")),
     }
   )
 
@@ -72,7 +71,7 @@ function Profile({ params }: { params: { id: string } }) {
               <div className="flex flex-row gap-1">
                 <span className=" text-lg font-bold w-16">Name: </span>
                 <span className=" text-lg ">
-                  {isProfileOwner()
+                  {isProfileOwner
                     ? useUser.user?.username
                     : isLoadingUser
                     ? ""
@@ -84,7 +83,7 @@ function Profile({ params }: { params: { id: string } }) {
               <div className="flex flex-row gap-1">
                 <span className=" text-lg font-bold w-16">Email:</span>
                 <span className=" text-lg ">
-                  {isProfileOwner()
+                  {isProfileOwner
                     ? useUser.user?.email
                     : isLoadingUser
                     ? ""
@@ -96,7 +95,7 @@ function Profile({ params }: { params: { id: string } }) {
               <div className="flex flex-row items-center">
                 <span className=" text-lg font-bold w-16">Role:</span>
                 <span className=" px-1 py-1 ">
-                  {isProfileOwner()
+                  {isProfileOwner
                     ? useUser.user?.role
                     : isLoadingUser
                     ? null
@@ -104,7 +103,7 @@ function Profile({ params }: { params: { id: string } }) {
                 </span>
 
                 <div>
-                  {isProfileOwner() && useUser.user?.role ? (
+                  {isProfileOwner && useUser.user?.role ? (
                     useUser.user.role == "ADMIN" ? (
                       <FaUserShield color="#000000" size={24} />
                     ) : useUser.user.role == "EDITOR" ? (
@@ -123,15 +122,15 @@ function Profile({ params }: { params: { id: string } }) {
               </div>
             </div>
           </div>
-          {(isProfileOwner() &&
+          {(isProfileOwner &&
             (useUser.user?.role == "EDITOR" ||
               useUser.user?.role == "ADMIN")) ||
-          (!isProfileOwner() &&
+          (!isProfileOwner &&
             (user?.role == "EDITOR" || user?.role == "ADMIN")) ? (
             <div>
               <div className="flex flex-row mb-12">
                 <span className=" text-lg font-bold text ">
-                  {isProfileOwner()
+                  {isProfileOwner
                     ? "Your "
                     : isLoadingUser
                     ? ""

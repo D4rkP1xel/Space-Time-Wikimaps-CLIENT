@@ -34,7 +34,7 @@ function Layer({ params }: { params: { id: string } }) {
   }, [])
 
   const { data: layer, isLoading: isLoadingLayer } = useQuery(
-    ["layer"],
+    ["layer", params.id],
     async () => {
       try {
         const data = await getLayer(Number.parseInt(params.id))
