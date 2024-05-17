@@ -94,6 +94,14 @@ async function deleteUser() {
     }
 }	
 
+async function deletingUser(id: number){
+    try {
+        const response = await axios.delete("/users/" +id)
+        console.log(response)
+    } catch (error) {
+        console.error(error)
+    }
+}
 
 async function changeSettingsUser(username: string, email: string): Promise<string | undefined> {
     if (username == null || username == "" || email == null || email == "") {
@@ -230,5 +238,5 @@ const useUserState = create<userState>((set, get) => ({
 
 }))
 
-export { useUserState, getUserByID, changePasswordUser, askToBeEditorUser, changeSettingsUser, deleteUser }
+export { useUserState, getUserByID, changePasswordUser, askToBeEditorUser, changeSettingsUser, deleteUser, deletingUser }
 export type { User }
