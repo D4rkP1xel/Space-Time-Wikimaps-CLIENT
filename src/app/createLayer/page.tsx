@@ -8,7 +8,7 @@ import PageCircleLoader from "@/components/loaders/PageCircleLoader"
 function CreateLayer() {
   const router = useRouter()
   const checkAuth = useCheckAuth(router, ["ADMIN", "EDITOR"])
-  if (checkAuth.isRenderLoader()) {
+  if (checkAuth.isRenderLoader) {
     return <PageCircleLoader />
   } else return <CreateEditLayer layerId={null} />
 }

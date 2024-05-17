@@ -8,7 +8,7 @@ import { useCheckAuth } from "../../../../../utils/customHooks/checkAuth"
 function EditLayer({ params }: { params: { id: string } }) {
   const router = useRouter()
   const checkAuth = useCheckAuth(router, ["ADMIN", "EDITOR"])
-  if (checkAuth.isRenderLoader()) {
+  if (checkAuth.isRenderLoader) {
     return <PageCircleLoader />
   } else if (params.id == null) return <PageCircleLoader />
   else return <CreateEditLayer layerId={params.id} />

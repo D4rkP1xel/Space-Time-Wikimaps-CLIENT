@@ -27,10 +27,10 @@ function Dashboard() {
     async () => {
       return await getAllUsers(selectedOption, name)
     },
-    { enabled: checkAuth.isRenderLoader() == false }
+    { enabled: checkAuth.isRenderLoader == false }
   )
 
-  if (checkAuth.isRenderLoader()) {
+  if (checkAuth.isRenderLoader) {
     return <PageCircleLoader />
   } else
     return (

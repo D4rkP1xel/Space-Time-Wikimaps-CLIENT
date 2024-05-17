@@ -75,6 +75,7 @@ function CreateEditLayer({ layerId }: { layerId: string | null }) {
         console.error(error)
         setResultString("")
         setResults([])
+        toast.error("Error while executing SparQL query.")
       }
     }
 
@@ -97,7 +98,8 @@ function CreateEditLayer({ layerId }: { layerId: string | null }) {
       if (
         typeof error === "string" &&
         (error == "One or more camps are empty." ||
-          error == "Invalid SparQL query.")
+          error == "Invalid SparQL query." ||
+          error == "Layer Name already exists.")
       ) {
         toast.error(error)
       } else toast.error("Unknown Error.")
@@ -168,7 +170,10 @@ function CreateEditLayer({ layerId }: { layerId: string | null }) {
         {/* Test Query button */}
         <div className="justify-center flex mb-12">
           <DarkBlueButton
-            onClick={() => setLastQuery(query)}
+            onClick={() => {
+              if (query == "") toast.error("Fill in the SparQL query field.")
+              setLastQuery(query)
+            }}
             logoComponent={null}
             buttonText="Test Query"
           />

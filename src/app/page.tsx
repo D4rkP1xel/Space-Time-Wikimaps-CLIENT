@@ -1,6 +1,6 @@
 "use client"
 import MobileMap from "@/components/layer/MobileMap"
-import Map from "@/components/main/Map"
+import SideMap from "@/components/main/SideMap"
 import Result from "@/components/main/Result"
 import { useEffect, useState } from "react"
 import { useQuery } from "react-query"
@@ -83,7 +83,9 @@ function Home() {
             )}
           </div>
         </div>
-        {pageWidth > 1024 ? <Map center={center} mapLocations={null} /> : null}
+        {pageWidth > 1024 ? (
+          <SideMap center={center} mapLocations={null} />
+        ) : null}
       </div>
     </>
   )

@@ -30,10 +30,10 @@ function EditorRequests() {
     async () => {
       return await getAllEditorRequests(name, selectedStatus)
     },
-    { enabled: checkAuth.isRenderLoader() == false }
+    { enabled: checkAuth.isRenderLoader == false }
   )
 
-  if (checkAuth.isRenderLoader()) {
+  if (checkAuth.isRenderLoader) {
     return <PageCircleLoader />
   } else {
     return (

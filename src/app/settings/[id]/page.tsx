@@ -57,7 +57,7 @@ function Settings({ params }: { params: { id: string } }) {
     newPasswordParam: string
   ) {
     try {
-      if (useUser.user == null || newPasswordParam.length < 6) return
+      if (useUser.user == null) return
       await changePasswordUser(
         useUser.user?.id.toString(),
         oldPasswordParam,
@@ -66,7 +66,13 @@ function Settings({ params }: { params: { id: string } }) {
       setOldPassword("")
       setNewPassword("")
     } catch (error) {
-      // console.error(error)
+      if (
+        typeof error === "string" &&
+        (error == "One or more camps are empty." ||
+          error == "New Password length has to be at least 6 characters long.")
+      ) {
+        toast.error(error)
+      } else toast.error("Unknown Error.")
     }
   }
 
@@ -119,7 +125,7 @@ function Settings({ params }: { params: { id: string } }) {
     },
     {
       enabled:
-        !checkAuth.isRenderLoader() &&
+        !checkAuth.isRenderLoader &&
         isProfileOwner === false &&
         useUser.user != null &&
         useUser.user?.role == "ADMIN" &&
@@ -153,7 +159,7 @@ function Settings({ params }: { params: { id: string } }) {
     }
   }, [email, username])
 
-  if (checkAuth.isRenderLoader()) {
+  if (checkAuth.isRenderLoader) {
     return <PageCircleLoader />
   } else {
     return (

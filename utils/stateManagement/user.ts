@@ -70,13 +70,17 @@ async function getUserByID(id: string): Promise<User | null> {
 }
 
 async function changePasswordUser(id: string, oldPassword: string, newPassword: string): Promise<string | undefined> {
+    if (oldPassword == null || oldPassword == "" || newPassword == "" || newPassword == null) throw ("One or more camps are empty.")
+    if (newPassword.length < 6) throw ("New Password length has to be at least 6 characters long.")
     try {
         const response = await axios.put("/users/" + id + "/password", { oldPassword, newPassword })
-        //console.log(response)
-        alert("Password changed successfully")
         return response.data;
     } catch (error) {
         console.error(error)
+        if (error instanceof AxiosError && error.response?.data?.message.startsWith("Validation failed:")) {
+            throw (error.response.data.message.split(";")[0])
+        }
+        throw ("Unknown error.")
     }
 }
 

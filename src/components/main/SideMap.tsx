@@ -2,8 +2,6 @@
 import { Icon } from "leaflet"
 import "leaflet/dist/leaflet.css"
 import { useEffect, useState } from "react"
-import Image from "next/image"
-import UnavailableImage from "./../../../public/icons/photo_unavailable.png"
 
 const customIcon = new Icon({
   // iconUrl: "https://cdn-icons-png.flaticon.com/512/447/447031.png",
@@ -22,7 +20,9 @@ import {
 import { LayerResult } from "../../../utils/stateManagement/layers"
 import ZoomHandler from "./ZoomHandler"
 import { FaBookOpen } from "react-icons/fa"
-function Map({
+import MapMarketResult from "./MapMarketResult"
+import { GetMapLocationsOrganized } from "../../../utils/customFunctions/mapFunctions"
+function SideMap({
   mapLocations,
   center,
 }: {
@@ -74,44 +74,34 @@ function Map({
               <Popup></Popup>
             </Marker> */}
             {mapLocations != null && mapLocations.length > 0
-              ? mapLocations.map((ml: LayerResult, index: number) => {
-                  if (ml.lat == null || ml.lon == null) return
-                  return (
-                    <Marker
-                      key={index}
-                      position={[
-                        Number.parseFloat(ml.lat),
-                        Number.parseFloat(ml.lon),
-                      ]}
-                      icon={customIcon}>
-                      <Popup closeButton={false}>
-                        <div className="flex flex-row gap-4 items-center">
-                          {ml.image ? (
-                            <img
-                              className="w-12 h-12 rounded-full object-cover"
-                              src={ml.image}
-                            />
-                          ) : (
-                            <Image
-                              className="w-12 h-12 rounded-full object-cover"
-                              src={UnavailableImage}
-                              alt={"Picture of " + ml.title}
-                            />
-                          )}
-                          <div className="flex flex-col w-40">
-                            <div className="font-bold mb-2">{ml.title}</div>
-                            <div className="flex flex-row items-center gap-2 select-none cursor-pointer">
-                              <FaBookOpen size={16} />
-                              <div className="text-md font-semibold">
-                                Read about
-                              </div>
+              ? Array.from(GetMapLocationsOrganized(mapLocations).values()).map(
+                  (mls: LayerResult[], index: number) => {
+                    if (mls.length > 0) {
+                      return (
+                        <Marker
+                          key={index}
+                          position={[
+                            Number.parseFloat(mls[0].lat!),
+                            Number.parseFloat(mls[0].lon!),
+                          ]}
+                          icon={customIcon}>
+                          <Popup closeButton={false}>
+                            <div className="flex flex-col gap-3">
+                              {mls.map((ml: LayerResult, mlIndex: number) => {
+                                return (
+                                  <MapMarketResult
+                                    key={mlIndex}
+                                    mapLocation={ml}
+                                  />
+                                )
+                              })}
                             </div>
-                          </div>
-                        </div>
-                      </Popup>
-                    </Marker>
-                  )
-                })
+                          </Popup>
+                        </Marker>
+                      )
+                    }
+                  }
+                )
               : null}
           </MapContainer>
         </div>
@@ -120,4 +110,4 @@ function Map({
   )
 }
 
-export default Map
+export default SideMap

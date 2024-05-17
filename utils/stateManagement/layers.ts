@@ -81,7 +81,10 @@ async function createNewLayer(name: string, description: string, query: string):
     } catch (error) {
         if (error instanceof AxiosError && error.response?.data?.message == "Invalid layer request") {
             throw ("Invalid SparQL query.")
+        } else if (error instanceof AxiosError && error.response?.data?.message.startsWith("Layer name already exists")) {
+            throw ("Layer Name already exists.")
         }
+        throw (error)
     }
 
 }

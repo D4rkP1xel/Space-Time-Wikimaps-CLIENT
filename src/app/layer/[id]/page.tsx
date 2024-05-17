@@ -1,7 +1,7 @@
 "use client"
 import { FaAngleLeft } from "react-icons/fa"
 
-import Map from "@/components/main/Map"
+import SideMap from "@/components/main/SideMap"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import MobileMap from "@/components/layer/MobileMap"
@@ -140,7 +140,7 @@ function Layer({ params }: { params: { id: string } }) {
           </div>
 
           {pageWidth > 1024 ? (
-            <Map mapLocations={results} center={center} />
+            <SideMap mapLocations={results} center={center} />
           ) : null}
         </div>
       </div>
