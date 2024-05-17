@@ -1,9 +1,10 @@
 "use client"
-import React, { useEffect, useState } from "react"
+import React, { use, useEffect, useState } from "react"
 import {
   askToBeEditorUser,
   changePasswordUser,
   changeSettingsUser,
+  deleteUser,
   getUserByID,
   useUserState,
 } from "../../../../utils/stateManagement/user"
@@ -32,6 +33,7 @@ function Settings({ params }: { params: { id: string } }) {
   const [canSaveChanges, setSaveChanges] = useState(false)
   const [isLoadingChanges, setLoadingChanges] = useState(false)
   const [isProfileOwner, setIsProfileOwner] = useState<boolean | null>(null)
+  const [isDeleting, setDeleting] = useState(false)
 
   useEffect(() => {
     if (useUser.user != null && params.id != null)
@@ -73,6 +75,17 @@ function Settings({ params }: { params: { id: string } }) {
       ) {
         toast.error(error)
       } else toast.error("Unknown Error.")
+    }
+  }
+
+  async function Deleting() {
+    try {
+      if (useUser.user == null) return
+      await deleteUser()
+      router.push("/")
+      useUser.signOutUser()
+    } catch (error) {
+      console.error(error)
     }
   }
 
@@ -280,7 +293,7 @@ function Settings({ params }: { params: { id: string } }) {
               <DeclineButton
                 logoComponent={<FaRegTrashAlt size={20} />}
                 buttonText="Delete Account"
-                onClick={() => null}
+                onClick={() => setDeleting(true)}
               />
             </div>
           ) : null}
@@ -368,6 +381,32 @@ function Settings({ params }: { params: { id: string } }) {
           </div>
         ) : null}
         {/* End of Ask to be Editor Modal*/}
+
+        {/* Delete Account Modal */}
+        {isDeleting === true ? (
+          <div className="w-screen h-screen bg-gray-900 bg-opacity-50 z-50 fixed top-0 left-0 flex">
+            <div
+              className="fixed top-16 right-2 p-8 cursor-pointer"
+              onClick={() => {
+                setDeleting(false)
+              }}>
+              <FiX color="#FFFFFF" size={48} />
+            </div>
+            <div className="bg-white rounded-2xl shadow-lg shadow-[#828282] w-4/12 p-8 mx-auto my-auto flex flex-col">
+              <div className="text-2xl font-medium mx-auto mb-6">
+                Are you sure you want to delete your account?
+              </div>
+              <div
+                onClick={() => {
+                  Deleting()
+                }}
+                className="bg-red-600 text-white text-center rounded-full py-2 w-1/2 mx-auto font-medium text-lg select-none cursor-pointer mb-2">
+                {"Delete Account"}
+              </div>
+            </div>
+          </div>
+        ) : null}
+        {/* End of Password Modal*/}
       </>
     )
   }

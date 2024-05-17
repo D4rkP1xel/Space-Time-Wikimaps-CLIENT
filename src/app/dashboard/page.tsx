@@ -77,7 +77,7 @@ function Dashboard() {
                 "No users found"
               ) : (
                 users.map((u: User) => (
-                  <DashboardResult key={u.id} role={u.role} name={u.username} />
+                  <DashboardResult key={u.id} role={u.role} name={u.username} id={u.id} />
                 ))
               )}
             </div>

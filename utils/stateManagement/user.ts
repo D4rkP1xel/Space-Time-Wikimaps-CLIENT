@@ -84,6 +84,17 @@ async function changePasswordUser(id: string, oldPassword: string, newPassword: 
     }
 }
 
+async function deleteUser() {
+    try {
+        const response = await axios.delete("/user")
+        console.log(response)
+        
+    } catch (error) {
+        console.error(error)
+    }
+}	
+
+
 async function changeSettingsUser(username: string, email: string): Promise<string | undefined> {
     if (username == null || username == "" || email == null || email == "") {
         throw ("One or more camps are empty.")
@@ -219,5 +230,5 @@ const useUserState = create<userState>((set, get) => ({
 
 }))
 
-export { useUserState, getUserByID, changePasswordUser, askToBeEditorUser, changeSettingsUser }
+export { useUserState, getUserByID, changePasswordUser, askToBeEditorUser, changeSettingsUser, deleteUser }
 export type { User }
