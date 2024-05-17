@@ -31,9 +31,26 @@ function Settings({ params }: { params: { id: string } }) {
   const [message, setMessage] = useState("")
   const [canSaveChanges, setSaveChanges] = useState(false)
   const [isLoadingChanges, setLoadingChanges] = useState(false)
-  const isProfileOwner = () => {
-    return useUser.user?.id.toString() == params.id
-  }
+  const [isProfileOwner, setIsProfileOwner] = useState<boolean | null>(null)
+
+  useEffect(() => {
+    if (useUser.user != null && params.id != null)
+      setIsProfileOwner(useUser.user.id.toString() == params.id)
+  }, [useUser.user, params.id])
+
+  useEffect(() => {
+    if (
+      useUser.user != null &&
+      params.id != null &&
+      useUser.user.role != "ADMIN" &&
+      isProfileOwner != null &&
+      isProfileOwner === false
+    ) {
+      console.log(isProfileOwner + " " + useUser.user.role)
+      router.push("/")
+      return
+    }
+  }, [useUser.user, params.id, isProfileOwner])
 
   async function ChangePassword(
     oldPasswordParam: string,
@@ -60,7 +77,7 @@ function Settings({ params }: { params: { id: string } }) {
       }
       setLoadingChanges(true)
       await changeSettingsUser(username, email)
-      if (isProfileOwner()) {
+      if (isProfileOwner) {
         await useUser.refreshUser()
       } else {
         await refetchUser()
@@ -96,31 +113,38 @@ function Settings({ params }: { params: { id: string } }) {
     isLoading: isLoadingUser,
     refetch: refetchUser,
   } = useQuery(
-    ["user"],
+    ["user_settings", params.id],
     async () => {
       return await getUserByID(params.id)
     },
-    { enabled: !checkAuth.isRenderLoader() == false && !isProfileOwner() }
+    {
+      enabled:
+        !checkAuth.isRenderLoader() &&
+        isProfileOwner === false &&
+        useUser.user != null &&
+        useUser.user?.role == "ADMIN" &&
+        params.id != null,
+    }
   )
 
   useEffect(() => {
-    if (isProfileOwner()) {
+    if (isProfileOwner) {
       setEmail(useUser.user?.email!)
       setUsername(useUser.user?.username!)
-    } else if (!isProfileOwner() && user != null) {
+    } else if (!isProfileOwner && user != null) {
       setEmail(user.email)
       setUsername(user.username)
     }
-  }, [isProfileOwner(), user, useUser.user])
+  }, [isProfileOwner, user, useUser.user])
 
   useEffect(() => {
-    if (isProfileOwner()) {
+    if (isProfileOwner) {
       let startEmail = useUser.user?.email!
       let startUsername = useUser.user?.username!
       if (startEmail != email || startUsername != username) {
         setSaveChanges(true)
       } else setSaveChanges(false)
-    } else if (!isProfileOwner() && user != null) {
+    } else if (!isProfileOwner && user != null) {
       let startEmail = user.email
       let startUsername = user.username
       if (startEmail != email || startUsername != username) {
@@ -140,13 +164,13 @@ function Settings({ params }: { params: { id: string } }) {
             <div className="flex flex-row">
               <span className=" text-lg font-bold w-16">Name:</span>
               <input
-                disabled={!isProfileOwner()}
+                disabled={!isProfileOwner}
                 type="text"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 className="border border-gray-400 px-2 py-1 rounded w-100 "
                 placeholder={
-                  isProfileOwner()
+                  isProfileOwner
                     ? useUser.user?.username
                     : isLoadingUser
                     ? ""
@@ -158,13 +182,13 @@ function Settings({ params }: { params: { id: string } }) {
             <div className="flex flex-row ">
               <span className=" text-lg font-bold w-16">Email:</span>
               <input
-                disabled={!isProfileOwner()}
+                disabled={!isProfileOwner}
                 type="text"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="border border-gray-400 px-2 py-1 rounded w-100"
                 placeholder={
-                  isProfileOwner()
+                  isProfileOwner
                     ? useUser.user?.email
                     : isLoadingUser
                     ? ""
@@ -176,14 +200,14 @@ function Settings({ params }: { params: { id: string } }) {
             <div className="flex flex-row items-center">
               <span className=" text-lg font-bold  w-16">Role:</span>
               <span className=" px-1 py-1 ">
-                {isProfileOwner()
+                {isProfileOwner
                   ? useUser.user?.role
                   : isLoadingUser
                   ? null
                   : user?.role}
               </span>
               <div>
-                {isProfileOwner() && useUser.user?.role ? (
+                {isProfileOwner && useUser.user?.role ? (
                   useUser.user.role == "ADMIN" ? (
                     <FaUserShield color="#000000" size={24} />
                   ) : useUser.user.role == "EDITOR" ? (
@@ -200,7 +224,7 @@ function Settings({ params }: { params: { id: string } }) {
                 )}
               </div>
             </div>
-            {isProfileOwner() ? (
+            {isProfileOwner ? (
               <>
                 <div className="flex flex-row">
                   <div className="flex flex-row ">
@@ -217,7 +241,7 @@ function Settings({ params }: { params: { id: string } }) {
             ) : null}
           </div>
 
-          {isProfileOwner() ? (
+          {isProfileOwner ? (
             <div className="flex flex-col gap-12 justify-center mb-12  w-[720px] mx-auto">
               <div className="flex flex-col ">
                 <div className="text-lg font-bold mb-4">Password Settings:</div>
@@ -227,7 +251,7 @@ function Settings({ params }: { params: { id: string } }) {
                   onClick={() => setChangePassword(true)}
                 />
               </div>
-              {isProfileOwner() && useUser.user?.role == "USER" ? (
+              {isProfileOwner && useUser.user?.role == "USER" ? (
                 <>
                   <div className="flex flex-col">
                     <div className="text-lg font-bold mb-4">
@@ -244,7 +268,7 @@ function Settings({ params }: { params: { id: string } }) {
             </div>
           ) : null}
 
-          {isProfileOwner() ||
+          {isProfileOwner ||
           (useUser.user?.role == "ADMIN" && !(user?.role == "ADMIN")) ? (
             <div className="flex justify-center">
               <DeclineButton

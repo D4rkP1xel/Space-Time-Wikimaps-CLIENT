@@ -93,7 +93,8 @@ function Layer({ params }: { params: { id: string } }) {
               <div className="text-3xl font-medium">{layer?.layerName}</div>
               {useUser.isUserAuth() &&
               (useUser.user?.role == "ADMIN" ||
-                useUser.user?.role == "EDITOR") ? (
+                (useUser.user?.role == "EDITOR" &&
+                  layer?.userDTO.id == useUser.user.id)) ? (
                 <EditButton
                   buttonText="Go to Edit Mode"
                   logoComponent={<FaRegEdit color="#FFFFFF" size={16} />}

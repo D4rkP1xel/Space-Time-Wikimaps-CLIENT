@@ -1,6 +1,7 @@
 import axiosNoAuth from "../axiosNoAuth"
 import axios from "../axiosHandler"
 import { User } from "./user"
+import { AxiosError } from "axios"
 interface Layer {
     id: number
     userDTO: User
@@ -74,7 +75,15 @@ async function getLayerResults(query: string): Promise<LayerResult[]> {
 }
 
 async function createNewLayer(name: string, description: string, query: string): Promise<void> {
-    await axios.post("/layers", { name, description, query })
+    if (name == null || name == "" || description == null || description == "" || query == null || query == "") throw ("One or more camps are empty.")
+    try {
+        await axios.post("/layers", { name, description, query })
+    } catch (error) {
+        if (error instanceof AxiosError && error.response?.data?.message == "Invalid layer request") {
+            throw ("Invalid SparQL query.")
+        }
+    }
+
 }
 
 async function editLayer(id: string, name: string, description: string, query: string): Promise<void> {

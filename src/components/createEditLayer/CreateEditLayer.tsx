@@ -12,7 +12,8 @@ import {
 } from "../../../utils/stateManagement/layers"
 import { useRouter } from "next/navigation"
 import PageCircleLoader from "../loaders/PageCircleLoader"
-
+import { useUserState } from "../../../utils/stateManagement/user"
+import toast from "react-hot-toast"
 function CreateEditLayer({ layerId }: { layerId: string | null }) {
   // When layerId is null, user is creating a layer
   // otherwise it's editing an existing layer
@@ -24,7 +25,7 @@ function CreateEditLayer({ layerId }: { layerId: string | null }) {
   const [lastQuery, setLastQuery] = useState("")
   const [resultString, setResultString] = useState<string>("")
   const [results, setResults] = useState<LayerResult[]>()
-
+  const useUser = useUserState()
   const {
     data: layer,
     isLoading: isLoadingLayer,
@@ -35,6 +36,10 @@ function CreateEditLayer({ layerId }: { layerId: string | null }) {
       try {
         if (layerId == null) return
         const data = await getLayer(Number.parseInt(layerId))
+        if (data.userDTO.id != useUser.user?.id) {
+          router.back()
+          return
+        }
         setName(data.layerName)
         setDescription(data.description)
         setQuery(data.query)
@@ -47,7 +52,7 @@ function CreateEditLayer({ layerId }: { layerId: string | null }) {
       }
     },
     {
-      enabled: layerId != null && layerId != "",
+      enabled: layerId != null && layerId != "" && useUser.user != null,
       refetchOnWindowFocus: true,
       refetchOnMount: "always",
     }
@@ -85,10 +90,17 @@ function CreateEditLayer({ layerId }: { layerId: string | null }) {
   ) {
     try {
       await createNewLayer(nameParam, descriptionParam, queryParam)
+      toast.success("Layer created successfully!")
       router.push("/")
     } catch (error) {
       console.error(error)
-      alert(error)
+      if (
+        typeof error === "string" &&
+        (error == "One or more camps are empty." ||
+          error == "Invalid SparQL query.")
+      ) {
+        toast.error(error)
+      } else toast.error("Unknown Error.")
     }
   }
 
