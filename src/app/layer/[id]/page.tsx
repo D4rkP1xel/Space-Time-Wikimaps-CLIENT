@@ -44,6 +44,9 @@ function Layer({ params }: { params: { id: string } }) {
         console.error(error)
         router.back()
       }
+    },
+    {
+      enabled: params.id != null,
     }
   )
 

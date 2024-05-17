@@ -35,9 +35,7 @@ function Profile({ params }: { params: { id: string } }) {
     },
     {
       enabled:
-        !checkAuth.isRenderLoader() == false &&
-        !isProfileOwner &&
-        params.id != null,
+        !checkAuth.isRenderLoader() && !isProfileOwner && params.id != null,
     }
   )
 
