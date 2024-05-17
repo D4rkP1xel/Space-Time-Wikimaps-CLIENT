@@ -23,7 +23,7 @@ function Profile({ params }: { params: { id: string } }) {
 
   useEffect(() => {
     setIsProfileOwner(useUser.user?.id.toString() == params.id)
-  }, [useUser.user])
+  }, [useUser.user, params.id])
   const {
     data: user,
     isLoading: isLoadingUser,
@@ -33,7 +33,12 @@ function Profile({ params }: { params: { id: string } }) {
     async () => {
       return await getUserByID(params.id)
     },
-    { enabled: !checkAuth.isRenderLoader() == false && !isProfileOwner }
+    {
+      enabled:
+        !checkAuth.isRenderLoader() == false &&
+        !isProfileOwner &&
+        params.id != null,
+    }
   )
 
   const {
@@ -53,6 +58,7 @@ function Profile({ params }: { params: { id: string } }) {
     {
       enabled:
         (checkAuth.isRenderLoader() == false &&
+          params.id != null &&
           isProfileOwner &&
           (useUser.user?.role == "EDITOR" || useUser.user?.role == "ADMIN")) ||
         (!isProfileOwner && (user?.role == "EDITOR" || user?.role == "ADMIN")),

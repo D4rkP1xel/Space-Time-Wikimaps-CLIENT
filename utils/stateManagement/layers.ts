@@ -46,7 +46,7 @@ async function getAllLayersByUserId(id: string): Promise<Layer[]> {
 
 async function getLayerResults(query: string): Promise<LayerResult[]> {
     const { data } = await axiosNoAuth.post("/sparql", { query })
-    console.log(data)
+    //console.log(data)
     return data.results.map((r: APILayerResult) => {
         let obj: LayerResult = {}
 
