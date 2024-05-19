@@ -8,6 +8,12 @@ interface EditorRequest {
     timestamp: string,
     status: string
 }
+interface EditorRequests {
+    requests: EditorRequest[],
+    currentPage: number,
+    totalItems: number,
+    totalPages: number
+}
 
 enum StatusEnum {
     DECLINED = 'DECLINED',
@@ -38,22 +44,20 @@ async function getAllUsers(role: string | null, name: string | null, page: strin
 }
 
 
-async function getAllEditorRequests(name: string | null, selectedStatus: string | null): Promise<EditorRequest[] | null> {
+async function getAllEditorRequests(name: string | null, selectedStatus: string | null, page: string | null): Promise<EditorRequests | null> {
+    if (page == null || page == "") page = "1"
     try {
-        let url = "/upgrade/requests"
+        let url = "/upgrade/requests?page=" + (Number(page) - 1) + "&size=5"
         let searchStatus = selectedStatus != null && selectedStatus != ""
         let searchName = name != null && name != ""
-        if (searchStatus || searchName) {
-            url += "?"
-            if (searchName && searchStatus) {
-                url += "name=" + name + "&status=" + selectedStatus
-            }
-            else if (searchName) url += "name=" + name
-            else if (searchStatus) url += "status=" + selectedStatus
-        }
+
+        if (searchName) url += "&name=" + name
+        if (searchStatus) url += "&status=" + selectedStatus
+
 
         const response = await axios.get(url)
         console.log(response)
+        if (response.data.requests == null || response.data.requests.length == 0) return null
         return response.data
     } catch (error) {
         console.error(error)
