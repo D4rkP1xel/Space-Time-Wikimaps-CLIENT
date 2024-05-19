@@ -7,12 +7,16 @@ import { useQuery } from "react-query"
 import { getLayers } from "../../utils/stateManagement/layers"
 import PageCircleLoader from "@/components/loaders/PageCircleLoader"
 import { useRouter, useSearchParams } from "next/navigation"
+import Paginator from "@/components/other/Paginator"
 
 function Home() {
   const [pageWidth, setPageWidth] = useState(window.innerWidth)
   const router = useRouter()
   const searchParams = useSearchParams()
   const [center, setCenter] = useState<[number, number]>([51.505, -0.09])
+  const [isLoadingResultsAux, setIsLoadingResultsAux] = useState(false)
+  const [curPage, setCurPage] = useState<number>(0)
+  const [totalPages, setTotalPages] = useState<number>(1)
   useEffect(() => {
     function handleResize() {
       setPageWidth(window.innerWidth)
@@ -28,14 +32,20 @@ function Home() {
     data: layers,
     isLoading: isLoadingLayers,
     refetch: refetchLayers,
-  } = useQuery(
-    ["layers"],
-    async () => await getLayers(searchParams.get("search"))
-  )
+  } = useQuery(["layers"], async () => {
+    setIsLoadingResultsAux(true)
+    const data = await getLayers(
+      searchParams.get("search"),
+      searchParams.get("page")
+    )
+    setTotalPages(data.totalPages)
+    setCurPage(data.currentPage + 1)
+    setIsLoadingResultsAux(false)
+    return data.layers
+  })
   useEffect(() => {
     refetchLayers()
-    console.log("refetching")
-  }, [searchParams.get("search")])
+  }, [searchParams.get("search"), searchParams.get("page")])
 
   return (
     <>
@@ -60,7 +70,7 @@ function Home() {
             {pageWidth > 1024 ? null : (
               <MobileMap center={center} mapLocations={null} />
             )}
-            {isLoadingLayers == true ? (
+            {isLoadingLayers == true || isLoadingResultsAux ? (
               <PageCircleLoader />
             ) : (
               <div className="mt-12">
@@ -81,8 +91,10 @@ function Home() {
                 )}
               </div>
             )}
+            <Paginator curPage={curPage} totalPages={totalPages} />
           </div>
         </div>
+
         {pageWidth > 1024 ? (
           <SideMap center={center} mapLocations={null} />
         ) : null}

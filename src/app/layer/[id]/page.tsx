@@ -17,6 +17,7 @@ import { FaRegEdit } from "react-icons/fa"
 import EditButton from "@/components/buttons/EditButton"
 import { useUserState } from "../../../../utils/stateManagement/user"
 import DarkBlueButton from "@/components/buttons/DarkBlueButton"
+import Paginator from "@/components/other/Paginator"
 
 function Layer({ params }: { params: { id: string } }) {
   const router = useRouter()
@@ -26,6 +27,7 @@ function Layer({ params }: { params: { id: string } }) {
   const [startYear, setStartYear] = useState<number>(0)
   const [endYear, setEndYear] = useState<number>(new Date().getFullYear())
   const [isLoadingResultsAux, setIsLoadingResultsAux] = useState(false)
+
   useEffect(() => {
     function handleResize() {
       setPageWidth(window.innerWidth)

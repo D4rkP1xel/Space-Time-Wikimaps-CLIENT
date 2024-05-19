@@ -12,6 +12,14 @@ interface User {
     role: string
 }
 
+interface Users {
+    users: User[]
+    currentPage: number,
+    totalItems: number,
+    totalPages: number
+}
+
+
 interface userState {
     user: User | null
     didFetchUser: boolean
@@ -88,15 +96,15 @@ async function deleteUser() {
     try {
         const response = await axios.delete("/user")
         console.log(response)
-        
+
     } catch (error) {
         console.error(error)
     }
-}	
+}
 
-async function deletingUser(id: number){
+async function deletingUser(id: number) {
     try {
-        const response = await axios.delete("/users/" +id)
+        const response = await axios.delete("/users/" + id)
         console.log(response)
     } catch (error) {
         console.error(error)
@@ -239,4 +247,4 @@ const useUserState = create<userState>((set, get) => ({
 }))
 
 export { useUserState, getUserByID, changePasswordUser, askToBeEditorUser, changeSettingsUser, deleteUser, deletingUser }
-export type { User }
+export type { User, Users }

@@ -11,6 +11,13 @@ interface Layer {
     query: string
 }
 
+interface Layers {
+    layers: Layer[]
+    currentPage: number,
+    totalItems: number,
+    totalPages: number
+}
+
 interface APILayerResult {
     item: string | undefined
     coordinates: string | undefined
@@ -27,10 +34,11 @@ interface LayerResult {
     description?: string
     image?: string
 }
-async function getLayers(search: string | null): Promise<Layer[]> {
+async function getLayers(search: string | null, page: string | null): Promise<Layers> {
     if (search == null) search = ""
-    const response = await axiosNoAuth.get("/layers/search?query=" + search)
-    console.log(search)
+    if (page == null || page == "") page = "1"
+    const response = await axiosNoAuth.get("/layers?query=" + search + "&page=" + (Number(page) - 1) + "&size=5")
+    console.log(response.data)
     return response.data;
 }
 
@@ -40,7 +48,7 @@ async function getLayer(id: number): Promise<Layer> {
     return response.data;
 }
 
-async function getAllLayersByUserId(id: string): Promise<Layer[]> {
+async function getAllLayersByUserId(id: string): Promise<Layers> {
     const response = await axiosNoAuth.get("/users/" + id + "/layers")
     return response.data;
 }

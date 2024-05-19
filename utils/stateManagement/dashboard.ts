@@ -1,5 +1,5 @@
 import axios from "../axiosHandler"
-import { User } from "./user"
+import { User, Users } from "./user"
 
 interface EditorRequest {
     id: number,
@@ -15,21 +15,19 @@ enum StatusEnum {
     PENDING = 'PENDING'
 }
 
-async function getAllUsers(role: string | null, name: string | null): Promise<User[] | null> {
+async function getAllUsers(role: string | null, name: string | null, page: string | null): Promise<Users | null> {
+    if (page == null || page == "") page = "1"
     try {
-        let url = "/users"
+        let url = "/users?page=" + (Number(page) - 1) + "&size=5"
         let searchRole = role != null && role != ""
         let searchName = name != null && name != ""
         if (searchRole || searchName) {
-            url += "?"
-            if (searchName && searchRole) {
-                url += "name=" + name + "&role=" + role
-            }
-            else if (searchName) url += "name=" + name
-            else if (searchRole) url += "role=" + role
+            if (searchName) url += "&name=" + name
+            if (searchRole) url += "&role=" + role
         }
 
         const response = await axios.get(url)
+
         console.log(response)
         return response.data
     } catch (error) {
