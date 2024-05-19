@@ -18,6 +18,7 @@ import { useRouter } from "next/navigation"
 import { FaUsers, FaTicketAlt } from "react-icons/fa"
 import toast from "react-hot-toast"
 import { FiSettings } from "react-icons/fi"
+import axios, { AxiosError } from "axios"
 
 function Header() {
   const router = useRouter()
@@ -68,12 +69,12 @@ function Header() {
       setPassword("")
       toast.success("Welcome " + usernameParam + "!")
     } catch (error) {
-      if (
-        typeof error === "string" &&
-        error == "Fill in all necessary fields."
-      ) {
+      if ( typeof error === "string" && error == "Fill in all necessary fields.") 
+      {
         toast.error(error)
-      } else toast.error("Unknown Error. Try later.")
+      } else if (error instanceof AxiosError && error?.response?.status == 403) {
+        toast.error("You have been blocked")
+      }else toast.error("Unknown Error. Try later.")
       // console.error(error)
     }
   }
