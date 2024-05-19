@@ -67,6 +67,8 @@ function Settings({ params }: { params: { id: string } }) {
       )
       setOldPassword("")
       setNewPassword("")
+      setChangePassword(false)
+      toast.success("Password changed successfully!")
     } catch (error) {
       if (
         typeof error === "string" &&
@@ -122,8 +124,11 @@ function Settings({ params }: { params: { id: string } }) {
       if (useUser.user == null) return
       await askToBeEditorUser(message)
       setMessage("")
+      setAskToBeEditor(false)
+      toast.success("Request sent successfully!")
     } catch (error) {
       console.error(error)
+      toast.error("Unknown Error. Try later.")
     }
   }
 

@@ -82,7 +82,7 @@ async function changePasswordUser(id: string, oldPassword: string, newPassword: 
     if (oldPassword == null || oldPassword == "" || newPassword == "" || newPassword == null) throw ("One or more camps are empty.")
     if (newPassword.length < 6) throw ("New Password length has to be at least 6 characters long.")
     try {
-        const response = await axios.put("/users/" + id + "/password", { oldPassword, newPassword })
+        const response = await axios.put("/users/password", { oldPassword, newPassword })
         return response.data;
     } catch (error) {
         console.error(error)
@@ -155,14 +155,11 @@ async function changeSettingsUser(username: string, email: string): Promise<stri
 }
 
 async function askToBeEditorUser(message: string): Promise<string | undefined> {
-    try {
+    
         const response = await axios.post("/upgrade/request", { message })
         //console.log(response)
-        alert("Request sent successfully")
         return response.data;
-    } catch (error) {
-        console.error(error)
-    }
+   
 }
 
 async function registerUser(username: string, password: string, repeat_password: string, email: string): Promise<void> {
