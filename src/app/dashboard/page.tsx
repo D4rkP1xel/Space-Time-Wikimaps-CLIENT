@@ -137,6 +137,8 @@ function Dashboard() {
                     role={u.role}
                     name={u.username}
                     id={u.id}
+                    block={u.blocked}
+                    refetchFunction={refetchUsers}
                   />
                 ))
               )}

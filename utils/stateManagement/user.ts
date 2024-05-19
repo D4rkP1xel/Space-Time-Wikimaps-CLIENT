@@ -10,6 +10,7 @@ interface User {
     username: string
     email: string
     role: string
+    blocked: boolean
 }
 
 interface Users {
@@ -105,6 +106,24 @@ async function deleteUser() {
 async function deletingUser(id: number) {
     try {
         const response = await axios.delete("/users/" + id)
+        console.log(response)
+    } catch (error) {
+        console.error(error)
+    }
+}
+
+async function blockingUser(id: number) {
+    try {
+        const response = await axios.put("/admin/users/" + id + "/block")
+        console.log(response)
+    } catch (error) {
+        console.error(error)
+    }
+}
+
+async function unblockingUser(id: number) {
+    try {
+        const response = await axios.put("/admin/users/" + id + "/unblock")
         console.log(response)
     } catch (error) {
         console.error(error)
@@ -225,6 +244,7 @@ const useUserState = create<userState>((set, get) => ({
                     username: data.username,
                     email: data.email,
                     role: data.role,
+                    blocked: data.blocked
                 }
                 return set(() => {
                     return { user: user, didFetchUser: true }
@@ -246,5 +266,5 @@ const useUserState = create<userState>((set, get) => ({
 
 }))
 
-export { useUserState, getUserByID, changePasswordUser, askToBeEditorUser, changeSettingsUser, deleteUser, deletingUser }
+export { useUserState, getUserByID, changePasswordUser, askToBeEditorUser, changeSettingsUser, deleteUser, deletingUser , blockingUser, unblockingUser}
 export type { User, Users }
