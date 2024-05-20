@@ -4,7 +4,7 @@ import Image from "next/image"
 import UnavailableImage from "./../../../public/icons/photo_unavailable.png"
 import { FaBookOpen } from "react-icons/fa"
 
-function MapMarketResult({ mapLocation }: { mapLocation: LayerResult }) {
+function MapMarkerResult({ mapLocation }: { mapLocation: LayerResult }) {
   return (
     <div className="flex flex-row gap-4 items-center">
       {mapLocation.image ? (
@@ -21,13 +21,17 @@ function MapMarketResult({ mapLocation }: { mapLocation: LayerResult }) {
       )}
       <div className="flex flex-col w-40">
         <div className="font-bold mb-2">{mapLocation.title}</div>
-        <div className="flex flex-row items-center gap-2 select-none cursor-pointer">
-          <FaBookOpen size={16} />
-          <div className="text-md font-semibold">Read about</div>
-        </div>
+        {mapLocation.url ? (
+          <div
+            onClick={() => window.open(mapLocation.url, "_blank")}
+            className="flex flex-row items-center gap-2 select-none cursor-pointer">
+            <FaBookOpen size={16} />
+            <div className="text-md font-semibold">Read about</div>
+          </div>
+        ) : null}
       </div>
     </div>
   )
 }
 
-export default MapMarketResult
+export default MapMarkerResult

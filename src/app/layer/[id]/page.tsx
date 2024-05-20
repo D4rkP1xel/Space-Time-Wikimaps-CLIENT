@@ -1,10 +1,10 @@
 "use client"
 import { FaAngleLeft } from "react-icons/fa"
 import { IoReload } from "react-icons/io5"
-import SideMap from "@/components/main/SideMap"
+
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
-import MobileMap from "@/components/layer/MobileMap"
+
 import { useQuery } from "react-query"
 import {
   LayerResult,
@@ -17,7 +17,9 @@ import { FaRegEdit } from "react-icons/fa"
 import EditButton from "@/components/buttons/EditButton"
 import { useUserState } from "../../../../utils/stateManagement/user"
 import DarkBlueButton from "@/components/buttons/DarkBlueButton"
-import Paginator from "@/components/other/Paginator"
+import MapFullScreen from "@/components/Maps/MapFullScreen"
+import SideMap from "@/components/Maps/SideMap"
+import MobileMap from "@/components/Maps/MobileMap"
 
 function Layer({ params }: { params: { id: string } }) {
   const router = useRouter()
@@ -27,6 +29,7 @@ function Layer({ params }: { params: { id: string } }) {
   const [startYear, setStartYear] = useState<number>(0)
   const [endYear, setEndYear] = useState<number>(new Date().getFullYear())
   const [isLoadingResultsAux, setIsLoadingResultsAux] = useState(false)
+  const [isFullscreen, setFullscreen] = useState(false)
 
   useEffect(() => {
     function handleResize() {
@@ -91,7 +94,9 @@ function Layer({ params }: { params: { id: string } }) {
               : { width: "100%" }
           }>
           <div
-            className={pageWidth > 1024 ? "w-full pr-48 z-10" : "w-full z-10"}>
+            className={
+              pageWidth > 1024 ? "w-full xl:pr-48 pr-32 z-10" : "w-full z-10"
+            }>
             <div
               className="flex flex-row gap-4 cursor-pointer items-center select-none"
               onClick={() => router.back()}>
@@ -113,7 +118,11 @@ function Layer({ params }: { params: { id: string } }) {
             </div>
             <div className="mt-4 text-lg">{layer?.description}</div>
             {pageWidth > 1024 ? null : (
-              <MobileMap mapLocations={results} center={center} />
+              <MobileMap
+                mapLocations={results}
+                center={center}
+                setFullscreen={setFullscreen}
+              />
             )}
             <div className="flex flex-row items-center mt-8">
               <div className="text-xl font-medium">Results:</div>
@@ -132,16 +141,42 @@ function Layer({ params }: { params: { id: string } }) {
                   onChange={(e) => setEndYear(Number(e.target.value))}
                   className="h-8 w-20 bg-gray-100 outline-none rounded-md"
                 />
-                <DarkBlueButton
-                  onClick={async () => {
-                    setIsLoadingResultsAux(true)
-                    await refetchResults()
-                    setIsLoadingResultsAux(false)
-                  }}
-                  buttonText="Reload Results"
-                  logoComponent={<IoReload size={20} />}
-                  isLoading={isLoadingResultsAux}
-                />
+                <div className="hidden xl:block">
+                  <DarkBlueButton
+                    onClick={async () => {
+                      setIsLoadingResultsAux(true)
+                      await refetchResults()
+                      setIsLoadingResultsAux(false)
+                    }}
+                    buttonText="Reload Results"
+                    logoComponent={<IoReload size={20} />}
+                    isLoading={isLoadingResultsAux}
+                  />
+                </div>
+                <div className="hidden md:block xl:hidden">
+                  <DarkBlueButton
+                    onClick={async () => {
+                      setIsLoadingResultsAux(true)
+                      await refetchResults()
+                      setIsLoadingResultsAux(false)
+                    }}
+                    buttonText="Reload"
+                    logoComponent={<IoReload size={20} />}
+                    isLoading={isLoadingResultsAux}
+                  />
+                </div>
+                <div className="block md:hidden">
+                  <DarkBlueButton
+                    onClick={async () => {
+                      setIsLoadingResultsAux(true)
+                      await refetchResults()
+                      setIsLoadingResultsAux(false)
+                    }}
+                    buttonText=""
+                    logoComponent={<IoReload size={20} />}
+                    isLoading={isLoadingResultsAux}
+                  />
+                </div>
               </div>
             </div>
 
@@ -177,10 +212,18 @@ function Layer({ params }: { params: { id: string } }) {
           </div>
 
           {pageWidth > 1024 ? (
-            <SideMap mapLocations={results} center={center} />
+            <SideMap
+              mapLocations={results}
+              center={center}
+              setFullscreen={setFullscreen}
+            />
           ) : null}
         </div>
       </div>
+
+      {isFullscreen ? (
+        <MapFullScreen mapLocations={results} setFullscreen={setFullscreen} />
+      ) : null}
     </>
   )
 }

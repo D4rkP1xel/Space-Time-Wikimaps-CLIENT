@@ -2,32 +2,27 @@
 import { Icon } from "leaflet"
 import "leaflet/dist/leaflet.css"
 import { useEffect, useState } from "react"
-
+import { MdFullscreen } from "react-icons/md"
 const customIcon = new Icon({
   // iconUrl: "https://cdn-icons-png.flaticon.com/512/447/447031.png",
   iconUrl:
     "https://www.hooknortonvets.co.uk/wp-content/uploads/2016/11/map-pointer.png",
   iconSize: [40, 40], // size of the icon
 })
-import {
-  MapContainer,
-  TileLayer,
-  Marker,
-  Popup,
-  useMapEvents,
-  useMap,
-} from "react-leaflet"
+import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet"
 import { LayerResult } from "../../../utils/stateManagement/layers"
-import ZoomHandler from "./ZoomHandler"
-import { FaBookOpen } from "react-icons/fa"
-import MapMarketResult from "./MapMarketResult"
+import ZoomHandler from "../main/ZoomHandler"
+import MapMarkerResult from "../main/MapMarkerResult"
 import { GetMapLocationsOrganized } from "../../../utils/customFunctions/mapFunctions"
+import MapFullScreen from "./MapFullScreen"
 function SideMap({
   mapLocations,
   center,
+  setFullscreen,
 }: {
   mapLocations: LayerResult[] | null | undefined
   center: [number, number] | null
+  setFullscreen: any
 }) {
   const [scrollY, setScrollY] = useState(0)
 
@@ -69,10 +64,12 @@ function SideMap({
               attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
+            <div
+              onClick={() => setFullscreen(true)}
+              className="absolute bottom-0 left-0 z-[500] p-1 cursor-pointer">
+              <MdFullscreen size={28} color="black" />
+            </div>
             <ZoomHandler mapLocations={mapLocations} center={center} />
-            {/* <Marker position={[51.5, -0.09]} icon={customIcon}>
-              <Popup></Popup>
-            </Marker> */}
             {mapLocations != null && mapLocations.length > 0
               ? Array.from(GetMapLocationsOrganized(mapLocations).values()).map(
                   (mls: LayerResult[], index: number) => {
@@ -89,7 +86,7 @@ function SideMap({
                             <div className="flex flex-col gap-3">
                               {mls.map((ml: LayerResult, mlIndex: number) => {
                                 return (
-                                  <MapMarketResult
+                                  <MapMarkerResult
                                     key={mlIndex}
                                     mapLocation={ml}
                                   />

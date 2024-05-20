@@ -25,6 +25,7 @@ interface APILayerResult {
     itemSchemaLabel: string | undefined
     url: string | undefined
     description: string | undefined
+    image?: string
 }
 interface LayerResult {
     title?: string
@@ -33,6 +34,11 @@ interface LayerResult {
     url?: string
     description?: string
     image?: string
+    itemLabel?: string
+}
+
+interface GetPhotoResponse {
+    results: [{ propertyValue: string }]
 }
 async function getLayers(search: string | null, page: string | null): Promise<Layers> {
     if (search == null) search = ""
@@ -78,6 +84,12 @@ async function getLayerResults(layerId: number, startYear: number, endYear: numb
         }
         if (r.description) {
             obj["description"] = r.description.split("@")[0]
+        }
+        if (r.itemLabel) {
+            obj["itemLabel"] = r.itemLabel
+        }
+        if (r.image) {
+            obj["image"] = r.image
         }
         return obj
     });
@@ -132,5 +144,11 @@ async function editLayer(id: string, name: string, description: string, query: s
     await axios.put("/layers/" + id, { name, description, query })
 }
 
-export { getLayers, getLayer, getLayerResults, createNewLayer, editLayer, getAllLayersByUserId, getLayerResultsByQuery }
+async function getPhoto(itemLabel: string): Promise<GetPhotoResponse> {
+    const response = await axios.get("/data/property-values/" + itemLabel + "/P18")
+    //console.log(response)
+    return response.data
+}
+
+export { getLayers, getLayer, getLayerResults, createNewLayer, editLayer, getAllLayersByUserId, getLayerResultsByQuery, getPhoto }
 export type { LayerResult, Layer }

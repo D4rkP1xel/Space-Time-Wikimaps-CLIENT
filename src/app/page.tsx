@@ -1,6 +1,5 @@
 "use client"
-import MobileMap from "@/components/layer/MobileMap"
-import SideMap from "@/components/main/SideMap"
+
 import Result from "@/components/main/Result"
 import { useEffect, useState } from "react"
 import { useQuery } from "react-query"
@@ -8,6 +7,9 @@ import { getLayers } from "../../utils/stateManagement/layers"
 import PageCircleLoader from "@/components/loaders/PageCircleLoader"
 import { useRouter, useSearchParams } from "next/navigation"
 import Paginator from "@/components/other/Paginator"
+import MobileMap from "@/components/Maps/MobileMap"
+import SideMap from "@/components/Maps/SideMap"
+import MapFullScreen from "@/components/Maps/MapFullScreen"
 
 function Home() {
   const [pageWidth, setPageWidth] = useState(window.innerWidth)
@@ -17,6 +19,8 @@ function Home() {
   const [isLoadingResultsAux, setIsLoadingResultsAux] = useState(false)
   const [curPage, setCurPage] = useState<number>(0)
   const [totalPages, setTotalPages] = useState<number>(1)
+  const [isFullscreen, setFullscreen] = useState(false)
+
   useEffect(() => {
     function handleResize() {
       setPageWidth(window.innerWidth)
@@ -68,7 +72,11 @@ function Home() {
                 : `Results: (results for: ${searchParams.get("search")})`}
             </div>
             {pageWidth > 1024 ? null : (
-              <MobileMap center={center} mapLocations={null} />
+              <MobileMap
+                center={center}
+                mapLocations={null}
+                setFullscreen={setFullscreen}
+              />
             )}
             {isLoadingLayers == true || isLoadingResultsAux ? (
               <PageCircleLoader />
@@ -96,9 +104,21 @@ function Home() {
         </div>
 
         {pageWidth > 1024 ? (
-          <SideMap center={center} mapLocations={null} />
+          <SideMap
+            center={center}
+            mapLocations={null}
+            setFullscreen={setFullscreen}
+          />
         ) : null}
       </div>
+
+      {isFullscreen ? (
+        <MapFullScreen
+          center={center}
+          mapLocations={[]}
+          setFullscreen={setFullscreen}
+        />
+      ) : null}
     </>
   )
 }

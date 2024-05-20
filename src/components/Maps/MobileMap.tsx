@@ -16,14 +16,17 @@ import { LayerResult } from "../../../utils/stateManagement/layers"
 import ZoomHandler from "../main/ZoomHandler"
 import { FaBookOpen } from "react-icons/fa"
 import { GetMapLocationsOrganized } from "../../../utils/customFunctions/mapFunctions"
-import MapMarketResult from "../main/MapMarketResult"
+import MapMarkerResult from "../main/MapMarkerResult"
+import { MdFullscreen } from "react-icons/md"
 
 function MobileMap({
   mapLocations,
   center,
+  setFullscreen,
 }: {
   mapLocations: LayerResult[] | null | undefined
   center: [number, number] | null
+  setFullscreen: any
 }) {
   return (
     <>
@@ -37,10 +40,12 @@ function MobileMap({
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           />
+          <div
+            onClick={() => setFullscreen(true)}
+            className="absolute bottom-0 left-0 z-[500] p-1 cursor-pointer">
+            <MdFullscreen size={28} color="black" />
+          </div>
           <ZoomHandler mapLocations={mapLocations} center={center} />
-          {/* <Marker position={[51.5, -0.09]} icon={customIcon}>
-            <Popup></Popup>
-          </Marker> */}
           {mapLocations != null && mapLocations.length > 0
             ? Array.from(GetMapLocationsOrganized(mapLocations).values()).map(
                 (mls: LayerResult[], index: number) => {
@@ -57,7 +62,7 @@ function MobileMap({
                           <div className="flex flex-col gap-3">
                             {mls.map((ml: LayerResult, mlIndex: number) => {
                               return (
-                                <MapMarketResult
+                                <MapMarkerResult
                                   key={mlIndex}
                                   mapLocation={ml}
                                 />

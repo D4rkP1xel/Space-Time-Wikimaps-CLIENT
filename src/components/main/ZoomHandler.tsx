@@ -14,7 +14,7 @@ function ZoomHandler({
     if (center) {
       map.setView(center, 15)
     }
-  }, [map, center])
+  }, [center])
   useEffect(() => {
     if (map != null && mapLocations != null && mapLocations.length > 0) {
       let latHighestValue: number = -180
@@ -45,7 +45,7 @@ function ZoomHandler({
         [latLowestValue, lonHighestValue],
       ])
     }
-  }, [map, mapLocations])
+  }, [mapLocations])
 
   return <div></div>
 }
