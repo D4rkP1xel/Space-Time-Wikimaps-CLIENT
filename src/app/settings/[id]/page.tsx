@@ -184,7 +184,7 @@ function Settings({ params }: { params: { id: string } }) {
       <>
         <div className="flex flex-col mb-12 w-full xl:px-48 px-32 pt-12 z-0">
           <div className="font-bold text-4xl mb-12 text-center">Settings</div>
-          <div className="flex flex-col mx-auto w-[720px] gap-2 mb-12">
+          <div className="flex flex-col mx-auto xl:ml-40 lg:ml-32 md:ml-20 ml-0 gap-2 mb-12">
             <div className="flex flex-row">
               <span className=" text-lg font-bold w-16">Name:</span>
               <input
@@ -266,7 +266,7 @@ function Settings({ params }: { params: { id: string } }) {
           </div>
 
           {isProfileOwner ? (
-            <div className="flex flex-col gap-12 justify-center mb-12  w-[720px] mx-auto">
+            <div className="flex flex-col gap-12 justify-center mb-12 xl:ml-40 lg:ml-32 md:ml-20 ml-0 mx-auto">
               <div className="flex flex-col ">
                 <div className="text-lg font-bold mb-4">Password Settings:</div>
                 <DarkBlueButton
@@ -315,7 +315,7 @@ function Settings({ params }: { params: { id: string } }) {
               }}>
               <FiX color="#FFFFFF" size={48} />
             </div>
-            <div className="bg-white rounded-2xl shadow-lg shadow-[#828282] w-4/12 p-8 mx-auto my-auto flex flex-col">
+            <div className="bg-white rounded-2xl shadow-lg shadow-[#828282] xl:w-4/12 lg:w-6/12 md:w-8/12 w-10/12 p-8 mx-auto my-auto flex flex-col">
               <div className="text-2xl font-medium mx-auto mb-6">
                 Change Password
               </div>
@@ -362,7 +362,7 @@ function Settings({ params }: { params: { id: string } }) {
               }}>
               <FiX color="#FFFFFF" size={48} />
             </div>
-            <div className="bg-white rounded-2xl shadow-lg shadow-[#828282] w-4/12 p-8 mx-auto my-auto flex flex-col">
+            <div className="bg-white rounded-2xl shadow-lg shadow-[#828282] xl:w-4/12 lg:w-6/12 md:w-8/12 w-10/12 p-8 mx-auto my-auto flex flex-col">
               <div className="text-2xl font-medium mx-auto mb-6">
                 Ask To Be An Editor
               </div>

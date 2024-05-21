@@ -30,27 +30,30 @@ function LayerResultDiv({
   // )
   return (
     <>
-      <div className="flex lg:flex-row flex-col gap-8 mt-4 ">
-        <div className="flex h-80 w-80 aspect-square lg:mx-0 mx-auto flex-shrink-0">
+      <div className="flex lg:flex-row flex-col gap-8 md:mt-4 mt-20">
+        <div className="flex aspect-square lg:mx-0 mx-auto flex-shrink-0">
           {result?.image != null ? (
-            <img className="w-full h-full object-cover" src={result.image} />
+            <img
+              className="xl:h-80 xl:w-80 lg:h-52 lg:w-52 md:w-96 md:h-96 w-80 h-80 object-cover"
+              src={result.image}
+            />
           ) : (
             // : photo && !isLoadingPhoto ? (
             //   <img className="w-full h-full object-cover" src={photo} />
             // )
             <Image
-              className="w-full h-full object-cover"
+              className="xl:h-80 xl:w-80 lg:h-52 lg:w-52 md:w-96 md:h-96 w-80 h-80 object-cover"
               src={UnavailableImage}
               alt={"Picture of " + result.title}
             />
           )}
         </div>
         <div className="flex flex-col">
-          <div className="flex flex-row">
+          <div className="flex flex-col">
             <div className="text-2xl font-semibold">
               {result.title ? result.title : "No Title Available"}
             </div>
-            <div className="flex flex-row lg:ml-4 ml-auto">
+            <div className="flex flex-row mt-1">
               <div
                 onClick={() => {
                   if (result.lat && result.lon)
@@ -76,7 +79,9 @@ function LayerResultDiv({
 
           <div className="mt-4 text-gray-600 font-normal text-md">
             {result.description
-              ? result.description
+              ? result.description.length > 80
+                ? result.description.slice(0, 80) + "..."
+                : result.description
               : "No Description Available"}
           </div>
         </div>

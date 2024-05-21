@@ -54,7 +54,7 @@ async function getLayer(id: number): Promise<Layer> {
     return response.data;
 }
 
-async function getAllLayersByUserId(id: string): Promise<Layers> {
+async function getAllLayersByUserId(id: string): Promise<Layer[]> {
     const response = await axiosNoAuth.get("/users/" + id + "/layers")
     return response.data;
 }

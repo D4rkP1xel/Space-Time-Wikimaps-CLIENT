@@ -94,12 +94,12 @@ function EditorRequests() {
             <FaSearch color="#000000" size={16} />
             <input
               type="text"
-              className="bg-gray-100 lg:w-80 md:w-60 w-40 text-black border-none outline-none font-medium"
+              className="bg-gray-100 lg:w-80 md:w-60 w-32 text-black border-none outline-none font-medium"
               placeholder="Name"
               onChange={(e) => setName(e.target.value)}
             />
           </div>
-          <div className="flex ml-12 items-center">
+          <div className="flex md:ml-12 ml-4 items-center">
             <div className="font-medium text-md mr-2">Status:</div>
             <select
               value={selectedStatus}

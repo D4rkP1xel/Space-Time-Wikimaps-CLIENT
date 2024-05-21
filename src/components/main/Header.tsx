@@ -18,8 +18,9 @@ import { useRouter } from "next/navigation"
 import { FaUsers, FaTicketAlt } from "react-icons/fa"
 import toast from "react-hot-toast"
 import { FiSettings } from "react-icons/fi"
-import axios, { AxiosError } from "axios"
+import { AxiosError } from "axios"
 
+import { IoMdArrowDropdown, IoMdArrowDropup } from "react-icons/io"
 function Header() {
   const router = useRouter()
   const [isMenuOpened, setMenuOpened] = useState(false)
@@ -69,12 +70,17 @@ function Header() {
       setPassword("")
       toast.success("Welcome " + usernameParam + "!")
     } catch (error) {
-      if ( typeof error === "string" && error == "Fill in all necessary fields.") 
-      {
+      if (
+        typeof error === "string" &&
+        error == "Fill in all necessary fields."
+      ) {
         toast.error(error)
-      } else if (error instanceof AxiosError && error?.response?.status == 403) {
+      } else if (
+        error instanceof AxiosError &&
+        error?.response?.status == 403
+      ) {
         toast.error("You have been blocked")
-      }else toast.error("Unknown Error. Try later.")
+      } else toast.error("Unknown Error. Try later.")
       // console.error(error)
     }
   }
@@ -162,6 +168,13 @@ function Header() {
               <FaUserEdit color="#FFFFFF" size={24} />
             ) : (
               <FaUser color="#FFFFFF" size={24} />
+            )}
+          </div>
+          <div className="relative top-[6px] right-2">
+            {isMenuOpened ? (
+              <IoMdArrowDropup size={20} color="#FFFFFF" />
+            ) : (
+              <IoMdArrowDropdown size={20} color="#FFFFFF" />
             )}
           </div>
         </div>
@@ -253,7 +266,7 @@ function Header() {
             }}>
             <FiX color="#FFFFFF" size={48} />
           </div>
-          <div className="bg-white rounded-2xl shadow-lg shadow-[#828282] w-4/12 p-8 mx-auto my-auto flex flex-col">
+          <div className="bg-white rounded-2xl shadow-lg shadow-[#828282] xl:w-4/12 lg:w-6/12 md:w-8/12 w-10/12 p-8 mx-auto my-auto flex flex-col">
             <div className="text-2xl font-medium mx-auto mb-6">
               {isRegister ? "Register" : "Login"}
             </div>

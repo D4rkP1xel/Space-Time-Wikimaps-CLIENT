@@ -53,13 +53,13 @@ function SideMap({
         className={`flex fixed xl:pr-24 pr-12 z-40 h-full right-0`}
         style={{ top: handleMapTop() }}
         onScroll={() => setScrollY(window.scrollY)}>
-        <div className="ml-auto pb-8" style={{ height: handleMapHeight() }}>
+        <div className="ml-auto" style={{ height: handleMapHeight() }}>
           <MapContainer
             // key={center[0] + "-" + center[1]}
             center={center ? center : [51.505, -0.09]}
             zoom={13}
             scrollWheelZoom={true}
-            style={{ width: "300px", height: "calc(100% - 48px)" }}>
+            style={{ width: "450px", height: "calc(100% - 48px)" }}>
             <TileLayer
               attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"

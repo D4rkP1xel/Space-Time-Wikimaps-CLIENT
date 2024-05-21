@@ -1,5 +1,5 @@
 "use client"
-import { FaAngleLeft } from "react-icons/fa"
+import { FaAngleLeft, FaUserEdit } from "react-icons/fa"
 import { IoReload } from "react-icons/io5"
 
 import { useRouter, useSearchParams } from "next/navigation"
@@ -34,6 +34,7 @@ function Layer({ params }: { params: { id: string } }) {
   const [isFullscreen, setFullscreen] = useState(false)
   const [pageResults, setPageResults] = useState<LayerResult[]>([])
   const [totalPages, setTotalPages] = useState(0)
+
   useEffect(() => {
     function handleResize() {
       setPageWidth(window.innerWidth)
@@ -120,14 +121,14 @@ function Layer({ params }: { params: { id: string } }) {
           className="flex w-full pr-12 xl:pl-24 pl-12 pt-12 z-0"
           style={
             pageWidth > 1280
-              ? { width: `calc(100% - 300px)` }
+              ? { width: `calc(100% - 450px)` }
               : pageWidth > 1024
-              ? { width: `calc(100% - 200px)` }
+              ? { width: `calc(100% - 350px)` }
               : { width: "100%" }
           }>
           <div
             className={
-              pageWidth > 1024 ? "w-full xl:pr-48 pr-32 z-10" : "w-full z-10"
+              pageWidth > 1024 ? "w-full lg:pr-32 pr-48 z-10" : "w-full z-10"
             }>
             <div
               className="flex flex-row gap-4 cursor-pointer items-center select-none"
@@ -162,9 +163,9 @@ function Layer({ params }: { params: { id: string } }) {
                 setFullscreen={setFullscreen}
               />
             )}
-            <div className="flex flex-row items-center mt-8">
+            <div className="flex xl:flex-row flex-col items-start mt-8">
               <div className="text-xl font-medium">Results:</div>
-              <div className="ml-auto flex flex-row gap-3 items-center">
+              <div className="xl:ml-auto xl:mt-0 mt-2 flex flex-row gap-3 items-center">
                 <div>Start Year:</div>
                 <input
                   type="number"
@@ -236,16 +237,7 @@ function Layer({ params }: { params: { id: string } }) {
                 )
               })
             )}
-            <div className="flex flex-row gap-1">
-              <div className="font-bold">Editor:</div>
-              <div
-                onClick={() => {
-                  if (layer) router.push("/profile/" + layer.userDTO.id)
-                }}
-                className="font-medium cursor-pointer hover:text-gray-500 hover:underline">
-                {layer?.userDTO.username}
-              </div>
-            </div>
+
             <Paginator
               curPage={
                 Number(searchParams.get("page"))
@@ -255,6 +247,17 @@ function Layer({ params }: { params: { id: string } }) {
               totalPages={totalPages}
               scrollToTop={true}
             />
+            <div className="flex flex-row gap-1 items-center">
+              <FaUserEdit color="#000000" size={24} />
+              <div className="font-bold">Editor:</div>
+              <div
+                onClick={() => {
+                  if (layer) router.push("/profile/" + layer.userDTO.id)
+                }}
+                className="font-medium cursor-pointer hover:text-gray-500 hover:underline">
+                {layer?.userDTO.username}
+              </div>
+            </div>
             <div className="w-full h-20"></div>
           </div>
 
