@@ -3,6 +3,7 @@ import Cookies from 'js-cookie'
 import axios from "../axiosHandler"
 import axiosNoAuth from "../axiosNoAuth"
 import { AxiosError } from "axios"
+import { EditorRequest } from "./dashboard"
 
 // TYPES
 interface User {
@@ -11,6 +12,7 @@ interface User {
     email: string
     role: string
     blocked: boolean
+    roleUpgrade: EditorRequest | null
 }
 
 interface Users {
@@ -241,7 +243,8 @@ const useUserState = create<userState>((set, get) => ({
                     username: data.username,
                     email: data.email,
                     role: data.role,
-                    blocked: data.blocked
+                    blocked: data.blocked,
+                    roleUpgrade: data.roleUpgrade
                 }
                 return set(() => {
                     return { user: user, didFetchUser: true }
