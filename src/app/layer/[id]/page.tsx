@@ -67,7 +67,7 @@ function Layer({ params }: { params: { id: string } }) {
     isLoading: isLoadingResults,
     refetch: refetchResults,
   } = useQuery(
-    ["results"],
+    ["results", params.id],
     async () => {
       try {
         if (layer == null) return null
@@ -88,7 +88,7 @@ function Layer({ params }: { params: { id: string } }) {
         router.back()
       }
     },
-    { enabled: layer != null && params.id != null }
+    { enabled: layer != null && params.id != null, refetchOnMount: "always" }
   )
 
   useEffect(() => {
@@ -131,7 +131,13 @@ function Layer({ params }: { params: { id: string } }) {
             }>
             <div
               className="flex flex-row gap-4 cursor-pointer items-center select-none"
-              onClick={() => router.back()}>
+              onClick={() =>
+                searchParams.get("goBack")
+                  ? router.push(
+                      "/?" + decodeURIComponent(searchParams.get("goBack") + "")
+                    )
+                  : router.push("/")
+              }>
               <FaAngleLeft size={24} />
               <div className="text-md">Go Back</div>
             </div>
@@ -241,7 +247,11 @@ function Layer({ params }: { params: { id: string } }) {
               </div>
             </div>
             <Paginator
-              curPage={Number(searchParams.get("page"))}
+              curPage={
+                Number(searchParams.get("page"))
+                  ? Number(searchParams.get("page"))
+                  : 1
+              }
               totalPages={totalPages}
               scrollToTop={true}
             />

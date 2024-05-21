@@ -91,6 +91,16 @@ function Home() {
                         description={l.description}
                         layerId={l.id}
                         router={router}
+                        curPage={
+                          searchParams.get("page")
+                            ? searchParams.get("page") + ""
+                            : "1"
+                        }
+                        curSearch={
+                          searchParams.get("search")
+                            ? searchParams.get("search") + ""
+                            : ""
+                        }
                       />
                     )
                   })
@@ -113,11 +123,7 @@ function Home() {
       </div>
 
       {isFullscreen ? (
-        <MapFullScreen
-          center={center}
-          mapLocations={[]}
-          setFullscreen={setFullscreen}
-        />
+        <MapFullScreen mapLocations={[]} setFullscreen={setFullscreen} />
       ) : null}
     </>
   )
