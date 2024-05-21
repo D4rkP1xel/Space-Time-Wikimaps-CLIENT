@@ -4,9 +4,11 @@ import React, { useEffect, useState } from "react"
 function Paginator({
   curPage,
   totalPages,
+  scrollToTop,
 }: {
   curPage: number
   totalPages: number
+  scrollToTop?: boolean
 }) {
   const [pagesToShow, setPagesToShow] = useState<number[]>([])
 
@@ -54,6 +56,7 @@ function Paginator({
 
     // Use history.pushState to update the browser's URL without reloading the page
     history.pushState({}, "", url.toString())
+    if (scrollToTop) window.scrollTo(0, 0)
   }
 
   useEffect(() => {

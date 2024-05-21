@@ -2,7 +2,7 @@
 import { FaAngleLeft } from "react-icons/fa"
 import { IoReload } from "react-icons/io5"
 
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { useEffect, useState } from "react"
 
 import { useQuery } from "react-query"
@@ -20,8 +20,10 @@ import DarkBlueButton from "@/components/buttons/DarkBlueButton"
 import MapFullScreen from "@/components/Maps/MapFullScreen"
 import SideMap from "@/components/Maps/SideMap"
 import MobileMap from "@/components/Maps/MobileMap"
+import Paginator from "@/components/other/Paginator"
 
 function Layer({ params }: { params: { id: string } }) {
+  const searchParams = useSearchParams()
   const router = useRouter()
   const [pageWidth, setPageWidth] = useState(window.innerWidth)
   const [center, setCenter] = useState<[number, number] | null>(null)
@@ -30,7 +32,8 @@ function Layer({ params }: { params: { id: string } }) {
   const [endYear, setEndYear] = useState<number>(new Date().getFullYear())
   const [isLoadingResultsAux, setIsLoadingResultsAux] = useState(false)
   const [isFullscreen, setFullscreen] = useState(false)
-
+  const [pageResults, setPageResults] = useState<LayerResult[]>([])
+  const [totalPages, setTotalPages] = useState(0)
   useEffect(() => {
     function handleResize() {
       setPageWidth(window.innerWidth)
@@ -67,16 +70,45 @@ function Layer({ params }: { params: { id: string } }) {
     ["results"],
     async () => {
       try {
-        if (layer == null) return
+        if (layer == null) return null
         const data = await getLayerResults(layer.id, startYear, endYear)
+        let arr = []
+
+        let page = Number(searchParams.get("page"))
+          ? Number(searchParams.get("page"))
+          : 1
+        for (let i = (page - 1) * 5; i < page * 5; i++) {
+          if (data[i]) arr.push(data[i])
+        }
+        setPageResults(arr)
+        setTotalPages(Math.ceil(data.length / 5))
         return data
       } catch (error) {
         console.error(error)
         router.back()
       }
     },
-    { enabled: layer != null }
+    { enabled: layer != null && params.id != null }
   )
+
+  useEffect(() => {
+    if (
+      results &&
+      results.length > 0 &&
+      searchParams.get("page") &&
+      Number(searchParams.get("page")) > 0
+    ) {
+      let arr = []
+      for (
+        let i = (Number(searchParams.get("page")) - 1) * 5;
+        i < Number(searchParams.get("page")) * 5;
+        i++
+      ) {
+        if (results[i]) arr.push(results[i])
+      }
+      setPageResults(arr)
+    } else setPageResults([])
+  }, [searchParams.get("page")])
 
   if (isLoadingLayer) {
     return <PageCircleLoader />
@@ -184,10 +216,11 @@ function Layer({ params }: { params: { id: string } }) {
               <PageCircleLoader />
             ) : results == undefined ||
               results == null ||
-              results.length === 0 ? (
+              results.length === 0 ||
+              pageResults.length == 0 ? (
               <div>No Results</div>
             ) : (
-              results.map((r: LayerResult, index) => {
+              pageResults.map((r: LayerResult, index) => {
                 return (
                   <LayerResultDiv
                     key={index}
@@ -207,7 +240,11 @@ function Layer({ params }: { params: { id: string } }) {
                 {layer?.userDTO.username}
               </div>
             </div>
-
+            <Paginator
+              curPage={Number(searchParams.get("page"))}
+              totalPages={totalPages}
+              scrollToTop={true}
+            />
             <div className="w-full h-20"></div>
           </div>
 
