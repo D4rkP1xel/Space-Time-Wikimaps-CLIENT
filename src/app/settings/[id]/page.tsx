@@ -34,6 +34,11 @@ function Settings({ params }: { params: { id: string } }) {
   const [isLoadingChanges, setLoadingChanges] = useState(false)
   const [isProfileOwner, setIsProfileOwner] = useState<boolean | null>(null)
   const [isDeleting, setDeleting] = useState(false)
+  const [isWaiting7Days, setWaiting7Days] = useState(false)
+
+  const [currentTime, setCurrentTime] = useState(new Date().toISOString());
+
+  
 
   useEffect(() => {
     if (useUser.user != null && params.id != null)
@@ -53,6 +58,52 @@ function Settings({ params }: { params: { id: string } }) {
       return
     }
   }, [useUser.user, params.id, isProfileOwner])
+
+  function WaitingDaysToAskToBeAnEditor() {
+    if (!useUser.user?.roleUpgrade) return;
+
+    const requestTime = new Date(useUser.user.roleUpgrade.timestamp);
+    const nextRequestTime = new Date(requestTime);
+    nextRequestTime.setDate(requestTime.getDate() + 7); // Add 7 days for next request
+
+    const currentTime = new Date();
+  
+    // Calculate the difference in milliseconds
+    const difference = nextRequestTime.getTime() - currentTime.getTime();
+
+    // If difference is negative, set all values to 0
+    if (difference < 0) {
+        setCurrentTime('');
+        setWaiting7Days(false);
+        return;
+    }
+
+    // Calculate the time components
+    const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+    setCurrentTime(days + 'D:' + hours + 'H:' + minutes + 'M');
+    setWaiting7Days(true);
+  }
+
+
+  useEffect(() => {
+    // Function to update the time
+    const updateCurrentTime = () => {
+      WaitingDaysToAskToBeAnEditor()
+    };
+
+    if (useUser.user?.roleUpgrade == null) return
+    // Call the function immediately
+    updateCurrentTime();
+
+    // Set an interval to call the function once per minute
+    const intervalId = setInterval(updateCurrentTime, 60000);
+
+    // Clean up the interval on component unmount
+    return () => clearInterval(intervalId);
+  }, [useUser.user]);
+  
 
   async function ChangePassword(
     oldPasswordParam: string,
@@ -180,7 +231,7 @@ function Settings({ params }: { params: { id: string } }) {
   if (checkAuth.isRenderLoader) {
     return <PageCircleLoader />
   } else {
-    return (
+    return ( 
       <>
         <div className="flex flex-col mb-12 w-full xl:px-48 px-32 pt-12 z-0">
           <div className="font-bold text-4xl mb-12 text-center">Settings</div>
@@ -277,15 +328,33 @@ function Settings({ params }: { params: { id: string } }) {
               </div>
               {isProfileOwner && useUser.user?.role == "USER" ? (
                 <>
-                  <div className="flex flex-col">
-                    <div className="text-lg font-bold mb-4">
-                      Editor Settings:
+                    <div className="flex flex-col">
+                      <div className="text-lg font-bold mb-4">
+                        Editor Settings:
+                      </div>
+                      <DarkBlueButton
+                        logoComponent={<FaUserEdit size={20} />}
+                        buttonText="Ask To Be an Editor"
+                        onClick={() => setAskToBeEditor(true)}
+                        isDisabled={isWaiting7Days}
+                      />
+                      {useUser.user?.roleUpgrade?.status == "DECLINED" ? (
+                      <>
+                      <div className="flex flex-row gap-1">
+                        <div className="text-lg text-black   ">
+                          You can ask again in: 
+                        </div>
+                        <div className="text-lg font-bold   text-red-500   ">
+                          {currentTime}
+                        </div>
+                      </div>
+                      </>
+                      ): null}
                     </div>
-                    <DarkBlueButton
-                      logoComponent={<FaUserEdit size={20} />}
-                      buttonText="Ask To Be an Editor"
-                      onClick={() => setAskToBeEditor(true)}
-                    />
+                  <div className="flex justify-center">
+                    <div className="text-lg font-bold ">
+                      Editor Response: {useUser.user?.roleUpgrade?.status}
+                    </div>
                   </div>
                 </>
               ) : null}
