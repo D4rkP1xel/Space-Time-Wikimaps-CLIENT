@@ -1,5 +1,5 @@
 import React from "react"
-import { FaLock, FaTrash, FaUserEdit, FaUserShield } from "react-icons/fa"
+import { FaLock, FaTrash, FaUnlock, FaUserEdit, FaUserShield } from "react-icons/fa"
 import { FaUser } from "react-icons/fa"
 import { FaEye } from "react-icons/fa"
 import DarkBlueButton from "../buttons/DarkBlueButton"
@@ -34,7 +34,7 @@ function DashboardResult({ role, name ,id ,block , refetchFunction }: { role: st
             {block ? (
             <AcceptButton
               onClick={() => setUnblocking(true)}
-              logoComponent={<FaLock size={20} />}
+              logoComponent={<FaUnlock size={20} />}
               buttonText="Unblock User"
             />
             ) : (
