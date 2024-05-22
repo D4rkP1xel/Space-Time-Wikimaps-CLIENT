@@ -1,6 +1,7 @@
 "use client"
 import React, { use, useEffect, useState } from "react"
 import {
+  User,
   askToBeEditorUser,
   changePasswordUser,
   changeSettingsUser,
@@ -9,7 +10,7 @@ import {
   useUserState,
 } from "../../../../utils/stateManagement/user"
 import { FaUser, FaUserEdit, FaUserShield } from "react-icons/fa"
-import { useQuery } from "react-query"
+import { useMutation, useQuery, useQueryClient } from "react-query"
 import PageCircleLoader from "@/components/loaders/PageCircleLoader"
 import { useCheckAuth } from "../../../../utils/customHooks/checkAuth"
 import { useRouter } from "next/navigation"
@@ -19,8 +20,11 @@ import DeclineButton from "@/components/buttons/DeclineButton"
 import { FaSave } from "react-icons/fa"
 import toast from "react-hot-toast"
 import { FaRegTrashAlt } from "react-icons/fa"
+import { StatusEnum } from "../../../../utils/stateManagement/dashboard"
+
 function Settings({ params }: { params: { id: string } }) {
   const router = useRouter()
+  const queryClient = useQueryClient()
   const checkAuth = useCheckAuth(router, ["ADMIN", "EDITOR", "USER"])
   const [isChangingPassword, setChangePassword] = useState(false)
   const [isAskingToBeEditor, setAskToBeEditor] = useState(false)
@@ -29,16 +33,113 @@ function Settings({ params }: { params: { id: string } }) {
   const [password, setOldPassword] = useState("")
   const [newPassword, setNewPassword] = useState("")
   const [email, setEmail] = useState("")
-  const [message, setMessage] = useState("")
+  const [askToBeEditorRequestMessage, setAskToBeEditorRequestMessage] =
+    useState("")
   const [canSaveChanges, setSaveChanges] = useState(false)
   const [isLoadingChanges, setLoadingChanges] = useState(false)
   const [isProfileOwner, setIsProfileOwner] = useState<boolean | null>(null)
   const [isDeleting, setDeleting] = useState(false)
   const [isWaiting7Days, setWaiting7Days] = useState(false)
+  const [timeLeftForNewEditorRequest, setTimeLeftForNewEditorRequest] =
+    useState(new Date().toISOString())
 
-  const [currentTime, setCurrentTime] = useState(new Date().toISOString());
+  const askToBeEditorMutation = useMutation(
+    ({ message, newUserObj }: { message: string; newUserObj: User }) =>
+      AskToBeEditor(message, newUserObj),
+    {
+      // onMutate is called before the mutation function is fired
+      onMutate: async ({
+        message,
+        newUserObj,
+      }: {
+        message: string
+        newUserObj: User
+      }): Promise<{ previousData: any }> => {
+        // Cancel any outgoing refetches (so they don't overwrite our optimistic update)
+        await queryClient.cancelQueries([
+          "user_settings",
+          newUserObj.id.toString(),
+        ])
 
-  
+        // Snapshot the previous value
+        const previousData = queryClient.getQueryData([
+          "user_settings",
+          newUserObj.id.toString(),
+        ])
+        //console.log(previousData)
+        // Optimistically update the cache with the new value
+        queryClient.setQueryData(
+          ["user_settings", newUserObj.id.toString()],
+          newUserObj
+        )
+
+        // Return a context object with the snapshotted value
+        return { previousData }
+      },
+      // If the mutation fails, use the context we returned from onMutate to roll back
+      onError: (err, newData, context) => {
+        queryClient.setQueryData(
+          ["user_settings", context?.previousData.id.toString()],
+          context?.previousData
+        )
+      },
+      // Always refetch after error or success:
+      onSettled: (data, error, context) => {
+        queryClient.invalidateQueries([
+          "user_settings",
+          context.newUserObj.id.toString(),
+        ])
+      },
+    }
+  )
+
+  const changeSettingsMutation = useMutation(
+    ({ newUserObj, oldUser }: { newUserObj: User; oldUser: User }) =>
+      ChangeSettings(newUserObj.username, newUserObj.email, oldUser),
+    {
+      // onMutate is called before the mutation function is fired
+      onMutate: async ({
+        newUserObj,
+      }: {
+        newUserObj: User
+      }): Promise<{ previousData: any }> => {
+        // Cancel any outgoing refetches (so they don't overwrite our optimistic update)
+        await queryClient.cancelQueries([
+          "user_settings",
+          newUserObj.id.toString(),
+        ])
+
+        // Snapshot the previous value
+        const previousData = queryClient.getQueryData([
+          "user_settings",
+          newUserObj.id.toString(),
+        ])
+        //console.log(previousData)
+        // Optimistically update the cache with the new value
+        queryClient.setQueryData(
+          ["user_settings", newUserObj.id.toString()],
+          newUserObj
+        )
+
+        // Return a context object with the snapshotted value
+        return { previousData }
+      },
+      // If the mutation fails, use the context we returned from onMutate to roll back
+      onError: (err, newData, context) => {
+        queryClient.setQueryData(
+          ["user_settings", context?.previousData.id.toString()],
+          context?.previousData
+        )
+      },
+      // Always refetch after error or success:
+      onSettled: (data, error, context) => {
+        queryClient.invalidateQueries([
+          "user_settings",
+          context.newUserObj.id.toString(),
+        ])
+      },
+    }
+  )
 
   useEffect(() => {
     if (useUser.user != null && params.id != null)
@@ -59,51 +160,51 @@ function Settings({ params }: { params: { id: string } }) {
     }
   }, [useUser.user, params.id, isProfileOwner])
 
-  function WaitingDaysToAskToBeAnEditor() {
-    if (!useUser.user?.roleUpgrade) return;
+  function UpdateTimeLeftForNewEditorRequest() {
+    if (!useUser.user?.roleUpgrade) return
 
-    const requestTime = new Date(useUser.user.roleUpgrade.timestamp);
-    const nextRequestTime = new Date(requestTime);
-    nextRequestTime.setDate(requestTime.getDate() + 7); // Add 7 days for next request
+    const requestTime = new Date(useUser.user.roleUpgrade.timestamp)
+    const nextRequestTime = new Date(requestTime)
+    nextRequestTime.setDate(requestTime.getDate() + 7) // Add 7 days for next request
 
-    const currentTime = new Date();
-  
+    const currentTime = new Date()
+
     // Calculate the difference in milliseconds
-    const difference = nextRequestTime.getTime() - currentTime.getTime();
+    const difference = nextRequestTime.getTime() - currentTime.getTime()
 
     // If difference is negative, set all values to 0
     if (difference < 0) {
-        setCurrentTime('');
-        setWaiting7Days(false);
-        return;
+      setTimeLeftForNewEditorRequest("")
+      setWaiting7Days(false)
+      return
     }
 
     // Calculate the time components
-    const days = Math.floor(difference / (1000 * 60 * 60 * 24));
-    const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-    const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
-    setCurrentTime(days + 'D:' + hours + 'H:' + minutes + 'M');
-    setWaiting7Days(true);
+    const days = Math.floor(difference / (1000 * 60 * 60 * 24))
+    const hours = Math.floor(
+      (difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
+    )
+    const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60))
+    setTimeLeftForNewEditorRequest(days + "D:" + hours + "H:" + minutes + "M")
+    setWaiting7Days(true)
   }
-
 
   useEffect(() => {
     // Function to update the time
     const updateCurrentTime = () => {
-      WaitingDaysToAskToBeAnEditor()
-    };
+      UpdateTimeLeftForNewEditorRequest()
+    }
 
     if (useUser.user?.roleUpgrade == null) return
     // Call the function immediately
-    updateCurrentTime();
+    updateCurrentTime()
 
     // Set an interval to call the function once per minute
-    const intervalId = setInterval(updateCurrentTime, 60000);
+    const intervalId = setInterval(updateCurrentTime, 60000)
 
     // Clean up the interval on component unmount
-    return () => clearInterval(intervalId);
-  }, [useUser.user]);
-  
+    return () => clearInterval(intervalId)
+  }, [useUser.user])
 
   async function ChangePassword(
     oldPasswordParam: string,
@@ -131,7 +232,7 @@ function Settings({ params }: { params: { id: string } }) {
     }
   }
 
-  async function Deleting() {
+  async function DeleteUser() {
     try {
       if (useUser.user == null) return
       await deleteUser()
@@ -142,20 +243,23 @@ function Settings({ params }: { params: { id: string } }) {
     }
   }
 
-  async function ChangeSettings(username: string, email: string) {
+  async function ChangeSettings(username: string, email: string, user: User) {
     try {
       if (useUser.user == null) {
-        return
+        throw "User not found"
       }
-      setLoadingChanges(true)
-      await changeSettingsUser(username, email)
+      if (username == null || username == "" || email == null || email == "") {
+        throw "One or more camps are empty."
+      }
+      let obj: { username?: string; email?: string } = {}
+      if (username != user.username) obj["username"] = username
+      if (email != user.email) obj["email"] = email
+      await changeSettingsUser(obj)
       if (isProfileOwner) {
         await useUser.refreshUser()
-      } else {
-        await refetchUser()
       }
+
       toast.success("Changes saved successfully!")
-      setLoadingChanges(false)
     } catch (error) {
       if (
         typeof error === "string" &&
@@ -170,11 +274,11 @@ function Settings({ params }: { params: { id: string } }) {
     }
   }
 
-  async function AskToBeEditor(message: string) {
+  async function AskToBeEditor(message: string, newUserObj: User) {
     try {
       if (useUser.user == null) return
       await askToBeEditorUser(message)
-      setMessage("")
+      setAskToBeEditorRequestMessage("")
       setAskToBeEditor(false)
       toast.success("Request sent successfully!")
     } catch (error) {
@@ -190,48 +294,43 @@ function Settings({ params }: { params: { id: string } }) {
   } = useQuery(
     ["user_settings", params.id],
     async () => {
-      return await getUserByID(params.id)
+      const userAux = await getUserByID(params.id)
+      if (userAux?.email) setEmail(userAux.email)
+      if (userAux?.username) setUsername(userAux.username)
+      return userAux
     },
     {
       enabled:
         !checkAuth.isRenderLoader &&
-        isProfileOwner === false &&
-        useUser.user != null &&
-        useUser.user?.role == "ADMIN" &&
+        (isProfileOwner === true ||
+          (isProfileOwner === false &&
+            useUser.user != null &&
+            useUser.user.role == "ADMIN")) &&
         params.id != null,
+      refetchOnMount: "always",
     }
   )
 
   useEffect(() => {
-    if (isProfileOwner) {
-      setEmail(useUser.user?.email!)
-      setUsername(useUser.user?.username!)
-    } else if (!isProfileOwner && user != null) {
+    if (user) {
       setEmail(user.email)
       setUsername(user.username)
     }
-  }, [isProfileOwner, user, useUser.user])
-
+  }, [user])
   useEffect(() => {
-    if (isProfileOwner) {
-      let startEmail = useUser.user?.email!
-      let startUsername = useUser.user?.username!
-      if (startEmail != email || startUsername != username) {
-        setSaveChanges(true)
-      } else setSaveChanges(false)
-    } else if (!isProfileOwner && user != null) {
+    if (user != null) {
       let startEmail = user.email
       let startUsername = user.username
       if (startEmail != email || startUsername != username) {
         setSaveChanges(true)
       } else setSaveChanges(false)
-    }
+    } else setSaveChanges(false)
   }, [email, username])
 
   if (checkAuth.isRenderLoader) {
     return <PageCircleLoader />
   } else {
-    return ( 
+    return (
       <>
         <div className="flex flex-col mb-12 w-full xl:px-48 px-32 pt-12 z-0">
           <div className="font-bold text-4xl mb-12 text-center">Settings</div>
@@ -244,13 +343,7 @@ function Settings({ params }: { params: { id: string } }) {
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 className="border border-gray-400 px-2 py-1 rounded w-100 "
-                placeholder={
-                  isProfileOwner
-                    ? useUser.user?.username
-                    : isLoadingUser
-                    ? ""
-                    : user?.username
-                }
+                placeholder={isLoadingUser ? "" : user?.username}
               />
             </div>
 
@@ -262,35 +355,17 @@ function Settings({ params }: { params: { id: string } }) {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="border border-gray-400 px-2 py-1 rounded w-100"
-                placeholder={
-                  isProfileOwner
-                    ? useUser.user?.email
-                    : isLoadingUser
-                    ? ""
-                    : user?.email
-                }
+                placeholder={isLoadingUser ? "" : user?.email}
               />
             </div>
 
             <div className="flex flex-row items-center">
               <span className=" text-lg font-bold  w-16">Role:</span>
               <span className=" px-1 py-1 ">
-                {isProfileOwner
-                  ? useUser.user?.role
-                  : isLoadingUser
-                  ? null
-                  : user?.role}
+                {isLoadingUser ? null : user?.role}
               </span>
               <div>
-                {isProfileOwner && useUser.user?.role ? (
-                  useUser.user.role == "ADMIN" ? (
-                    <FaUserShield color="#000000" size={24} />
-                  ) : useUser.user.role == "EDITOR" ? (
-                    <FaUserEdit color="#000000" size={24} />
-                  ) : (
-                    <FaUser color="#000000" size={24} />
-                  )
-                ) : user?.role == "ADMIN" ? (
+                {user?.role == "ADMIN" ? (
                   <FaUserShield color="#000000" size={24} />
                 ) : user?.role == "EDITOR" ? (
                   <FaUserEdit color="#000000" size={24} />
@@ -306,7 +381,20 @@ function Settings({ params }: { params: { id: string } }) {
                     <DarkBlueButton
                       logoComponent={<FaSave size={20} />}
                       buttonText="Save Changes"
-                      onClick={() => ChangeSettings(username, email)}
+                      onClick={() => {
+                        if (user == null) return null
+                        return changeSettingsMutation.mutate({
+                          newUserObj: {
+                            id: user.id,
+                            blocked: user.blocked,
+                            email: email,
+                            role: user.role,
+                            roleUpgrade: user.roleUpgrade,
+                            username: username,
+                          },
+                          oldUser: user,
+                        })
+                      }}
                       isDisabled={!canSaveChanges}
                       isLoading={isLoadingChanges}
                     />
@@ -326,36 +414,39 @@ function Settings({ params }: { params: { id: string } }) {
                   onClick={() => setChangePassword(true)}
                 />
               </div>
-              {isProfileOwner && useUser.user?.role == "USER" ? (
+              {useUser.user?.role == "USER" ? (
                 <>
-                    <div className="flex flex-col">
-                      <div className="text-lg font-bold mb-4">
-                        Editor Settings:
-                      </div>
-                      <DarkBlueButton
-                        logoComponent={<FaUserEdit size={20} />}
-                        buttonText="Ask To Be an Editor"
-                        onClick={() => setAskToBeEditor(true)}
-                        isDisabled={isWaiting7Days}
-                      />
-                      {useUser.user?.roleUpgrade?.status == "DECLINED" ? (
+                  <div className="flex flex-col">
+                    <div className="text-lg font-bold mb-4">
+                      Editor Settings:
+                    </div>
+                    <DarkBlueButton
+                      logoComponent={<FaUserEdit size={20} />}
+                      buttonText="Ask To Be an Editor"
+                      onClick={() => setAskToBeEditor(true)}
+                      isDisabled={
+                        isWaiting7Days ||
+                        user?.roleUpgrade?.status == StatusEnum.PENDING
+                      }
+                    />
+                    {user?.roleUpgrade?.status == "DECLINED" ? (
                       <>
-                      <div className="flex flex-row gap-1">
-                        <div className="text-lg text-black   ">
-                          You can ask again in: 
+                        <div className="flex flex-row gap-1">
+                          <div className="text-lg text-black   ">
+                            You can ask again in:
+                          </div>
+                          <div className="text-lg font-bold text-red-500   ">
+                            {timeLeftForNewEditorRequest}
+                          </div>
                         </div>
-                        <div className="text-lg font-bold   text-red-500   ">
-                          {currentTime}
-                        </div>
-                      </div>
                       </>
-                      ): null}
-                    </div>
-                  <div className="flex justify-center">
-                    <div className="text-lg font-bold ">
-                      Editor Response: {useUser.user?.roleUpgrade?.status}
-                    </div>
+                    ) : null}
                   </div>
+                  {user?.roleUpgrade != null ? (
+                    <div className="text-lg font-bold">
+                      Editor Response: {user.roleUpgrade?.status}
+                    </div>
+                  ) : null}
                 </>
               ) : null}
             </div>
@@ -427,7 +518,7 @@ function Settings({ params }: { params: { id: string } }) {
               className="fixed top-16 right-2 p-8 cursor-pointer"
               onClick={() => {
                 setAskToBeEditor(false)
-                setMessage("")
+                setAskToBeEditorRequestMessage("")
               }}>
               <FiX color="#FFFFFF" size={48} />
             </div>
@@ -438,15 +529,34 @@ function Settings({ params }: { params: { id: string } }) {
               <div className="flex items-center gap-2 py-2 px-2 mb-4">
                 <textarea
                   id="description"
-                  value={message}
-                  onChange={(e) => setMessage(e.target.value)}
+                  value={askToBeEditorRequestMessage}
+                  onChange={(e) =>
+                    setAskToBeEditorRequestMessage(e.target.value)
+                  }
                   className="border border-gray-400 px-2 py-1 rounded flex-grow w-full h-36"
                   placeholder="Enter a message to the admin to ask to be an Editor"
                 />
               </div>
               <div
                 onClick={() => {
-                  AskToBeEditor(message)
+                  if (useUser.user == null) return null
+                  askToBeEditorMutation.mutate({
+                    message: askToBeEditorRequestMessage,
+                    newUserObj: {
+                      id: useUser.user.id,
+                      blocked: useUser.user.blocked,
+                      email: useUser.user.email,
+                      role: useUser.user.role,
+                      roleUpgrade: {
+                        id: -1,
+                        reason: "",
+                        timestamp: "",
+                        username: "",
+                        status: StatusEnum.PENDING,
+                      },
+                      username: useUser.user.username,
+                    },
+                  })
                 }}
                 className="bg-cyan-800 text-white text-center rounded-full py-2 w-1/2 mx-auto font-medium text-lg select-none cursor-pointer mb-2">
                 {"Send"}
@@ -466,16 +576,18 @@ function Settings({ params }: { params: { id: string } }) {
               }}>
               <FiX color="#FFFFFF" size={48} />
             </div>
-            <div className="bg-white rounded-2xl shadow-lg shadow-[#828282] w-4/12 p-8 mx-auto my-auto flex flex-col">
+            <div className="bg-white rounded-2xl shadow-lg shadow-[#828282] xl:w-4/12 lg:w-6/12 md:w-8/12 w-10/12 p-8 mx-auto my-auto flex flex-col">
               <div className="text-2xl font-medium mx-auto mb-6">
                 Are you sure you want to delete your account?
               </div>
-              <div
-                onClick={() => {
-                  Deleting()
-                }}
-                className="bg-red-600 text-white text-center rounded-full py-2 w-1/2 mx-auto font-medium text-lg select-none cursor-pointer mb-2">
-                {"Delete Account"}
+              <div className="flex justify-center">
+                <DeclineButton
+                  logoComponent={<FaRegTrashAlt size={20} />}
+                  buttonText="Delete Account"
+                  onClick={() => {
+                    DeleteUser()
+                  }}
+                />
               </div>
             </div>
           </div>

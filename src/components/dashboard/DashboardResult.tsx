@@ -22,7 +22,15 @@ import toast from "react-hot-toast"
 import AcceptButton from "../buttons/AcceptButton"
 import { useMutation, useQueryClient } from "react-query"
 
-function DashboardResult({ user, curPage }: { user: User; curPage: number }) {
+function DashboardResult({
+  user,
+  refetchUsers,
+  curPage,
+}: {
+  user: User
+  curPage: number
+  refetchUsers: any
+}) {
   const queryClient = useQueryClient()
   const router = useRouter()
   const [isDeletingModal, setDeletingModal] = useState(false)
@@ -151,7 +159,7 @@ function DashboardResult({ user, curPage }: { user: User; curPage: number }) {
               onClick={async () => {
                 try {
                   await deleteUserById(user.id)
-                  //refetchFunction()
+                  refetchUsers()
                   setDeletingModal(false)
                   toast.success("User deleted successfully.")
                 } catch (error) {

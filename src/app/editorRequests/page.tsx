@@ -2,7 +2,7 @@
 import PageCircleLoader from "@/components/loaders/PageCircleLoader"
 import { useCheckAuth } from "../../../utils/customHooks/checkAuth"
 import { useRouter, useSearchParams } from "next/navigation"
-import { useQuery } from "react-query"
+import { useMutation, useQuery } from "react-query"
 import {
   EditorRequest,
   getAllEditorRequests,
@@ -18,7 +18,7 @@ function EditorRequests() {
   const checkAuth = useCheckAuth(router, ["ADMIN"])
   const [name, setName] = useState("")
   const [selectedStatus, setSelectedStatus] = useState("")
-  const [curPage, setCurPage] = useState<number>(0)
+
   const [totalPages, setTotalPages] = useState<number>(1)
   const [isLoadingResultsAux, setIsLoadingResultsAux] = useState(false)
   const searchParams = useSearchParams()
@@ -50,16 +50,17 @@ function EditorRequests() {
     isLoading: isLoadingEditorRequests,
     refetch: refetchEditorRequests,
   } = useQuery(
-    ["editorRequests"],
+    [
+      "editorRequests",
+      searchParams.get("page") != null ? searchParams.get("page") : "1",
+    ],
     async () => {
-      setIsLoadingResultsAux(true)
       const data = await getAllEditorRequests(
         name,
         selectedStatus,
         searchParams.get("page")
       )
       if (data == null) {
-        setCurPage(1)
         changeToPage(1)
         setSelectedStatus("")
         setName("")
@@ -69,9 +70,6 @@ function EditorRequests() {
         return []
       }
       setTotalPages(data.totalPages)
-      setCurPage(data.currentPage + 1)
-      setIsLoadingResultsAux(false)
-      setIsLoadingResultsAux(false)
       return data.requests
     },
     { enabled: checkAuth.isRenderLoader == false }
@@ -128,17 +126,26 @@ function EditorRequests() {
             editorRequests.map((u: EditorRequest) => (
               <EditorRequestComponent
                 key={u.id}
-                requestID={u.id}
-                name={u.username}
-                reason={u.reason}
-                timestamp={u.timestamp}
-                status={u.status}
+                request={u}
                 refetchEditorRequests={refetchEditorRequests}
+                curPage={
+                  searchParams.get("page") != null
+                    ? Number(searchParams.get("page"))
+                    : 1
+                }
               />
             ))
           )}
         </div>
-        <Paginator curPage={curPage} totalPages={totalPages} />
+        <Paginator
+          curPage={
+            searchParams.get("page") != null
+              ? Number(searchParams.get("page"))
+              : 1
+          }
+          totalPages={totalPages}
+          scrollToTop={true}
+        />
       </div>
     )
   }

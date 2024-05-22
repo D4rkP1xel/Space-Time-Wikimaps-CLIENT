@@ -22,7 +22,6 @@ interface Users {
     totalPages: number
 }
 
-
 interface userState {
     user: User | null
     didFetchUser: boolean
@@ -132,12 +131,10 @@ async function unblockUser(id: number) {
     }
 }
 
-async function changeSettingsUser(username: string, email: string): Promise<string | undefined> {
-    if (username == null || username == "" || email == null || email == "") {
-        throw ("One or more camps are empty.")
-    }
+async function changeSettingsUser(obj: { username?: string, email?: string }): Promise<string | undefined> {
+
     try {
-        const response = await axios.put("/user", { username, email })
+        const response = await axios.put("/user", obj)
         storeTokens(response.data.accessToken, response.data.refreshToken, response.data.user.id)
         return response.data;
     }

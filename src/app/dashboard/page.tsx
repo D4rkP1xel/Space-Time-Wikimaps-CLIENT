@@ -21,7 +21,6 @@ function Dashboard() {
   const checkAuth = useCheckAuth(router, ["ADMIN"])
   const [name, setName] = useState("")
   const [totalPages, setTotalPages] = useState<number>(1)
-  const [isLoadingResultsAux, setIsLoadingResultsAux] = useState(false)
 
   function changeToPage(page: number) {
     const currentUrl = window.location.href
@@ -126,7 +125,7 @@ function Dashboard() {
               </div>
             </div>
             <div className="flex flex-col mt-8">
-              {isLoadingUsers || isLoadingResultsAux ? (
+              {isLoadingUsers ? (
                 <PageCircleLoader />
               ) : users == null || users.length == 0 ? (
                 "No users found"
@@ -135,13 +134,22 @@ function Dashboard() {
                   <DashboardResult
                     key={u.id}
                     user={u}
-                    curPage={Number(searchParams.get("page"))}
+                    refetchUsers={refetchUsers}
+                    curPage={
+                      searchParams.get("page") != null
+                        ? Number(searchParams.get("page"))
+                        : 1
+                    }
                   />
                 ))
               )}
             </div>
             <Paginator
-              curPage={Number(searchParams.get("page"))}
+              curPage={
+                searchParams.get("page") != null
+                  ? Number(searchParams.get("page"))
+                  : 1
+              }
               totalPages={totalPages}
               scrollToTop={true}
             />

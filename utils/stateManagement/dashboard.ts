@@ -6,7 +6,7 @@ interface EditorRequest {
     username: string,
     reason: string,
     timestamp: string,
-    status: string
+    status: StatusEnum
 }
 interface EditorRequests {
     requests: EditorRequest[],

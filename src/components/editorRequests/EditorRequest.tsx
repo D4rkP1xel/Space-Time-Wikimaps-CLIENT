@@ -8,26 +8,23 @@ import AcceptButton from "../buttons/AcceptButton"
 import DeclineButton from "../buttons/DeclineButton"
 import { IoMdClose } from "react-icons/io"
 import {
+  EditorRequest as IEditorRequest,
   StatusEnum,
   updateEditorRequest,
 } from "../../../utils/stateManagement/dashboard"
+import { useMutation, useQueryClient } from "react-query"
+import toast from "react-hot-toast"
 function EditorRequest({
-  requestID,
-  name,
-  reason,
-  timestamp,
-  status,
+  request,
   refetchEditorRequests,
+  curPage,
 }: {
-  requestID: number
-  name: string
-  reason: string
-  timestamp: string
-  status: string
+  request: IEditorRequest
   refetchEditorRequests: any
+  curPage: number
 }) {
   const [isDetailsOpened, setDetailsOpened] = useState(false)
-
+  const queryClient = useQueryClient()
   function convertTimeStampToDate(timestamp: string) {
     const date = new Date(timestamp)
 
@@ -41,6 +38,79 @@ function EditorRequest({
     return `${day}-${month}-${year} ${hours}:${minutes}:${seconds}`
   }
 
+  const changeRequestStatusMutation = useMutation(
+    ({
+      status,
+      oldRequest,
+    }: {
+      status: StatusEnum
+      oldRequest: IEditorRequest
+    }) => _updateEditorRequest(oldRequest.id, status),
+    {
+      // onMutate is called before the mutation function is fired
+      onMutate: async ({
+        status,
+        oldRequest,
+      }: {
+        status: StatusEnum
+        oldRequest: IEditorRequest
+      }): Promise<{ previousData: any }> => {
+        // Cancel any outgoing refetches (so they don't overwrite our optimistic update)
+        await queryClient.cancelQueries(["editorRequests", curPage.toString()])
+
+        // Snapshot the previous value
+        const previousData = queryClient.getQueryData([
+          "editorRequests",
+          curPage.toString(),
+        ])
+        //console.log(previousData)
+        // Optimistically update the cache with the new value
+        queryClient.setQueryData(
+          ["editorRequests", curPage.toString()],
+          (oldRequests) => {
+            if (Array.isArray(oldRequests)) {
+              return oldRequests.map((r: any) => {
+                if (r.id == oldRequest.id)
+                  return {
+                    id: oldRequest.id,
+                    username: oldRequest.username,
+                    reason: oldRequest.reason,
+                    timestamp: oldRequest.timestamp,
+                    status: status,
+                  }
+                else return r
+              })
+            } else return oldRequests
+          }
+        )
+
+        // Return a context object with the snapshotted value
+        return { previousData }
+      },
+      // If the mutation fails, use the context we returned from onMutate to roll back
+      onError: (err, newData, context) => {
+        queryClient.setQueryData(
+          ["editorRequests", curPage.toString()],
+          context?.previousData
+        )
+      },
+      // Always refetch after error or success:
+      onSettled: (data, error, context) => {
+        queryClient.invalidateQueries(["editorRequests", curPage.toString()])
+      },
+    }
+  )
+
+  async function _updateEditorRequest(requestID: number, status: StatusEnum) {
+    try {
+      await updateEditorRequest(requestID, status)
+      //refetchEditorRequests()
+      toast.success("Editor Request updated successfully!")
+    } catch (error) {
+      toast.error("Unknown error while updating Editor Request")
+    }
+  }
+
   return (
     <>
       <div className={isDetailsOpened ? "mb-48 relative" : "mb-6 relative"}>
@@ -48,46 +118,40 @@ function EditorRequest({
           <div className="flex items-center h-full">
             <div
               className={
-                status == StatusEnum.PENDING
+                request.status == StatusEnum.PENDING
                   ? "mr-4 bg-yellow-400 text-white font-semibold text-sm rounded-full py-1 px-2 select-none"
-                  : status == StatusEnum.ACCEPTED
+                  : request.status == StatusEnum.ACCEPTED
                   ? "mr-4 bg-green-500 text-white font-semibold text-sm rounded-full py-1 px-2  select-none"
-                  : status == StatusEnum.DECLINED
+                  : request.status == StatusEnum.DECLINED
                   ? "mr-4 bg-red-600 text-white font-semibold text-sm rounded-full py-1 px-2  select-none"
                   : "hidden"
               }>
-              {status}
+              {request.status}
             </div>
             <FaUser color="#000000" size={32} />
-            <div className="font-medium text-xl ml-3">{name}</div>
+            <div className="font-medium text-xl ml-3">{request.username}</div>
             <div
               onClick={() => setDetailsOpened(!isDetailsOpened)}
               className="cursor-pointer w-full h-[76px]"></div>
             <div className="ml-auto flex gap-4 items-center">
-              {status == StatusEnum.PENDING ? (
+              {request.status == StatusEnum.PENDING ? (
                 <div className="flex-col flex gap-3">
                   <AcceptButton
-                    onClick={async () => {
-                      try {
-                        await updateEditorRequest(
-                          requestID,
-                          StatusEnum.ACCEPTED
-                        )
-                        refetchEditorRequests()
-                      } catch (error) {}
+                    onClick={() => {
+                      changeRequestStatusMutation.mutate({
+                        status: StatusEnum.ACCEPTED,
+                        oldRequest: request,
+                      })
                     }}
                     logoComponent={<FaCheck size={20} />}
                     buttonText="Accept"
                   />
                   <DeclineButton
-                    onClick={async () => {
-                      try {
-                        await updateEditorRequest(
-                          requestID,
-                          StatusEnum.DECLINED
-                        )
-                        refetchEditorRequests()
-                      } catch (error) {}
+                    onClick={() => {
+                      changeRequestStatusMutation.mutate({
+                        status: StatusEnum.DECLINED,
+                        oldRequest: request,
+                      })
                     }}
                     logoComponent={<IoMdClose size={24} />}
                     buttonText="Decline"
@@ -119,13 +183,13 @@ function EditorRequest({
               <div className="font-bold">Message:</div>
               <textarea
                 className="resize-none bg-gray-200 w-full h-28"
-                value={reason}
+                value={request.reason}
                 disabled
               />
             </div>
             <div className="w-1/2 pl-4">
               <div className="font-bold">Request Time:</div>
-              <div>{convertTimeStampToDate(timestamp)}</div>
+              <div>{convertTimeStampToDate(request.timestamp)}</div>
               <div className="font-bold mt-2">User Profile:</div>
               <div className="mt-2">
                 <DarkBlueButton
