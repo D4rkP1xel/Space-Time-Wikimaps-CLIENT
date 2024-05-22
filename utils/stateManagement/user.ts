@@ -105,7 +105,7 @@ async function deleteUser() {
     }
 }
 
-async function deletingUser(id: number) {
+async function deleteUserById(id: number) {
     try {
         const response = await axios.delete("/users/" + id)
         console.log(response)
@@ -114,7 +114,7 @@ async function deletingUser(id: number) {
     }
 }
 
-async function blockingUser(id: number) {
+async function blockUser(id: number) {
     try {
         const response = await axios.put("/admin/users/" + id + "/block")
         console.log(response)
@@ -123,7 +123,7 @@ async function blockingUser(id: number) {
     }
 }
 
-async function unblockingUser(id: number) {
+async function unblockUser(id: number) {
     try {
         const response = await axios.put("/admin/users/" + id + "/unblock")
         console.log(response)
@@ -157,11 +157,11 @@ async function changeSettingsUser(username: string, email: string): Promise<stri
 }
 
 async function askToBeEditorUser(message: string): Promise<string | undefined> {
-    
-        const response = await axios.post("/upgrade/request", { message })
-        //console.log(response)
-        return response.data;
-   
+
+    const response = await axios.post("/upgrade/request", { message })
+    //console.log(response)
+    return response.data;
+
 }
 
 async function registerUser(username: string, password: string, repeat_password: string, email: string): Promise<void> {
@@ -266,5 +266,5 @@ const useUserState = create<userState>((set, get) => ({
 
 }))
 
-export { useUserState, getUserByID, changePasswordUser, askToBeEditorUser, changeSettingsUser, deleteUser, deletingUser , blockingUser, unblockingUser}
+export { useUserState, getUserByID, changePasswordUser, askToBeEditorUser, changeSettingsUser, deleteUser, deleteUserById, blockUser, unblockUser }
 export type { User, Users }

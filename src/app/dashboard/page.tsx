@@ -5,7 +5,7 @@ import { FaSearch } from "react-icons/fa"
 import { useRouter, useSearchParams } from "next/navigation"
 import { useCheckAuth } from "../../../utils/customHooks/checkAuth"
 import PageCircleLoader from "@/components/loaders/PageCircleLoader"
-import { useQuery } from "react-query"
+import { useQuery, useQueryClient } from "react-query"
 import { getAllUsers } from "../../../utils/stateManagement/dashboard"
 import { User } from "../../../utils/stateManagement/user"
 import DarkBlueButton from "@/components/buttons/DarkBlueButton"
@@ -20,7 +20,6 @@ function Dashboard() {
   const searchParams = useSearchParams()
   const checkAuth = useCheckAuth(router, ["ADMIN"])
   const [name, setName] = useState("")
-  const [curPage, setCurPage] = useState<number>(0)
   const [totalPages, setTotalPages] = useState<number>(1)
   const [isLoadingResultsAux, setIsLoadingResultsAux] = useState(false)
 
@@ -48,9 +47,8 @@ function Dashboard() {
     isLoading: isLoadingUsers,
     refetch: refetchUsers,
   } = useQuery(
-    ["users"],
+    ["users", Number(searchParams.get("page"))],
     async () => {
-      setIsLoadingResultsAux(true)
       try {
         const data = await getAllUsers(
           selectedOption,
@@ -58,7 +56,7 @@ function Dashboard() {
           searchParams.get("page")
         )
         if (data == null) {
-          setCurPage(1)
+          //setCurPage(1)
           changeToPage(1)
           setSelectedOption("")
           setName("")
@@ -66,16 +64,18 @@ function Dashboard() {
           return []
         }
         setTotalPages(data.totalPages)
-        setCurPage(data.currentPage + 1)
-        setIsLoadingResultsAux(false)
+        //setCurPage(data.currentPage + 1)
+
         return data.users
       } catch (error) {
-        setCurPage(Number(searchParams.get("page")))
-        setIsLoadingResultsAux(false)
+        //setCurPage(Number(searchParams.get("page")))
+
         return []
       }
     },
-    { enabled: checkAuth.isRenderLoader == false }
+    {
+      enabled: checkAuth.isRenderLoader == false,
+    }
   )
 
   useEffect(() => {
@@ -134,16 +134,17 @@ function Dashboard() {
                 users.map((u: User) => (
                   <DashboardResult
                     key={u.id}
-                    role={u.role}
-                    name={u.username}
-                    id={u.id}
-                    block={u.blocked}
-                    refetchFunction={refetchUsers}
+                    user={u}
+                    curPage={Number(searchParams.get("page"))}
                   />
                 ))
               )}
             </div>
-            <Paginator curPage={curPage} totalPages={totalPages} />
+            <Paginator
+              curPage={Number(searchParams.get("page"))}
+              totalPages={totalPages}
+              scrollToTop={true}
+            />
           </div>
         </div>
       </>
