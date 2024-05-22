@@ -1,32 +1,29 @@
+"use client"
+import { ReactQueryDevtools } from "react-query/devtools"
+import { QueryClient, QueryClientProvider } from "react-query"
+
 import React from "react"
-import Header from "./main/Header"
-import { useUserState } from "../../utils/stateManagement/user"
-import { useQuery } from "react-query"
-import { useRouter } from "next/navigation"
-import { Toaster } from "react-hot-toast"
+import LayoutWrapper from "./other/LayoutWrapper"
 
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 300000, // 5 min
+      refetchOnWindowFocus: false,
+    },
+  },
+})
 function CustomLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  const router = useRouter()
-  const useUser = useUserState()
-  const { data: user } = useQuery(
-    ["refreshUser"],
-    async () => await useUser.refreshUser()
-  )
-
   return (
     <>
-      <Toaster
-        position="top-center"
-        reverseOrder={false}
-        gutter={8}
-        containerStyle={{}}
-        toastOptions={{
-          // Define default options
-          duration: 5000,
-        }}
-      />
-      <Header />
-      {children}
+      <QueryClientProvider client={queryClient}>
+        <html>
+          <body>
+            <LayoutWrapper children={children} />
+            <ReactQueryDevtools initialIsOpen={false} />
+          </body>
+        </html>
+      </QueryClientProvider>
     </>
   )
 }

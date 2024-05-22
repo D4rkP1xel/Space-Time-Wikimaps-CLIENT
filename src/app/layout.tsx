@@ -1,27 +1,24 @@
-"use client"
-import { QueryClient, QueryClientProvider } from "react-query"
+import Head from "next/head"
 import "./globals.css"
 import CustomLayout from "@/components/CustomLayout"
-import { ReactQueryDevtools } from "react-query/devtools"
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      staleTime: 300000, // 5 min
-      refetchOnWindowFocus: false,
-    },
-  },
-})
+
+import type { Metadata } from "next"
+
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <QueryClientProvider client={queryClient}>
-      <html lang="en">
-        <body>
-          <CustomLayout children={children} />
-          <ReactQueryDevtools initialIsOpen={false} />
-        </body>
-      </html>
-    </QueryClientProvider>
+    <>
+      <Head>
+        <title>WikiMaps</title>
+      </Head>
+      <CustomLayout children={children} />
+    </>
   )
+}
+
+export const metadata: Metadata = {
+  title: "WikiMaps",
+  description:
+    "WikiMaps is an innovative platform that combines the vast informational resources of WikiData with the power of an interactive map. Users can visually explore various locations and see search results displayed on the map. ",
 }

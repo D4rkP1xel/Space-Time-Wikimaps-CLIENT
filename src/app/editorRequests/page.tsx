@@ -2,7 +2,7 @@
 import PageCircleLoader from "@/components/loaders/PageCircleLoader"
 import { useCheckAuth } from "../../../utils/customHooks/checkAuth"
 import { useRouter, useSearchParams } from "next/navigation"
-import { useMutation, useQuery } from "react-query"
+import { useQuery } from "react-query"
 import {
   EditorRequest,
   getAllEditorRequests,

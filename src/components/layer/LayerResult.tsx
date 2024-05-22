@@ -9,9 +9,11 @@ import { useQuery } from "react-query"
 function LayerResultDiv({
   result,
   setCenter,
+  pageWidth,
 }: {
   result: LayerResult
   setCenter: (center: [number, number]) => void
+  pageWidth: number
 }) {
   // const { data: photo, isLoading: isLoadingPhoto } = useQuery(
   //   ["photo", result.itemLabel],
@@ -61,6 +63,7 @@ function LayerResultDiv({
                       Number.parseFloat(result.lat),
                       Number.parseFloat(result.lon),
                     ])
+                  if (pageWidth <= 1024) window.scrollTo(0, 0)
                 }}
                 className="flex flex-row items-center gap-2 select-none cursor-pointer">
                 <FaMapMarkerAlt size={16} />

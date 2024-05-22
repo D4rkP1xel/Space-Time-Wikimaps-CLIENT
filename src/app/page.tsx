@@ -7,19 +7,15 @@ import { getLayers } from "../../utils/stateManagement/layers"
 import PageCircleLoader from "@/components/loaders/PageCircleLoader"
 import { useRouter, useSearchParams } from "next/navigation"
 import Paginator from "@/components/other/Paginator"
-import MobileMap from "@/components/Maps/MobileMap"
-import SideMap from "@/components/Maps/SideMap"
-import MapFullScreen from "@/components/Maps/MapFullScreen"
+import Head from "next/head"
 
 function Home() {
   const [pageWidth, setPageWidth] = useState(window.innerWidth)
   const router = useRouter()
   const searchParams = useSearchParams()
-  const [center, setCenter] = useState<[number, number]>([51.505, -0.09])
   const [isLoadingResultsAux, setIsLoadingResultsAux] = useState(false)
   const [curPage, setCurPage] = useState<number>(0)
   const [totalPages, setTotalPages] = useState<number>(1)
-  const [isFullscreen, setFullscreen] = useState(false)
 
   useEffect(() => {
     function handleResize() {
@@ -54,6 +50,14 @@ function Home() {
 
   return (
     <>
+      <Head>
+        <title>WikiMaps</title>
+        <meta
+          name="description"
+          content="WikiMaps is an innovative platform that combines the vast informational resources of WikiData with the power of an interactive map. Users can visually explore various locations and see search results displayed on the map."
+        />
+        <meta name="keywords" content="wikimaps, wikipedia, wikidata" />
+      </Head>
       <div className="flex w-full px-12 xl:px-24 pt-12 z-0">
         <div className="w-full z-10">
           <div className="font-normal text-2xl mb-2">

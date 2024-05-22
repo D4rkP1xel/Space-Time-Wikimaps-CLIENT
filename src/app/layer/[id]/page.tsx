@@ -233,6 +233,7 @@ function Layer({ params }: { params: { id: string } }) {
                     key={index}
                     result={r}
                     setCenter={setCenter}
+                    pageWidth={pageWidth}
                   />
                 )
               })
