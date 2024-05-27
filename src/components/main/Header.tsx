@@ -348,7 +348,7 @@ function Header() {
                   ? handleRegister(username, password, repeatPassword, email)
                   : handleSignIn(username, password)
               }}
-              className="bg-cyan-800 text-white text-center rounded-full py-2 w-1/2 mx-auto font-medium text-lg select-none cursor-pointer mb-2">
+              className="bg-cyan-800 text-white text-center rounded-full py-2 w-1/2 mx-auto font-medium text-lg select-none cursor-pointer mb-2" id="Login_Button">
               {isRegister ? "Register" : "Login"}
             </div>
             {isRegister ? (
