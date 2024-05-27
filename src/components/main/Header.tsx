@@ -11,7 +11,7 @@ import { FaUserPlus } from "react-icons/fa"
 import { FiX } from "react-icons/fi"
 import { FiMail } from "react-icons/fi"
 import { FiLock } from "react-icons/fi"
-import { useUserState } from "../../../utils/stateManagement/user"
+import { UserRoleEnum, useUserState } from "../../../utils/stateManagement/user"
 import { FiLogOut } from "react-icons/fi"
 import { TbTablePlus } from "react-icons/tb"
 import { useRouter } from "next/navigation"
@@ -162,9 +162,11 @@ function Header() {
           ) : null}
 
           <div className="p-2">
-            {useUser.isUserAuth() && useUser.user?.role == "ADMIN" ? (
+            {useUser.isUserAuth() &&
+            useUser.user?.role == UserRoleEnum.ADMIN ? (
               <FaUserShield color="#FFFFFF" size={24} />
-            ) : useUser.isUserAuth() && useUser.user?.role == "EDITOR" ? (
+            ) : useUser.isUserAuth() &&
+              useUser.user?.role == UserRoleEnum.EDITOR ? (
               <FaUserEdit color="#FFFFFF" size={24} />
             ) : (
               <FaUser color="#FFFFFF" size={24} />
@@ -189,14 +191,18 @@ function Header() {
                   <FaUser color="#000000" size={16} />
                   <div className="font-semibold select-none">Profile</div>
                 </div>
-
-                <div
-                  className="flex gap-3 items-center cursor-pointer hover:bg-slate-200 p-1"
-                  onClick={() => router.push("/createLayer")}>
-                  <TbTablePlus color="#000000" size={16} />
-                  <div className="font-semibold select-none">Create Layer</div>
-                </div>
-                {useUser.user?.role == "ADMIN" ? (
+                {useUser.user?.role == UserRoleEnum.ADMIN ||
+                useUser.user?.role == UserRoleEnum.EDITOR ? (
+                  <div
+                    className="flex gap-3 items-center cursor-pointer hover:bg-slate-200 p-1"
+                    onClick={() => router.push("/createLayer")}>
+                    <TbTablePlus color="#000000" size={16} />
+                    <div className="font-semibold select-none">
+                      Create Layer
+                    </div>
+                  </div>
+                ) : null}
+                {useUser.user?.role == UserRoleEnum.ADMIN ? (
                   <>
                     <div
                       className="flex gap-3 items-center cursor-pointer hover:bg-slate-200 p-1"

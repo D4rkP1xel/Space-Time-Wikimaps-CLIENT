@@ -5,7 +5,14 @@ import axiosNoAuth from "../axiosNoAuth"
 import { AxiosError } from "axios"
 import { EditorRequest } from "./dashboard"
 
+
 // TYPES
+enum UserRoleEnum {
+    ADMIN = 'ADMIN',
+    EDITOR = 'EDITOR',
+    USER = 'USER'
+}
+
 interface User {
     id: number
     username: string
@@ -263,5 +270,5 @@ const useUserState = create<userState>((set, get) => ({
 
 }))
 
-export { useUserState, getUserByID, changePasswordUser, askToBeEditorUser, changeSettingsUser, deleteUser, deleteUserById, blockUser, unblockUser }
-export type { User, Users }
+export { UserRoleEnum, useUserState, getUserByID, changePasswordUser, askToBeEditorUser, changeSettingsUser, deleteUser, deleteUserById, blockUser, unblockUser }
+export type { User, Users, }

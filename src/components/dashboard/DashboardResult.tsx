@@ -17,6 +17,7 @@ import {
   unblockUser,
   deleteUserById,
   User,
+  UserRoleEnum,
 } from "../../../utils/stateManagement/user"
 import toast from "react-hot-toast"
 import AcceptButton from "../buttons/AcceptButton"
@@ -97,9 +98,9 @@ function DashboardResult({
   return (
     <>
       <div className="flex w-full bg-gray-200 rounded-full shadow-lg py-8 px-12 items-center mb-6">
-        {user.role === "ADMIN" ? (
+        {user.role === UserRoleEnum.ADMIN ? (
           <FaUserShield color="#000000" size={32} />
-        ) : user.role === "EDITOR" ? (
+        ) : user.role === UserRoleEnum.EDITOR ? (
           <FaUserEdit color="#000000" size={32} />
         ) : (
           <FaUser color="#000000" size={32} />
@@ -107,7 +108,7 @@ function DashboardResult({
 
         <div className="font-medium text-xl ml-3">{user.username}</div>
         <div className="flex flex-row items-center gap-2 ml-auto">
-          {user.role != "ADMIN" ? (
+          {user.role != UserRoleEnum.ADMIN ? (
             <div>
               {user.blocked ? (
                 <AcceptButton

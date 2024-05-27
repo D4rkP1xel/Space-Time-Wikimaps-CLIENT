@@ -1,6 +1,7 @@
 "use client"
 import React, { useEffect, useState } from "react"
 import {
+  UserRoleEnum,
   getUserByID,
   useUserState,
 } from "../../../../utils/stateManagement/user"
@@ -68,8 +69,11 @@ function Profile({ params }: { params: { id: string } }) {
       enabled:
         (params.id != null &&
           isProfileOwner &&
-          (useUser.user?.role == "EDITOR" || useUser.user?.role == "ADMIN")) ||
-        (!isProfileOwner && (user?.role == "EDITOR" || user?.role == "ADMIN")),
+          (useUser.user?.role == UserRoleEnum.EDITOR ||
+            useUser.user?.role == UserRoleEnum.ADMIN)) ||
+        (!isProfileOwner &&
+          (user?.role == UserRoleEnum.EDITOR ||
+            user?.role == UserRoleEnum.ADMIN)),
       refetchOnMount: "always",
     }
   )
@@ -135,16 +139,16 @@ function Profile({ params }: { params: { id: string } }) {
 
               <div>
                 {isProfileOwner && useUser.user?.role ? (
-                  useUser.user.role == "ADMIN" ? (
+                  useUser.user.role == UserRoleEnum.ADMIN ? (
                     <FaUserShield color="#000000" size={24} />
-                  ) : useUser.user.role == "EDITOR" ? (
+                  ) : useUser.user.role == UserRoleEnum.EDITOR ? (
                     <FaUserEdit color="#000000" size={24} />
                   ) : (
                     <FaUser color="#000000" size={24} />
                   )
-                ) : user?.role == "ADMIN" ? (
+                ) : user?.role == UserRoleEnum.ADMIN ? (
                   <FaUserShield color="#000000" size={24} />
-                ) : user?.role == "EDITOR" ? (
+                ) : user?.role == UserRoleEnum.EDITOR ? (
                   <FaUserEdit color="#000000" size={24} />
                 ) : (
                   <FaUser color="#000000" size={24} />
@@ -154,9 +158,11 @@ function Profile({ params }: { params: { id: string } }) {
           </div>
         </div>
         {(isProfileOwner &&
-          (useUser.user?.role == "EDITOR" || useUser.user?.role == "ADMIN")) ||
+          (useUser.user?.role == UserRoleEnum.EDITOR ||
+            useUser.user?.role == UserRoleEnum.ADMIN)) ||
         (!isProfileOwner &&
-          (user?.role == "EDITOR" || user?.role == "ADMIN")) ? (
+          (user?.role == UserRoleEnum.EDITOR ||
+            user?.role == UserRoleEnum.ADMIN)) ? (
           <div>
             <div className="flex flex-row mb-4">
               <span className=" text-lg font-bold text ">

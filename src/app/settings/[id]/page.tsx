@@ -2,6 +2,7 @@
 import React, { use, useEffect, useState } from "react"
 import {
   User,
+  UserRoleEnum,
   askToBeEditorUser,
   changePasswordUser,
   changeSettingsUser,
@@ -25,7 +26,11 @@ import { StatusEnum } from "../../../../utils/stateManagement/dashboard"
 function Settings({ params }: { params: { id: string } }) {
   const router = useRouter()
   const queryClient = useQueryClient()
-  const checkAuth = useCheckAuth(router, ["ADMIN", "EDITOR", "USER"])
+  const checkAuth = useCheckAuth(router, [
+    UserRoleEnum.ADMIN,
+    UserRoleEnum.EDITOR,
+    "USER",
+  ])
   const [isChangingPassword, setChangePassword] = useState(false)
   const [isAskingToBeEditor, setAskToBeEditor] = useState(false)
   const useUser = useUserState()
@@ -150,7 +155,7 @@ function Settings({ params }: { params: { id: string } }) {
     if (
       useUser.user != null &&
       params.id != null &&
-      useUser.user.role != "ADMIN" &&
+      useUser.user.role != UserRoleEnum.ADMIN &&
       isProfileOwner != null &&
       isProfileOwner === false
     ) {
@@ -305,7 +310,7 @@ function Settings({ params }: { params: { id: string } }) {
         (isProfileOwner === true ||
           (isProfileOwner === false &&
             useUser.user != null &&
-            useUser.user.role == "ADMIN")) &&
+            useUser.user.role == UserRoleEnum.ADMIN)) &&
         params.id != null,
       refetchOnMount: "always",
     }
@@ -365,9 +370,9 @@ function Settings({ params }: { params: { id: string } }) {
                 {isLoadingUser ? null : user?.role}
               </span>
               <div>
-                {user?.role == "ADMIN" ? (
+                {user?.role == UserRoleEnum.ADMIN ? (
                   <FaUserShield color="#000000" size={24} />
-                ) : user?.role == "EDITOR" ? (
+                ) : user?.role == UserRoleEnum.EDITOR ? (
                   <FaUserEdit color="#000000" size={24} />
                 ) : (
                   <FaUser color="#000000" size={24} />
@@ -453,7 +458,8 @@ function Settings({ params }: { params: { id: string } }) {
           ) : null}
 
           {isProfileOwner ||
-          (useUser.user?.role == "ADMIN" && !(user?.role == "ADMIN")) ? (
+          (useUser.user?.role == UserRoleEnum.ADMIN &&
+            !(user?.role == UserRoleEnum.ADMIN)) ? (
             <div className="flex justify-center">
               <DeclineButton
                 logoComponent={<FaRegTrashAlt size={20} />}

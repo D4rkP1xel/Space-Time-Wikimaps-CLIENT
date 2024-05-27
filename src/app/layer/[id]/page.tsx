@@ -15,7 +15,10 @@ import PageCircleLoader from "@/components/loaders/PageCircleLoader"
 import LayerResultDiv from "@/components/layer/LayerResult"
 import { FaRegEdit } from "react-icons/fa"
 import EditButton from "@/components/buttons/EditButton"
-import { useUserState } from "../../../../utils/stateManagement/user"
+import {
+  UserRoleEnum,
+  useUserState,
+} from "../../../../utils/stateManagement/user"
 import DarkBlueButton from "@/components/buttons/DarkBlueButton"
 import MapFullScreen from "@/components/Maps/MapFullScreen"
 import SideMap from "@/components/Maps/SideMap"
@@ -145,8 +148,8 @@ function Layer({ params }: { params: { id: string } }) {
             <div className="mt-8 flex gap-8">
               <div className="text-3xl font-medium">{layer?.layerName}</div>
               {useUser.isUserAuth() &&
-              (useUser.user?.role == "ADMIN" ||
-                (useUser.user?.role == "EDITOR" &&
+              (useUser.user?.role == UserRoleEnum.ADMIN ||
+                (useUser.user?.role == UserRoleEnum.EDITOR &&
                   layer?.userDTO.id == useUser.user.id)) ? (
                 <EditButton
                   buttonText="Go to Edit Mode"

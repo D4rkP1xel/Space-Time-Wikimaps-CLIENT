@@ -15,7 +15,7 @@ import Paginator from "@/components/other/Paginator"
 
 function EditorRequests() {
   const router = useRouter()
-  const checkAuth = useCheckAuth(router, ["ADMIN"])
+  const checkAuth = useCheckAuth(router, [UserRoleEnum.ADMIN])
   const [name, setName] = useState("")
   const [selectedStatus, setSelectedStatus] = useState("")
 

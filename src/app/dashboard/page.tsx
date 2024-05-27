@@ -7,7 +7,7 @@ import { useCheckAuth } from "../../../utils/customHooks/checkAuth"
 import PageCircleLoader from "@/components/loaders/PageCircleLoader"
 import { useQuery, useQueryClient } from "react-query"
 import { getAllUsers } from "../../../utils/stateManagement/dashboard"
-import { User } from "../../../utils/stateManagement/user"
+import { User, UserRoleEnum } from "../../../utils/stateManagement/user"
 import DarkBlueButton from "@/components/buttons/DarkBlueButton"
 import Paginator from "@/components/other/Paginator"
 
@@ -18,7 +18,7 @@ function Dashboard() {
     setSelectedOption(event.target.value)
   }
   const searchParams = useSearchParams()
-  const checkAuth = useCheckAuth(router, ["ADMIN"])
+  const checkAuth = useCheckAuth(router, [UserRoleEnum.ADMIN])
   const [name, setName] = useState("")
   const [totalPages, setTotalPages] = useState<number>(1)
 
@@ -109,8 +109,8 @@ function Dashboard() {
                   className="border-black border-2 outline-none w-32">
                   <option value="">All</option>
                   <option value="USER">Users</option>
-                  <option value="EDITOR">Editors</option>
-                  <option value="ADMIN">Admins</option>
+                  <option value={UserRoleEnum.EDITOR}>Editors</option>
+                  <option value={UserRoleEnum.ADMIN}>Admins</option>
                 </select>
               </div>
               <div className="ml-auto">
