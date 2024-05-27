@@ -73,8 +73,8 @@ function Paginator({
                 onClick={() => changeToPage(p)}
                 className={
                   curPage === p
-                    ? "border-black border-2 bg-slate-50 w-10 h-10 flex justify-center items-center select-none cursor-pointer"
-                    : "border-gray-500 border bg-slate-50 w-10 h-10 flex justify-center items-center select-none cursor-pointer"
+                    ? "font-bold w-10 h-10 flex justify-center items-center select-none cursor-pointer"
+                    : "font-thin w-10 h-10 flex justify-center items-center select-none cursor-pointer"
                 }
                 key={p}>
                 {p}
