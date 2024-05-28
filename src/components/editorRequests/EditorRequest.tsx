@@ -14,6 +14,7 @@ import {
 } from "../../../utils/stateManagement/dashboard"
 import { useMutation, useQueryClient } from "react-query"
 import toast from "react-hot-toast"
+import { useRouter } from "next/navigation"
 function EditorRequest({
   request,
   refetchEditorRequests,
@@ -23,6 +24,7 @@ function EditorRequest({
   refetchEditorRequests: any
   curPage: number
 }) {
+  const router = useRouter()
   const [isDetailsOpened, setDetailsOpened] = useState(false)
   const queryClient = useQueryClient()
   function convertTimeStampToDate(timestamp: string) {
@@ -128,8 +130,13 @@ function EditorRequest({
               }>
               {request.status}
             </div>
-            <FaUser color="#000000" size={32} />
-            <div className="font-medium text-xl ml-3">{request.username}</div>
+            <div
+              className="flex flex-row cursor-pointer"
+              onClick={() => router.push("/profile/" + request.username)}>
+              <FaUser color="#000000" size={32} />
+              <div className="font-medium text-xl ml-3">{request.username}</div>
+            </div>
+
             <div
               onClick={() => setDetailsOpened(!isDetailsOpened)}
               className="cursor-pointer w-full h-[76px]"></div>
@@ -193,7 +200,7 @@ function EditorRequest({
               <div className="font-bold mt-2">User Profile:</div>
               <div className="mt-2">
                 <DarkBlueButton
-                  onClick={() => null}
+                  onClick={() => router.push("/profile/" + request.username)}
                   logoComponent={<FaEye size={20} />}
                   buttonText="Profile"
                 />

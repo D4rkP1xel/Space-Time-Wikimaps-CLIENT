@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import {
   FaLock,
   FaTrash,
@@ -37,6 +37,17 @@ function DashboardResult({
   const [isDeletingModal, setDeletingModal] = useState(false)
   const [isBlockingModal, setBlockingModal] = useState(false)
   const [isUnBlockingModal, setUnBlockingModal] = useState(false)
+  const [pageWidth, setPageWidth] = useState(window.innerWidth)
+  useEffect(() => {
+    function handleResize() {
+      setPageWidth(window.innerWidth)
+    }
+    window.addEventListener("resize", handleResize)
+
+    return () => {
+      window.removeEventListener("resize", handleResize)
+    }
+  }, [])
 
   const blockMutation = useMutation(
     ({ isBlocking, newUserObj }: { isBlocking: boolean; newUserObj: User }) =>
@@ -97,46 +108,59 @@ function DashboardResult({
 
   return (
     <>
-      <div className="flex w-full bg-gray-200 rounded-full shadow-lg py-8 px-12 items-center mb-6">
-        {user.role === UserRoleEnum.ADMIN ? (
-          <FaUserShield color="#000000" size={32} />
-        ) : user.role === UserRoleEnum.EDITOR ? (
-          <FaUserEdit color="#000000" size={32} />
-        ) : (
-          <FaUser color="#000000" size={32} />
-        )}
-
-        <div className="font-medium text-xl ml-3">{user.username}</div>
+      <div
+        className={
+          pageWidth > 800
+            ? "flex flex-row w-full bg-gray-200 rounded-full shadow-lg py-8 px-12 items-center mb-6"
+            : "flex-col w-full bg-gray-200 rounded-full shadow-lg py-8 px-12 items-center mb-6"
+        }>
+        <div
+          className={
+            pageWidth > 800
+              ? "flex items-center cursor-pointer"
+              : "flex items-center cursor-pointer mb-6"
+          }
+          onClick={() => router.push("/profile/" + user.id)}>
+          {user.role === UserRoleEnum.ADMIN ? (
+            <FaUserShield color="#000000" size={32} />
+          ) : user.role === UserRoleEnum.EDITOR ? (
+            <FaUserEdit color="#000000" size={32} />
+          ) : (
+            <FaUser color="#000000" size={32} />
+          )}
+          <div className="font-medium text-xl ml-3">{user.username}</div>
+        </div>
         <div className="flex flex-row items-center gap-2 ml-auto">
-          {user.role != UserRoleEnum.ADMIN ? (
-            <div>
-              {user.blocked ? (
-                <AcceptButton
-                  onClick={() => setUnBlockingModal(true)}
-                  logoComponent={<FaUnlock size={20} />}
-                  buttonText="Unblock User"
-                />
-              ) : (
-                <DeclineButton
-                  onClick={() => setBlockingModal(true)}
-                  logoComponent={<FaLock size={20} />}
-                  buttonText="Block User"
-                />
-              )}
-            </div>
-          ) : null}
-          <div>
+          <div className={pageWidth > 800 ? "block" : "hidden"}>
             <DarkBlueButton
               onClick={() => router.push("/profile/" + user.id)}
               logoComponent={<FaEye size={20} />}
               buttonText="Profile"
             />
           </div>
+          {user.role != UserRoleEnum.ADMIN ? (
+            <div>
+              {user.blocked ? (
+                <AcceptButton
+                  onClick={() => setUnBlockingModal(true)}
+                  logoComponent={<FaUnlock size={20} />}
+                  buttonText={pageWidth > 1024 ? "Unblock User" : "Unblock"}
+                />
+              ) : (
+                <DeclineButton
+                  onClick={() => setBlockingModal(true)}
+                  logoComponent={<FaLock size={20} />}
+                  buttonText={pageWidth > 1024 ? "Block User" : "Block"}
+                />
+              )}
+            </div>
+          ) : null}
+
           <div>
             <DeclineButton
               onClick={() => setDeletingModal(true)}
               logoComponent={<FaTrash size={20} />}
-              buttonText="Delete User"
+              buttonText={pageWidth > 1024 ? "Delete User" : "Delete"}
             />
           </div>
         </div>
@@ -156,19 +180,21 @@ function DashboardResult({
             <div className="text-2xl font-medium mx-auto mb-6">
               Are you sure you want to delete {user.username}'s account?
             </div>
-            <div
-              onClick={async () => {
-                try {
-                  await deleteUserById(user.id)
-                  refetchUsers()
-                  setDeletingModal(false)
-                  toast.success("User deleted successfully.")
-                } catch (error) {
-                  toast.error("Error deleting user.")
-                }
-              }}
-              className="bg-red-600 text-white text-center rounded-full py-2 w-1/2 mx-auto font-medium text-lg select-none cursor-pointer mb-2">
-              {"Delete Account"}
+            <div className="flex justify-center">
+              <DeclineButton
+                onClick={async () => {
+                  try {
+                    await deleteUserById(user.id)
+                    refetchUsers()
+                    setDeletingModal(false)
+                    toast.success("User deleted successfully.")
+                  } catch (error) {
+                    toast.error("Error deleting user.")
+                  }
+                }}
+                buttonText="Delete Account"
+                logoComponent={<FaTrash size={20} />}
+              />
             </div>
           </div>
         </div>
@@ -189,22 +215,24 @@ function DashboardResult({
             <div className="text-2xl font-medium mx-auto mb-6">
               Are you sure you want to block {user.username}'s account?
             </div>
-            <div
-              onClick={() => {
-                blockMutation.mutate({
-                  isBlocking: true,
-                  newUserObj: {
-                    id: user.id,
-                    username: user.username,
-                    blocked: true,
-                    email: user.email,
-                    role: user.role,
-                    roleUpgrade: user.roleUpgrade,
-                  },
-                })
-              }}
-              className="bg-red-600 text-white text-center rounded-full py-2 w-1/2 mx-auto font-medium text-lg select-none cursor-pointer mb-2">
-              {"Block Account"}
+            <div className="flex justify-center">
+              <DeclineButton
+                onClick={() => {
+                  blockMutation.mutate({
+                    isBlocking: true,
+                    newUserObj: {
+                      id: user.id,
+                      username: user.username,
+                      blocked: true,
+                      email: user.email,
+                      role: user.role,
+                      roleUpgrade: user.roleUpgrade,
+                    },
+                  })
+                }}
+                buttonText="Block Account"
+                logoComponent={<FaLock size={20} />}
+              />
             </div>
           </div>
         </div>
@@ -225,22 +253,24 @@ function DashboardResult({
             <div className="text-2xl font-medium mx-auto mb-6">
               Are you sure you want to unblock {user.username}'s account?
             </div>
-            <div
-              onClick={() => {
-                blockMutation.mutate({
-                  isBlocking: false,
-                  newUserObj: {
-                    id: user.id,
-                    username: user.username,
-                    blocked: false,
-                    email: user.email,
-                    role: user.role,
-                    roleUpgrade: user.roleUpgrade,
-                  },
-                })
-              }}
-              className="bg-green-600 text-white text-center rounded-full py-2 w-1/2 mx-auto font-medium text-lg select-none cursor-pointer mb-2">
-              {"Unblock Account"}
+            <div className="flex justify-center">
+              <AcceptButton
+                buttonText="Unblock Account"
+                logoComponent={<FaUnlock size={20} />}
+                onClick={() => {
+                  blockMutation.mutate({
+                    isBlocking: false,
+                    newUserObj: {
+                      id: user.id,
+                      username: user.username,
+                      blocked: false,
+                      email: user.email,
+                      role: user.role,
+                      roleUpgrade: user.roleUpgrade,
+                    },
+                  })
+                }}
+              />
             </div>
           </div>
         </div>

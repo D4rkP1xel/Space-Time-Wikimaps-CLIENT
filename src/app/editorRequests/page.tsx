@@ -12,6 +12,7 @@ import EditorRequestComponent from "@/components/editorRequests/EditorRequest"
 import { FaSearch } from "react-icons/fa"
 import DarkBlueButton from "@/components/buttons/DarkBlueButton"
 import Paginator from "@/components/other/Paginator"
+import { UserRoleEnum } from "../../../utils/stateManagement/user"
 
 function EditorRequests() {
   const router = useRouter()
