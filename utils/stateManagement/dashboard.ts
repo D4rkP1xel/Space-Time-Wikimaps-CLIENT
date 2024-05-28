@@ -3,7 +3,7 @@ import { User, Users } from "./user"
 
 interface EditorRequest {
     id: number,
-    username: string,
+    userDTO: User,
     reason: string,
     timestamp: string,
     status: StatusEnum

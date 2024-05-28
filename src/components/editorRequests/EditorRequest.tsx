@@ -75,7 +75,7 @@ function EditorRequest({
                 if (r.id == oldRequest.id)
                   return {
                     id: oldRequest.id,
-                    username: oldRequest.username,
+                    userDTO: oldRequest.userDTO,
                     reason: oldRequest.reason,
                     timestamp: oldRequest.timestamp,
                     status: status,
@@ -132,9 +132,11 @@ function EditorRequest({
             </div>
             <div
               className="flex flex-row cursor-pointer"
-              onClick={() => router.push("/profile/" + request.username)}>
+              onClick={() => router.push("/profile/" + request.userDTO.id)}>
               <FaUser color="#000000" size={32} />
-              <div className="font-medium text-xl ml-3">{request.username}</div>
+              <div className="font-medium text-xl ml-3">
+                {request.userDTO.username}
+              </div>
             </div>
 
             <div
@@ -200,7 +202,7 @@ function EditorRequest({
               <div className="font-bold mt-2">User Profile:</div>
               <div className="mt-2">
                 <DarkBlueButton
-                  onClick={() => router.push("/profile/" + request.username)}
+                  onClick={() => router.push("/profile/" + request.userDTO.id)}
                   logoComponent={<FaEye size={20} />}
                   buttonText="Profile"
                 />
