@@ -1,6 +1,6 @@
 import { FaMapMarkerAlt } from "react-icons/fa"
 import { FaBookOpen } from "react-icons/fa"
-import { LayerResult, getPhoto } from "../../../utils/stateManagement/layers"
+import { LayerResult, getPhoto } from "../../../utils/customFunctions/layers"
 import Image from "next/image"
 import UnavailableImage from "./../../../public/icons/photo_unavailable.png"
 import { useEffect } from "react"

@@ -1,4 +1,4 @@
-import { LayerResult } from "../stateManagement/layers"
+import { LayerResult } from "./layers"
 
 function GetMapLocationsOrganized(mapLocations: LayerResult[]): Map<string, LayerResult[]> {
     const map = new Map<string, LayerResult[]>()

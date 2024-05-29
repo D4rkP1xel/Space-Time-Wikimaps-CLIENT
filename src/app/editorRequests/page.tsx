@@ -6,7 +6,7 @@ import { useQuery } from "react-query"
 import {
   EditorRequest,
   getAllEditorRequests,
-} from "../../../utils/stateManagement/dashboard"
+} from "../../../utils/customFunctions/dashboard"
 import { useEffect, useState } from "react"
 import EditorRequestComponent from "@/components/editorRequests/EditorRequest"
 import { FaSearch } from "react-icons/fa"

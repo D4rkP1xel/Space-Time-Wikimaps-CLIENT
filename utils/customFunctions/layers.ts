@@ -1,6 +1,6 @@
-import axiosNoAuth from "../axiosNoAuth"
-import axios from "../axiosHandler"
-import { User } from "./user"
+import axiosNoAuth from "../axios/axiosNoAuth"
+import axios from "../axios/axiosHandler"
+import { User } from "../stateManagement/user"
 import { AxiosError } from "axios"
 interface Layer {
     id: number

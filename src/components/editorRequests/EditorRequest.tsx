@@ -11,7 +11,7 @@ import {
   EditorRequest as IEditorRequest,
   StatusEnum,
   updateEditorRequest,
-} from "../../../utils/stateManagement/dashboard"
+} from "../../../utils/customFunctions/dashboard"
 import { useMutation, useQueryClient } from "react-query"
 import toast from "react-hot-toast"
 import { useRouter } from "next/navigation"

@@ -21,7 +21,7 @@ import DeclineButton from "@/components/buttons/DeclineButton"
 import { FaSave } from "react-icons/fa"
 import toast from "react-hot-toast"
 import { FaRegTrashAlt } from "react-icons/fa"
-import { StatusEnum } from "../../../../utils/stateManagement/dashboard"
+import { StatusEnum } from "../../../../utils/customFunctions/dashboard"
 import { IoSend } from "react-icons/io5"
 function Settings({ params }: { params: { id: string } }) {
   const router = useRouter()

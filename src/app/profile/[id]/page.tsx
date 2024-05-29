@@ -12,7 +12,7 @@ import { useRouter, useSearchParams } from "next/navigation"
 import {
   Layer,
   getAllLayersByUserId,
-} from "../../../../utils/stateManagement/layers"
+} from "../../../../utils/customFunctions/layers"
 import ProfileLayersResult from "@/components/profile/ProfileLayersResult"
 import Paginator from "@/components/other/Paginator"
 

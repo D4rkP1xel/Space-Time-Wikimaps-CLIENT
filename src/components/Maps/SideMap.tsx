@@ -10,7 +10,7 @@ const customIcon = new Icon({
   iconSize: [40, 40], // size of the icon
 })
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet"
-import { LayerResult } from "../../../utils/stateManagement/layers"
+import { LayerResult } from "../../../utils/customFunctions/layers"
 import ZoomHandler from "../main/ZoomHandler"
 import MapMarkerResult from "../main/MapMarkerResult"
 import { GetMapLocationsOrganized } from "../../../utils/customFunctions/mapFunctions"

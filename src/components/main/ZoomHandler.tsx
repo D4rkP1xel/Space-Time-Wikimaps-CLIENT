@@ -1,6 +1,6 @@
 import React, { useEffect } from "react"
 import { useMap } from "react-leaflet"
-import { LayerResult } from "../../../utils/stateManagement/layers"
+import { LayerResult } from "../../../utils/customFunctions/layers"
 
 function ZoomHandler({
   mapLocations,

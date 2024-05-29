@@ -3,7 +3,7 @@
 import Result from "@/components/main/Result"
 import { useEffect, useState } from "react"
 import { useQuery } from "react-query"
-import { getLayers } from "../../utils/stateManagement/layers"
+import { getLayers } from "../../utils/customFunctions/layers"
 import PageCircleLoader from "@/components/loaders/PageCircleLoader"
 import { useRouter, useSearchParams } from "next/navigation"
 import Paginator from "@/components/other/Paginator"

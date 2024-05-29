@@ -10,7 +10,7 @@ import {
   LayerResult,
   getLayer,
   getLayerResults,
-} from "../../../../utils/stateManagement/layers"
+} from "../../../../utils/customFunctions/layers"
 import PageCircleLoader from "@/components/loaders/PageCircleLoader"
 import LayerResultDiv from "@/components/layer/LayerResult"
 import { FaRegEdit } from "react-icons/fa"

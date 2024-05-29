@@ -9,7 +9,7 @@ import {
   getLayer,
   getLayerResults,
   getLayerResultsByQuery,
-} from "../../../utils/stateManagement/layers"
+} from "../../../utils/customFunctions/layers"
 import { useRouter } from "next/navigation"
 import PageCircleLoader from "../loaders/PageCircleLoader"
 import { useUserState } from "../../../utils/stateManagement/user"

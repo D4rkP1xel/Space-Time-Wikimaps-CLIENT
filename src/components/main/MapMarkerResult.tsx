@@ -1,5 +1,5 @@
 import React from "react"
-import { LayerResult } from "../../../utils/stateManagement/layers"
+import { LayerResult } from "../../../utils/customFunctions/layers"
 import Image from "next/image"
 import UnavailableImage from "./../../../public/icons/photo_unavailable.png"
 import { FaBookOpen } from "react-icons/fa"

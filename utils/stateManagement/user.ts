@@ -1,9 +1,9 @@
 import { create } from "zustand"
 import Cookies from 'js-cookie'
-import axios from "../axiosHandler"
-import axiosNoAuth from "../axiosNoAuth"
+import axios from "../axios/axiosHandler"
+import axiosNoAuth from "../axios/axiosNoAuth"
 import { AxiosError } from "axios"
-import { EditorRequest } from "./dashboard"
+import { EditorRequest } from "../customFunctions/dashboard"
 
 
 // TYPES

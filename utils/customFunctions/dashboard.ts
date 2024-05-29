@@ -1,5 +1,5 @@
-import axios from "../axiosHandler"
-import { User, Users } from "./user"
+import axios from "../axios/axiosHandler"
+import { User, Users } from "../stateManagement/user"
 
 interface EditorRequest {
     id: number,

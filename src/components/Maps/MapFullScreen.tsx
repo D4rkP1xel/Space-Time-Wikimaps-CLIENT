@@ -1,5 +1,5 @@
 import React from "react"
-import { LayerResult } from "../../../utils/stateManagement/layers"
+import { LayerResult } from "../../../utils/customFunctions/layers"
 import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet"
 import { MdFullscreenExit } from "react-icons/md"
 import ZoomHandler from "../main/ZoomHandler"
