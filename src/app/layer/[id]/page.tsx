@@ -20,9 +20,9 @@ import {
   useUserState,
 } from "../../../../utils/stateManagement/user"
 import DarkBlueButton from "@/components/buttons/DarkBlueButton"
-import MapFullScreen from "@/components/Maps/MapFullScreen"
-import SideMap from "@/components/Maps/SideMap"
-import MobileMap from "@/components/Maps/MobileMap"
+import MapFullScreen from "@/components/maps/MapFullScreen"
+import SideMap from "@/components/maps/SideMap"
+import MobileMap from "@/components/maps/MobileMap"
 import Paginator from "@/components/other/Paginator"
 
 function Layer({ params }: { params: { id: string } }) {

@@ -22,7 +22,7 @@ import { FaSave } from "react-icons/fa"
 import toast from "react-hot-toast"
 import { FaRegTrashAlt } from "react-icons/fa"
 import { StatusEnum } from "../../../../utils/stateManagement/dashboard"
-
+import { IoSend } from "react-icons/io5"
 function Settings({ params }: { params: { id: string } }) {
   const router = useRouter()
   const queryClient = useQueryClient()
@@ -436,11 +436,11 @@ function Settings({ params }: { params: { id: string } }) {
                     />
                     {user?.roleUpgrade?.status == "DECLINED" ? (
                       <>
-                        <div className="flex flex-row gap-1">
-                          <div className="text-lg text-black   ">
+                        <div className="flex flex-row gap-1 mt-1">
+                          <div className=" text-black text-sm ">
                             You can ask again in:
                           </div>
-                          <div className="text-lg font-bold text-red-500   ">
+                          <div className="text-sm font-bold text-red-500   ">
                             {timeLeftForNewEditorRequest}
                           </div>
                         </div>
@@ -449,7 +449,7 @@ function Settings({ params }: { params: { id: string } }) {
                   </div>
                   {user?.roleUpgrade != null ? (
                     <div className="text-lg font-bold">
-                      Editor Response: {user.roleUpgrade?.status}
+                      Admin Response: {user.roleUpgrade?.status}
                     </div>
                   ) : null}
                 </>
@@ -505,12 +505,12 @@ function Settings({ params }: { params: { id: string } }) {
                   className="bg-[#EFF6FF] w-full outline-none"
                 />
               </div>
-              <div
-                onClick={() => {
-                  ChangePassword(password, newPassword)
-                }}
-                className="bg-cyan-800 text-white text-center rounded-full py-2 w-1/2 mx-auto font-medium text-lg select-none cursor-pointer mb-2">
-                {"Change Password"}
+              <div className="flex justify-center">
+                <DarkBlueButton
+                  buttonText="Change Password"
+                  onClick={() => ChangePassword(password, newPassword)}
+                  logoComponent={<FiLock color="#FFFFFF" size={20} />}
+                />
               </div>
             </div>
           </div>
@@ -543,29 +543,31 @@ function Settings({ params }: { params: { id: string } }) {
                   placeholder="Enter a message to the admin to ask to be an Editor"
                 />
               </div>
-              <div
-                onClick={() => {
-                  if (useUser.user == null) return null
-                  askToBeEditorMutation.mutate({
-                    message: askToBeEditorRequestMessage,
-                    newUserObj: {
-                      id: useUser.user.id,
-                      blocked: useUser.user.blocked,
-                      email: useUser.user.email,
-                      role: useUser.user.role,
-                      roleUpgrade: {
-                        id: -1,
-                        reason: "",
-                        timestamp: "",
-                        username: "",
-                        status: StatusEnum.PENDING,
+              <div className="flex justify-center">
+                <DarkBlueButton
+                  buttonText="Send Request"
+                  onClick={() => {
+                    if (useUser.user == null) return null
+                    askToBeEditorMutation.mutate({
+                      message: askToBeEditorRequestMessage,
+                      newUserObj: {
+                        id: useUser.user.id,
+                        blocked: useUser.user.blocked,
+                        email: useUser.user.email,
+                        role: useUser.user.role,
+                        roleUpgrade: {
+                          id: -1,
+                          reason: "",
+                          timestamp: "",
+                          userDTO: useUser.user,
+                          status: StatusEnum.PENDING,
+                        },
+                        username: useUser.user.username,
                       },
-                      username: useUser.user.username,
-                    },
-                  })
-                }}
-                className="bg-cyan-800 text-white text-center rounded-full py-2 w-1/2 mx-auto font-medium text-lg select-none cursor-pointer mb-2">
-                {"Send"}
+                    })
+                  }}
+                  logoComponent={<IoSend color="#FFFFFF" size={20} />}
+                />
               </div>
             </div>
           </div>
