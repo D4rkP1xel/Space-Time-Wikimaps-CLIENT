@@ -37,7 +37,6 @@ function Layer({ params }: { params: { id: string } }) {
   const [isFullscreen, setFullscreen] = useState(false)
   const [pageResults, setPageResults] = useState<LayerResult[]>([])
   const [totalPages, setTotalPages] = useState(0)
-
   useEffect(() => {
     function handleResize() {
       setPageWidth(window.innerWidth)
@@ -117,6 +116,7 @@ function Layer({ params }: { params: { id: string } }) {
   if (isLoadingLayer) {
     return <PageCircleLoader />
   }
+
   return (
     <>
       <div className="flex">

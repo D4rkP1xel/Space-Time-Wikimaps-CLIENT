@@ -1,6 +1,6 @@
 "use client"
 import PageCircleLoader from "@/components/loaders/PageCircleLoader"
-import { useCheckAuth } from "../../../utils/customHooks/checkAuth"
+import { useCheckAuth } from "../../../utils/customHooks/useCheckAuth"
 import { useRouter, useSearchParams } from "next/navigation"
 import { useQuery } from "react-query"
 import {

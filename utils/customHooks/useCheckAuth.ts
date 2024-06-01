@@ -1,8 +1,9 @@
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime"
 import { useEffect, useState } from "react"
-import { useUserState } from "../stateManagement/user"
+import { UserRoleEnum, useUserState } from "../stateManagement/user"
 
-export function useCheckAuth(router: AppRouterInstance, rolesAllowed: string[]) {
+export
+    function useCheckAuth(router: AppRouterInstance, rolesAllowed: UserRoleEnum[]) {
     const useUser = useUserState()
     const [isRenderLoader, setRenderLoader] = useState(true)
     useEffect(() => {

@@ -63,7 +63,6 @@ function DashboardResult({
       }): Promise<{ previousData: any }> => {
         // Cancel any outgoing refetches (so they don't overwrite our optimistic update)
         await queryClient.cancelQueries(["users", curPage])
-
         // Snapshot the previous value
         const previousData = queryClient.getQueryData(["users", curPage])
         console.log(previousData)

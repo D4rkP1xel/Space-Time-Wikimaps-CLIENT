@@ -2,7 +2,7 @@
 import CreateEditLayer from "@/components/createEditLayer/CreateEditLayer"
 import { useRouter } from "next/navigation"
 import React from "react"
-import { useCheckAuth } from "../../../utils/customHooks/checkAuth"
+import { useCheckAuth } from "../../../utils/customHooks/useCheckAuth"
 import PageCircleLoader from "@/components/loaders/PageCircleLoader"
 import { UserRoleEnum } from "../../../utils/stateManagement/user"
 

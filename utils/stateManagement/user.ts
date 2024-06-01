@@ -17,7 +17,7 @@ interface User {
     id: number
     username: string
     email: string
-    role: string
+    role: UserRoleEnum
     blocked: boolean
     roleUpgrade: EditorRequest | null
 }
@@ -65,13 +65,13 @@ function signOut() {
 }
 async function refreshUser() {
     try {
-        const id = Cookies.get('userId')
-        const response = await axios.get("/users/id/" + id)
-        //console.log(response)
+
+        const response = await axios.get("/user")
+        console.log(response)
         return response.data;
     } catch (error) {
         console.error(error)
-        signOut()
+        //signOut()
     }
 }
 
@@ -142,7 +142,7 @@ async function changeSettingsUser(obj: { username?: string, email?: string }): P
 
     try {
         const response = await axios.put("/user", obj)
-        storeTokens(response.data.accessToken, response.data.refreshToken, response.data.user.id)
+        storeTokens(response.data.accessToken, response.data.refreshToken)
         return response.data;
     }
     catch (error) {
@@ -193,20 +193,22 @@ async function registerUser(username: string, password: string, repeat_password:
 }
 
 // TOKENS
-function storeTokens(access_token: string, refresh_token: string, user_id: number) {
-    if (access_token != null && refresh_token != null && user_id != null) {
-        Cookies.set('accessToken', access_token);
-        Cookies.set('refreshToken', refresh_token);
-        Cookies.set('userId', user_id.toString());
+function storeTokens(access_token: string, refresh_token: string) {
+    if (access_token != null && refresh_token != null) {
+        Cookies.set('accessToken', access_token, { secure: true, sameSite: 'Strict' });
+        Cookies.set('refreshToken', refresh_token, { secure: true, sameSite: 'Strict' });
     }
 }
 
 function cleanTokens() {
     Cookies.remove('accessToken');
     Cookies.remove('refreshToken');
-    Cookies.remove('userId')
 }
 
+function areCookiesValid() {
+    if (Cookies.get('accessToken') != null && Cookies.get('refreshToken') != null) return true
+    else return false
+}
 // USER STATE
 const useUserState = create<userState>((set, get) => ({
     user: null,
@@ -224,10 +226,10 @@ const useUserState = create<userState>((set, get) => ({
         }
 
         if (data) {
-            storeTokens(data.accessToken, data.refreshToken, data.user.id)
+            storeTokens(data.accessToken, data.refreshToken)
             const user = data.user
             set(() => {
-                return { user: user }
+                return { user: user, didFetchUser: true }
             })
         }
     },
@@ -239,7 +241,7 @@ const useUserState = create<userState>((set, get) => ({
     },
     refreshUser: async () => {
 
-        if (Cookies.get("userId") != null) {
+        if (areCookiesValid()) {
             const data = await refreshUser()
             if (data) {
                 const user: User = {
@@ -255,6 +257,7 @@ const useUserState = create<userState>((set, get) => ({
                 })
             }
         }
+
         set(() => {
             return { user: null, didFetchUser: true }
         })
@@ -271,4 +274,4 @@ const useUserState = create<userState>((set, get) => ({
 }))
 
 export { UserRoleEnum, useUserState, getUserByID, changePasswordUser, askToBeEditorUser, changeSettingsUser, deleteUser, deleteUserById, blockUser, unblockUser }
-export type { User, Users, }
+export type { User, Users }

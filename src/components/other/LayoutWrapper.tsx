@@ -6,7 +6,7 @@ import Header from "../main/Header"
 function LayoutWrapper({ children }: Readonly<{ children: React.ReactNode }>) {
   const useUser = useUserState()
   const { data: user } = useQuery(
-    ["refreshUser"],
+    ["auth_user"],
     async () => await useUser.refreshUser()
   )
   return (

@@ -1,5 +1,5 @@
 "use client"
-import React, { use, useEffect, useState } from "react"
+import React, { useEffect, useState } from "react"
 import {
   User,
   UserRoleEnum,
@@ -13,7 +13,7 @@ import {
 import { FaUser, FaUserEdit, FaUserShield } from "react-icons/fa"
 import { useMutation, useQuery, useQueryClient } from "react-query"
 import PageCircleLoader from "@/components/loaders/PageCircleLoader"
-import { useCheckAuth } from "../../../../utils/customHooks/checkAuth"
+import { useCheckAuth } from "../../../../utils/customHooks/useCheckAuth"
 import { useRouter } from "next/navigation"
 import { FiLock, FiX } from "react-icons/fi"
 import DarkBlueButton from "@/components/buttons/DarkBlueButton"
@@ -29,7 +29,7 @@ function Settings({ params }: { params: { id: string } }) {
   const checkAuth = useCheckAuth(router, [
     UserRoleEnum.ADMIN,
     UserRoleEnum.EDITOR,
-    "USER",
+    UserRoleEnum.USER,
   ])
   const [isChangingPassword, setChangePassword] = useState(false)
   const [isAskingToBeEditor, setAskToBeEditor] = useState(false)
@@ -419,7 +419,7 @@ function Settings({ params }: { params: { id: string } }) {
                   onClick={() => setChangePassword(true)}
                 />
               </div>
-              {useUser.user?.role == "USER" ? (
+              {useUser.user?.role == UserRoleEnum.USER ? (
                 <>
                   <div className="flex flex-col">
                     <div className="text-lg font-bold mb-4">

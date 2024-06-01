@@ -3,7 +3,7 @@ import DashboardResult from "@/components/dashboard/DashboardResult"
 import { useEffect, useState } from "react"
 import { FaSearch } from "react-icons/fa"
 import { useRouter, useSearchParams } from "next/navigation"
-import { useCheckAuth } from "../../../utils/customHooks/checkAuth"
+import { useCheckAuth } from "../../../utils/customHooks/useCheckAuth"
 import PageCircleLoader from "@/components/loaders/PageCircleLoader"
 import { useQuery, useQueryClient } from "react-query"
 import { getAllUsers } from "../../../utils/customFunctions/dashboard"
@@ -46,7 +46,10 @@ function Dashboard() {
     isLoading: isLoadingUsers,
     refetch: refetchUsers,
   } = useQuery(
-    ["users", Number(searchParams.get("page"))],
+    [
+      "users",
+      searchParams.get("page") != null ? Number(searchParams.get("page")) : 1,
+    ],
     async () => {
       try {
         const data = await getAllUsers(
@@ -136,7 +139,9 @@ function Dashboard() {
                     user={u}
                     refetchUsers={refetchUsers}
                     curPage={
-                      searchParams.get("page") != null
+                      searchParams.get("page") !== undefined &&
+                      searchParams.get("page") !== null &&
+                      searchParams.get("page") != ""
                         ? Number(searchParams.get("page"))
                         : 1
                     }
