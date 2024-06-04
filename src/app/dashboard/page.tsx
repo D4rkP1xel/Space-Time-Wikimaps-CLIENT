@@ -5,7 +5,7 @@ import { FaSearch } from "react-icons/fa"
 import { useRouter, useSearchParams } from "next/navigation"
 import { useCheckAuth } from "../../../utils/customHooks/useCheckAuth"
 import PageCircleLoader from "@/components/loaders/PageCircleLoader"
-import { useQuery, useQueryClient } from "react-query"
+import { useQuery } from "react-query"
 import { getAllUsers } from "../../../utils/customFunctions/dashboard"
 import { User, UserRoleEnum } from "../../../utils/stateManagement/user"
 import DarkBlueButton from "@/components/buttons/DarkBlueButton"
@@ -13,16 +13,20 @@ import Paginator from "@/components/other/Paginator"
 
 function Dashboard() {
   const router = useRouter()
-  const [selectedOption, setSelectedOption] = useState("")
+  const searchParams = useSearchParams()
+  const [selectedOption, setSelectedOption] = useState(
+    searchParams.get("role") + ""
+  )
+  const [name, setName] = useState(searchParams.get("name") + "")
   const handleOptionChange = (event: any) => {
     setSelectedOption(event.target.value)
   }
-  const searchParams = useSearchParams()
+
   const checkAuth = useCheckAuth(router, [UserRoleEnum.ADMIN])
-  const [name, setName] = useState("")
+
   const [totalPages, setTotalPages] = useState<number>(1)
 
-  function changeToPage(page: number) {
+  function changeToUrlParam(urlName: string, value: string) {
     const currentUrl = window.location.href
 
     // Create a new URL object
@@ -32,7 +36,7 @@ function Dashboard() {
     const searchParams = new URLSearchParams(url.search)
 
     // Set or update the query parameter
-    searchParams.set("page", page.toString())
+    searchParams.set(urlName, value)
 
     // Update the URL object with the new search parameters
     url.search = searchParams.toString()
@@ -40,7 +44,6 @@ function Dashboard() {
     // Use history.pushState to update the browser's URL without reloading the page
     history.pushState({}, "", url.toString())
   }
-
   const {
     data: users,
     isLoading: isLoadingUsers,
@@ -48,18 +51,20 @@ function Dashboard() {
   } = useQuery(
     [
       "users",
+      searchParams.get("name") != null ? searchParams.get("name") : "",
+      searchParams.get("role") != null ? searchParams.get("role") : "",
       searchParams.get("page") != null ? Number(searchParams.get("page")) : 1,
     ],
     async () => {
       try {
         const data = await getAllUsers(
           selectedOption,
-          name,
+          searchParams.get("name"),
           searchParams.get("page")
         )
         if (data == null) {
           //setCurPage(1)
-          changeToPage(1)
+          changeToUrlParam("page", "1")
           setSelectedOption("")
           setName("")
           refetchUsers()
@@ -101,6 +106,7 @@ function Dashboard() {
                   type="text"
                   className="bg-gray-100 lg:w-80 md:w-60 w-40 text-black border-none outline-none font-medium"
                   placeholder="Name"
+                  value={name}
                   onChange={(e) => setName(e.target.value)}
                 />
               </div>
@@ -119,7 +125,9 @@ function Dashboard() {
               <div className="ml-auto">
                 <DarkBlueButton
                   onClick={() => {
-                    changeToPage(1)
+                    changeToUrlParam("name", name)
+                    changeToUrlParam("role", selectedOption)
+                    changeToUrlParam("page", "1")
                     refetchUsers()
                   }}
                   logoComponent={<FaSearch color="#FFFFFF" size={16} />}
@@ -138,6 +146,8 @@ function Dashboard() {
                     key={u.id}
                     user={u}
                     refetchUsers={refetchUsers}
+                    curName={searchParams.get("name") + ""}
+                    curRole={searchParams.get("role") + ""}
                     curPage={
                       searchParams.get("page") !== undefined &&
                       searchParams.get("page") !== null &&

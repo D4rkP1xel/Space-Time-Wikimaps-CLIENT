@@ -34,7 +34,7 @@ async function getAllUsers(role: string | null, name: string | null, page: strin
 
         const response = await axios.get(url)
 
-        console.log(response)
+        //console.log(response)
         return response.data
     } catch (error) {
         console.error(error)

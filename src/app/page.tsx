@@ -1,7 +1,7 @@
 "use client"
 
 import Result from "@/components/main/Result"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useQuery } from "react-query"
 import { getLayers } from "../../utils/customFunctions/layers"
 import PageCircleLoader from "@/components/loaders/PageCircleLoader"
@@ -14,7 +14,7 @@ function Home() {
   const [totalPages, setTotalPages] = useState<number>(1)
 
   const {
-    data: layers,
+    data: layersResponse,
     isLoading: isLoadingLayers,
     refetch: refetchLayers,
   } = useQuery(
@@ -29,9 +29,15 @@ function Home() {
         searchParams.get("page")
       )
       setTotalPages(data.totalPages)
-      return data.layers
+      return data
     }
   )
+
+  useEffect(() => {
+    if (layersResponse != null) {
+      setTotalPages(layersResponse.totalPages)
+    }
+  }, [layersResponse])
 
   return (
     <>
@@ -48,8 +54,9 @@ function Home() {
             <PageCircleLoader />
           ) : (
             <div className="mt-12">
-              {layers != null && layers.length > 0 ? (
-                layers.map((l) => {
+              {layersResponse?.layers != null &&
+              layersResponse.layers.length > 0 ? (
+                layersResponse.layers.map((l) => {
                   return (
                     <Result
                       key={l.id}

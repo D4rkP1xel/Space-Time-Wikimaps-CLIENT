@@ -34,7 +34,7 @@ function CreateEditLayer({ layerId }: { layerId: string | null }) {
     isLoading: isLoadingLayer,
     refetch: refetchLayer,
   } = useQuery(
-    ["editlayer"],
+    ["editLayer", layerId],
     async () => {
       try {
         if (layerId == null) return
@@ -65,7 +65,7 @@ function CreateEditLayer({ layerId }: { layerId: string | null }) {
     const fetchData = async () => {
       try {
         const resultsResp = await getLayerResultsByQuery(lastQuery)
-        console.log(resultsResp)
+        //console.log(resultsResp)
         setResultString(JSON.stringify(resultsResp))
         // if (resultsResp[0].lat != null && resultsResp[0].lon != null) {
         //   setCenter([

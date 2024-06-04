@@ -34,12 +34,8 @@ interface LayerResult {
     url?: string
     description?: string
     image?: string
-    itemLabel?: string
 }
 
-// interface GetPhotoResponse {
-//     results: [{ propertyValue: string }]
-// }
 async function getLayers(search: string | null, page: string | null): Promise<Layers> {
     if (search == null) search = ""
     if (page == null || page == "") page = "1"
@@ -85,9 +81,7 @@ async function getLayerResults(layerId: number, startYear: number, endYear: numb
         if (r.description) {
             obj["description"] = r.description.split("@")[0]
         }
-        if (r.itemLabel) {
-            obj["itemLabel"] = r.itemLabel
-        }
+
         if (r.image) {
             obj["image"] = r.image
         }
@@ -137,7 +131,6 @@ async function createNewLayer(name: string, description: string, query: string):
         }
         throw (error)
     }
-
 }
 
 async function editLayer(id: string, name: string, description: string, query: string): Promise<void> {

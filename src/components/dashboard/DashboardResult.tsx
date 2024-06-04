@@ -27,9 +27,13 @@ function DashboardResult({
   user,
   refetchUsers,
   curPage,
+  curName,
+  curRole,
 }: {
   user: User
   curPage: number
+  curName: string
+  curRole: string
   refetchUsers: any
 }) {
   const queryClient = useQueryClient()
@@ -62,31 +66,42 @@ function DashboardResult({
         newUserObj: User
       }): Promise<{ previousData: any }> => {
         // Cancel any outgoing refetches (so they don't overwrite our optimistic update)
-        await queryClient.cancelQueries(["users", curPage])
+        await queryClient.cancelQueries(["users", curName, curRole, curPage])
         // Snapshot the previous value
-        const previousData = queryClient.getQueryData(["users", curPage])
-        console.log(previousData)
+        const previousData = queryClient.getQueryData([
+          "users",
+          curName,
+          curRole,
+          curPage,
+        ])
+        //console.log(previousData)
         // Optimistically update the cache with the new value
-        queryClient.setQueryData(["users", curPage], (oldUsers) => {
-          if (Array.isArray(oldUsers)) {
-            console.log(oldUsers)
-            return oldUsers.map((u: any) => {
-              if (u.id == newUserObj.id) return newUserObj
-              else return u
-            })
-          } else return oldUsers
-        })
+        queryClient.setQueryData(
+          ["users", curName, curRole, curPage],
+          (oldUsers) => {
+            if (Array.isArray(oldUsers)) {
+              //console.log(oldUsers)
+              return oldUsers.map((u: any) => {
+                if (u.id == newUserObj.id) return newUserObj
+                else return u
+              })
+            } else return oldUsers
+          }
+        )
 
         // Return a context object with the snapshotted value
         return { previousData }
       },
       // If the mutation fails, use the context we returned from onMutate to roll back
       onError: (err, newData, context) => {
-        queryClient.setQueryData(["users", curPage], context?.previousData)
+        queryClient.setQueryData(
+          ["users", curName, curRole, curPage],
+          context?.previousData
+        )
       },
       // Always refetch after error or success:
       onSettled: () => {
-        queryClient.invalidateQueries(["users", curPage])
+        queryClient.invalidateQueries(["users", curName, curRole, curPage])
       },
     }
   )
@@ -105,6 +120,16 @@ function DashboardResult({
     }
   }
 
+  async function deleteUser() {
+    try {
+      await deleteUserById(user.id)
+      refetchUsers()
+      setDeletingModal(false)
+      toast.success("User deleted successfully.")
+    } catch (error) {
+      toast.error("Error deleting user.")
+    }
+  }
   return (
     <>
       <div
@@ -181,15 +206,8 @@ function DashboardResult({
             </div>
             <div className="flex justify-center">
               <DeclineButton
-                onClick={async () => {
-                  try {
-                    await deleteUserById(user.id)
-                    refetchUsers()
-                    setDeletingModal(false)
-                    toast.success("User deleted successfully.")
-                  } catch (error) {
-                    toast.error("Error deleting user.")
-                  }
+                onClick={() => {
+                  deleteUser()
                 }}
                 buttonText="Delete Account"
                 logoComponent={<FaTrash size={20} />}
