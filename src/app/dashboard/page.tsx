@@ -14,17 +14,13 @@ import Paginator from "@/components/other/Paginator"
 function Dashboard() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const [selectedOption, setSelectedOption] = useState(
-    searchParams.get("role") + ""
-  )
-  const [name, setName] = useState(searchParams.get("name") + "")
+  const [selectedOption, setSelectedOption] = useState("")
+  const [name, setName] = useState("")
   const handleOptionChange = (event: any) => {
     setSelectedOption(event.target.value)
   }
 
   const checkAuth = useCheckAuth(router, [UserRoleEnum.ADMIN])
-
-  const [totalPages, setTotalPages] = useState<number>(1)
 
   function changeToUrlParam(urlName: string, value: string) {
     const currentUrl = window.location.href
@@ -58,26 +54,23 @@ function Dashboard() {
     async () => {
       try {
         const data = await getAllUsers(
-          selectedOption,
+          searchParams.get("role"),
           searchParams.get("name"),
           searchParams.get("page")
         )
         if (data == null) {
           //setCurPage(1)
           changeToUrlParam("page", "1")
-          setSelectedOption("")
-          setName("")
           refetchUsers()
-          return []
+          return { users: [], totalPages: 1 }
         }
-        setTotalPages(data.totalPages)
         //setCurPage(data.currentPage + 1)
 
-        return data.users
+        return data
       } catch (error) {
         //setCurPage(Number(searchParams.get("page")))
 
-        return []
+        return { users: [], totalPages: 1 }
       }
     },
     {
@@ -85,9 +78,22 @@ function Dashboard() {
     }
   )
 
+  // useEffect(() => {
+  //   refetchUsers()
+  // }, [searchParams.get("page")])
   useEffect(() => {
-    refetchUsers()
-  }, [searchParams.get("page")])
+    let aux = searchParams.get("name")
+    if (aux != null) {
+      setName(aux)
+    }
+  }, [searchParams.get("name")])
+
+  useEffect(() => {
+    let aux = searchParams.get("role")
+    if (aux != null) {
+      setSelectedOption(aux)
+    }
+  }, [searchParams.get("role")])
 
   if (checkAuth.isRenderLoader) {
     return <PageCircleLoader />
@@ -117,7 +123,7 @@ function Dashboard() {
                   onChange={handleOptionChange}
                   className="border-black border-2 outline-none w-32">
                   <option value="">All</option>
-                  <option value="USER">Users</option>
+                  <option value={UserRoleEnum.USER}>Users</option>
                   <option value={UserRoleEnum.EDITOR}>Editors</option>
                   <option value={UserRoleEnum.ADMIN}>Admins</option>
                 </select>
@@ -138,10 +144,10 @@ function Dashboard() {
             <div className="flex flex-col mt-8">
               {isLoadingUsers ? (
                 <PageCircleLoader />
-              ) : users == null || users.length == 0 ? (
+              ) : !users || users.users == null || users.users.length == 0 ? (
                 "No users found"
               ) : (
-                users.map((u: User) => (
+                users.users.map((u: User) => (
                   <DashboardResult
                     key={u.id}
                     user={u}
@@ -165,7 +171,7 @@ function Dashboard() {
                   ? Number(searchParams.get("page"))
                   : 1
               }
-              totalPages={totalPages}
+              totalPages={users && users.totalPages ? users.totalPages : 1}
               scrollToTop={true}
             />
           </div>

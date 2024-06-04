@@ -19,10 +19,14 @@ function EditorRequest({
   request,
   refetchEditorRequests,
   curPage,
+  curName,
+  curStatus,
 }: {
   request: IEditorRequest
   refetchEditorRequests: any
   curPage: number
+  curName: string
+  curStatus: string
 }) {
   const router = useRouter()
   const [isDetailsOpened, setDetailsOpened] = useState(false)
@@ -58,17 +62,24 @@ function EditorRequest({
         oldRequest: IEditorRequest
       }): Promise<{ previousData: any }> => {
         // Cancel any outgoing refetches (so they don't overwrite our optimistic update)
-        await queryClient.cancelQueries(["editorRequests", curPage.toString()])
+        await queryClient.cancelQueries([
+          "editorRequests",
+          curName,
+          curStatus,
+          curPage.toString(),
+        ])
 
         // Snapshot the previous value
         const previousData = queryClient.getQueryData([
           "editorRequests",
+          curName,
+          curStatus,
           curPage.toString(),
         ])
         //console.log(previousData)
         // Optimistically update the cache with the new value
         queryClient.setQueryData(
-          ["editorRequests", curPage.toString()],
+          ["editorRequests", curName, curStatus, curPage.toString()],
           (oldRequests) => {
             if (Array.isArray(oldRequests)) {
               return oldRequests.map((r: any) => {
@@ -92,13 +103,18 @@ function EditorRequest({
       // If the mutation fails, use the context we returned from onMutate to roll back
       onError: (err, newData, context) => {
         queryClient.setQueryData(
-          ["editorRequests", curPage.toString()],
+          ["editorRequests", curName, curStatus, curPage.toString()],
           context?.previousData
         )
       },
       // Always refetch after error or success:
       onSettled: (data, error, context) => {
-        queryClient.invalidateQueries(["editorRequests", curPage.toString()])
+        queryClient.invalidateQueries([
+          "editorRequests",
+          curName,
+          curStatus,
+          curPage.toString(),
+        ])
       },
     }
   )

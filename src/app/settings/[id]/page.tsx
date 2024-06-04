@@ -434,7 +434,8 @@ function Settings({ params }: { params: { id: string } }) {
                         user?.roleUpgrade?.status == StatusEnum.PENDING
                       }
                     />
-                    {user?.roleUpgrade?.status == "DECLINED" ? (
+                    {user?.roleUpgrade?.status == "DECLINED" &&
+                    timeLeftForNewEditorRequest != "" ? (
                       <>
                         <div className="flex flex-row gap-1 mt-1">
                           <div className=" text-black text-sm ">

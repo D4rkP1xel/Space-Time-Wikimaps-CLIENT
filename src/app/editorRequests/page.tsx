@@ -16,18 +16,17 @@ import { UserRoleEnum } from "../../../utils/stateManagement/user"
 
 function EditorRequests() {
   const router = useRouter()
-  const checkAuth = useCheckAuth(router, [UserRoleEnum.ADMIN])
-  const [name, setName] = useState("")
-  const [selectedStatus, setSelectedStatus] = useState("")
-
-  const [totalPages, setTotalPages] = useState<number>(1)
-  const [isLoadingResultsAux, setIsLoadingResultsAux] = useState(false)
   const searchParams = useSearchParams()
+  const checkAuth = useCheckAuth(router, [UserRoleEnum.ADMIN])
+  const [name, setName] = useState<string>("")
+  const [selectedStatus, setSelectedStatus] = useState("")
+  const [isLoadingResultsAux, setIsLoadingResultsAux] = useState(false)
+
   const handleStatusChange = (event: any) => {
     setSelectedStatus(event.target.value)
   }
 
-  function changeToPage(page: number) {
+  function changeToUrlParam(urlName: string, value: string) {
     const currentUrl = window.location.href
 
     // Create a new URL object
@@ -37,7 +36,7 @@ function EditorRequests() {
     const searchParams = new URLSearchParams(url.search)
 
     // Set or update the query parameter
-    searchParams.set("page", page.toString())
+    searchParams.set(urlName, value)
 
     // Update the URL object with the new search parameters
     url.search = searchParams.toString()
@@ -53,32 +52,46 @@ function EditorRequests() {
   } = useQuery(
     [
       "editorRequests",
+      searchParams.get("name") != null ? searchParams.get("name") : "",
+      searchParams.get("status") != null ? searchParams.get("status") : "",
       searchParams.get("page") != null ? searchParams.get("page") : "1",
     ],
     async () => {
       const data = await getAllEditorRequests(
-        name,
-        selectedStatus,
+        searchParams.get("name") != null ? searchParams.get("name") : "",
+        searchParams.get("status") != null ? searchParams.get("status") : "",
         searchParams.get("page")
       )
       if (data == null) {
-        changeToPage(1)
-        setSelectedStatus("")
-        setName("")
+        changeToUrlParam("page", "1")
+
         setIsLoadingResultsAux(false)
         refetchEditorRequests()
 
-        return []
+        return { requests: [], totalPages: 1 }
       }
-      setTotalPages(data.totalPages)
-      return data.requests
+      //console.log(data)
+      return data
     },
     { enabled: checkAuth.isRenderLoader == false }
   )
 
+  // useEffect(() => {
+  //   refetchEditorRequests()
+  // }, [searchParams.get("page")])
   useEffect(() => {
-    refetchEditorRequests()
-  }, [searchParams.get("page")])
+    let aux = searchParams.get("name")
+    if (aux != null) {
+      setName(aux)
+    }
+  }, [searchParams.get("name")])
+
+  useEffect(() => {
+    let aux = searchParams.get("status")
+    if (aux != null) {
+      setSelectedStatus(aux)
+    }
+  }, [searchParams.get("status")])
 
   if (checkAuth.isRenderLoader) {
     return <PageCircleLoader />
@@ -95,6 +108,7 @@ function EditorRequests() {
               type="text"
               className="bg-gray-100 lg:w-80 md:w-60 w-32 text-black border-none outline-none font-medium"
               placeholder="Name"
+              value={name}
               onChange={(e) => setName(e.target.value)}
             />
           </div>
@@ -112,7 +126,15 @@ function EditorRequests() {
           </div>
           <div className="ml-auto">
             <DarkBlueButton
-              onClick={() => refetchEditorRequests()}
+              onClick={() => {
+                changeToUrlParam("name", name != null ? name : "")
+                changeToUrlParam(
+                  "status",
+                  selectedStatus != null ? selectedStatus : ""
+                )
+                changeToUrlParam("page", "1")
+                refetchEditorRequests()
+              }}
               logoComponent={<FaSearch color="#FFFFFF" size={16} />}
               buttonText="Search"
             />
@@ -121,10 +143,12 @@ function EditorRequests() {
         <div className="flex flex-col mt-8">
           {isLoadingEditorRequests || isLoadingResultsAux ? (
             <PageCircleLoader />
-          ) : editorRequests == null || editorRequests.length == 0 ? (
+          ) : !editorRequests ||
+            editorRequests.requests == null ||
+            editorRequests.requests.length == 0 ? (
             "No editor requests found"
           ) : (
-            editorRequests.map((u: EditorRequest) => (
+            editorRequests.requests.map((u: EditorRequest) => (
               <EditorRequestComponent
                 key={u.id}
                 request={u}
@@ -134,6 +158,8 @@ function EditorRequests() {
                     ? Number(searchParams.get("page"))
                     : 1
                 }
+                curName={searchParams.get("name") + ""}
+                curStatus={searchParams.get("status") + ""}
               />
             ))
           )}
@@ -144,7 +170,11 @@ function EditorRequests() {
               ? Number(searchParams.get("page"))
               : 1
           }
-          totalPages={totalPages}
+          totalPages={
+            editorRequests && editorRequests.totalPages
+              ? editorRequests.totalPages
+              : 1
+          }
           scrollToTop={true}
         />
       </div>

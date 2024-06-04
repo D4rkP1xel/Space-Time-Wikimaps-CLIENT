@@ -56,7 +56,7 @@ async function getAllEditorRequests(name: string | null, selectedStatus: string 
 
 
         const response = await axios.get(url)
-        console.log(response)
+        //console.log(response)
         if (response.data.requests == null || response.data.requests.length == 0) return null
         return response.data
     } catch (error) {
@@ -66,9 +66,9 @@ async function getAllEditorRequests(name: string | null, selectedStatus: string 
 
 }
 
-async function updateEditorRequest(requestID: number, status: StatusEnum): Promise<undefined> {
+async function updateEditorRequest(requestID: number, status: StatusEnum): Promise<void> {
     try {
-        const response = await axios.put("/upgrade/request/" + requestID, { status, message: "null!!!!" })
+        const response = await axios.put("/upgrade/request/" + requestID, { status, message: "" })
         console.log(response)
         // return response.data
     } catch (error) {
