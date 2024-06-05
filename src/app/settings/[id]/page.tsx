@@ -343,6 +343,7 @@ function Settings({ params }: { params: { id: string } }) {
             <div className="flex flex-row">
               <span className=" text-lg font-bold w-16">Name:</span>
               <input
+                id ="username"
                 disabled={!isProfileOwner}
                 type="text"
                 value={username}
@@ -355,6 +356,7 @@ function Settings({ params }: { params: { id: string } }) {
             <div className="flex flex-row ">
               <span className=" text-lg font-bold w-16">Email:</span>
               <input
+                id="email"
                 disabled={!isProfileOwner}
                 type="text"
                 value={email}
@@ -413,11 +415,12 @@ function Settings({ params }: { params: { id: string } }) {
             <div className="flex flex-col gap-12 justify-center mb-12 xl:ml-40 lg:ml-32 md:ml-20 ml-0 mx-auto">
               <div className="flex flex-col ">
                 <div className="text-lg font-bold mb-4">Password Settings:</div>
-                <DarkBlueButton
+                <DarkBlueButton 
+                  id="changePassword"
                   logoComponent={<FiLock />}
                   buttonText="Change Password"
                   onClick={() => setChangePassword(true)}
-                />
+                  />
               </div>
               {useUser.user?.role == UserRoleEnum.USER ? (
                 <>
@@ -463,6 +466,7 @@ function Settings({ params }: { params: { id: string } }) {
             !(user?.role == UserRoleEnum.ADMIN)) ? (
             <div className="flex justify-center">
               <DeclineButton
+                id="deleteAccountButton"
                 logoComponent={<FaRegTrashAlt size={20} />}
                 buttonText="Delete Account"
                 onClick={() => setDeleting(true)}
@@ -489,6 +493,7 @@ function Settings({ params }: { params: { id: string } }) {
               <div className="bg-[#EFF6FF] rounded-full flex items-center gap-2 py-2 px-2 mb-4">
                 <FiLock color="#000000" size={16} />
                 <input
+                  id="oldPassword"
                   type="password"
                   placeholder="Old Password"
                   className="bg-[#EFF6FF] w-full outline-none"
@@ -499,6 +504,7 @@ function Settings({ params }: { params: { id: string } }) {
               <div className="bg-[#EFF6FF] rounded-full flex items-center gap-2 py-2 px-2 mb-4">
                 <FiLock color="#000000" size={16} />
                 <input
+                  id="newPassword"
                   type="password"
                   placeholder="New Password"
                   value={newPassword}
@@ -508,6 +514,7 @@ function Settings({ params }: { params: { id: string } }) {
               </div>
               <div className="flex justify-center">
                 <DarkBlueButton
+                  id="changePasswordButtonFinal"
                   buttonText="Change Password"
                   onClick={() => ChangePassword(password, newPassword)}
                   logoComponent={<FiLock color="#FFFFFF" size={20} />}
@@ -591,6 +598,7 @@ function Settings({ params }: { params: { id: string } }) {
               </div>
               <div className="flex justify-center">
                 <DeclineButton
+                  id="deleteAccountButtonFinal"
                   logoComponent={<FaRegTrashAlt size={20} />}
                   buttonText="Delete Account"
                   onClick={() => {

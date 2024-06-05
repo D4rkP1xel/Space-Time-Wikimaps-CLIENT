@@ -2,12 +2,14 @@ import { Component } from "react"
 import { TailSpin } from "react-loader-spinner"
 
 function DarkBlueButton({
+  id,
   onClick,
   logoComponent,
   buttonText,
   isDisabled,
   isLoading,
 }: {
+  id?: string
   onClick: () => any
   logoComponent?: React.ReactNode
   buttonText: string
@@ -16,6 +18,7 @@ function DarkBlueButton({
 }) {
   return (
     <div
+      id={id}
       onClick={isDisabled ? () => null : onClick}
       className={
         isDisabled || isLoading
