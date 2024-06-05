@@ -22,7 +22,6 @@ function Profile({ params }: { params: { id: string } }) {
   const useUser = useUserState()
   const [isProfileOwner, setIsProfileOwner] = useState(false)
   const [totalPages, setTotalPages] = useState(0)
-  const [pageResults, setPageResults] = useState<Layer[]>([])
 
   useEffect(() => {
     setIsProfileOwner(useUser.user?.id.toString() == params.id)
@@ -46,20 +45,19 @@ function Profile({ params }: { params: { id: string } }) {
     isLoading: isLoadingLayers,
     refetch: refetchLayers,
   } = useQuery(
-    ["profileLayers", params.id],
+    [
+      "profileLayers",
+      params.id,
+      searchParams.get("page") ? searchParams.get("page") : "1",
+    ],
     async () => {
       try {
-        const data = await getAllLayersByUserId(params.id)
-        let arr = []
+        const data = await getAllLayersByUserId(
+          params.id,
+          searchParams.get("page") ? searchParams.get("page") : "1"
+        )
+        setTotalPages(data.totalPages)
 
-        let page = Number(searchParams.get("page"))
-          ? Number(searchParams.get("page"))
-          : 1
-        for (let i = (page - 1) * 5; i < page * 5; i++) {
-          if (data[i]) arr.push(data[i])
-        }
-        setPageResults(arr)
-        setTotalPages(Math.ceil(data.length / 5))
         return data
       } catch (error) {
         console.error(error)
@@ -77,25 +75,6 @@ function Profile({ params }: { params: { id: string } }) {
       refetchOnMount: "always",
     }
   )
-
-  useEffect(() => {
-    if (
-      layers &&
-      layers.length > 0 &&
-      searchParams.get("page") &&
-      Number(searchParams.get("page")) > 0
-    ) {
-      let arr = []
-      for (
-        let i = (Number(searchParams.get("page")) - 1) * 5;
-        i < Number(searchParams.get("page")) * 5;
-        i++
-      ) {
-        if (layers[i]) arr.push(layers[i])
-      }
-      setPageResults(arr)
-    } else setPageResults([])
-  }, [searchParams.get("page")])
 
   return (
     <>
@@ -175,12 +154,10 @@ function Profile({ params }: { params: { id: string } }) {
               <div className="flex flex-col mt-8 w-full">
                 {isLoadingLayers ? (
                   <PageCircleLoader />
-                ) : layers == null ||
-                  layers.length == 0 ||
-                  pageResults.length == 0 ? (
+                ) : layers == null || layers.layers.length == 0 ? (
                   "No Layers found"
                 ) : (
-                  pageResults.map((l: Layer) => (
+                  layers.layers.map((l: Layer) => (
                     <ProfileLayersResult
                       key={l.id}
                       name={l.layerName}

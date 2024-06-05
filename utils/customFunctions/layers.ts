@@ -10,7 +10,6 @@ interface Layer {
     timestamp: string
     query: string
 }
-
 interface Layers {
     layers: Layer[]
     currentPage: number,
@@ -50,8 +49,9 @@ async function getLayer(id: number): Promise<Layer> {
     return response.data;
 }
 
-async function getAllLayersByUserId(id: string): Promise<Layer[]> {
-    const response = await axiosNoAuth.get("/users/" + id + "/layers")
+async function getAllLayersByUserId(id: string, page: string | null): Promise<Layers> {
+    if (page == null || page == "") page = "1"
+    const response = await axiosNoAuth.get("/users/" + id + "/layers?page=" + (Number(page) - 1) + "&size=5")
     return response.data;
 }
 
