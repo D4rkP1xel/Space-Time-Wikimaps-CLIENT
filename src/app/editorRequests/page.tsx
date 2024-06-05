@@ -158,8 +158,8 @@ function EditorRequests() {
                     ? Number(searchParams.get("page"))
                     : 1
                 }
-                curName={searchParams.get("name") + ""}
-                curStatus={searchParams.get("status") + ""}
+                curName={searchParams.get("name") || ""}
+                curStatus={searchParams.get("status") || ""}
               />
             ))
           )}

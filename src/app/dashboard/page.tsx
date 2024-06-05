@@ -152,8 +152,8 @@ function Dashboard() {
                     key={u.id}
                     user={u}
                     refetchUsers={refetchUsers}
-                    curName={searchParams.get("name") + ""}
-                    curRole={searchParams.get("role") + ""}
+                    curName={searchParams.get("name") || ""}
+                    curRole={searchParams.get("role") || ""}
                     curPage={
                       searchParams.get("page") !== undefined &&
                       searchParams.get("page") !== null &&

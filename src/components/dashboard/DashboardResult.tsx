@@ -65,6 +65,7 @@ function DashboardResult({
         isBlocking: boolean
         newUserObj: User
       }): Promise<{ previousData: any }> => {
+        console.log(curName, curRole, curPage)
         // Cancel any outgoing refetches (so they don't overwrite our optimistic update)
         await queryClient.cancelQueries(["users", curName, curRole, curPage])
         // Snapshot the previous value
