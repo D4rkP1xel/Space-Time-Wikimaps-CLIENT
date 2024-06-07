@@ -222,7 +222,7 @@ function Header() {
                     </div>
                   </>
                 ) : null}
-                <div
+                <div id="settings"
                   className="flex gap-3 items-center cursor-pointer hover:bg-slate-200 p-1"
                   onClick={() =>
                     router.push("/settings/" + [useUser.user?.id])
