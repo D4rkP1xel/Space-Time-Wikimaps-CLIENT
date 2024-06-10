@@ -113,7 +113,7 @@ async function deleteUser() {
 
 async function deleteUserById(id: number) {
     try {
-        const response = await axios.delete("/users/" + id)
+        const response = await axios.delete("/admin/users/" + id)
         console.log(response)
     } catch (error) {
         console.error(error)
