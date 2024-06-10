@@ -170,7 +170,7 @@ async function askToBeEditorUser(message: string): Promise<string | undefined> {
 
 async function registerUser(username: string, password: string, repeat_password: string, email: string): Promise<void> {
     if (username == "" || password == "" || repeat_password == "" || email == "") {
-        throw ("One or more camps are empty.")
+        throw ("Fill in all necessary fields.")
     }
     if (password != repeat_password) {
         throw ("Passwords do not match.")

@@ -1,21 +1,30 @@
-import { Component } from "react"
+import ButtonComponent from "./ButtonComponent"
 
 function AcceptButton({
+  id,
   onClick,
   logoComponent,
   buttonText,
+  isDisabled,
+  isLoading,
 }: {
+  id?: string
   onClick: () => any
-  logoComponent: React.ReactNode
+  logoComponent?: React.ReactNode
   buttonText: string
+  isDisabled?: boolean
+  isLoading?: boolean
 }) {
   return (
-    <div
+    <ButtonComponent
+      id={id}
+      color={"bg-green-600"}
       onClick={onClick}
-      className="flex flex-row items-center gap-2 select-none cursor-pointer bg-green-600 rounded-full text-white px-6 py-1 font-normal shadow-md shadow-gray-600">
-      {logoComponent}
-      <div className="text-md font-medium text-base">{buttonText}</div>
-    </div>
+      logoComponent={logoComponent}
+      buttonText={buttonText}
+      isDisabled={isDisabled}
+      isLoading={isLoading}
+    />
   )
 }
 

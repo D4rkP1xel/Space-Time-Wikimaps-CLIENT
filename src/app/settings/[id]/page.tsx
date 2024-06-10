@@ -48,6 +48,30 @@ function Settings({ params }: { params: { id: string } }) {
   const [timeLeftForNewEditorRequest, setTimeLeftForNewEditorRequest] =
     useState(new Date().toISOString())
 
+  const {
+    data: user,
+    isLoading: isLoadingUser,
+    refetch: refetchUser,
+  } = useQuery(
+    ["user_settings", params.id],
+    async () => {
+      const userAux = await getUserByID(params.id)
+      if (userAux?.email) setEmail(userAux.email)
+      if (userAux?.username) setUsername(userAux.username)
+      return userAux
+    },
+    {
+      enabled:
+        !checkAuth.isRenderLoader &&
+        (isProfileOwner === true ||
+          (isProfileOwner === false &&
+            useUser.user != null &&
+            useUser.user.role == UserRoleEnum.ADMIN)) &&
+        params.id != null,
+      refetchOnMount: "always",
+    }
+  )
+
   const askToBeEditorMutation = useMutation(
     ({ message, newUserObj }: { message: string; newUserObj: User }) =>
       AskToBeEditor(message, newUserObj),
@@ -159,7 +183,7 @@ function Settings({ params }: { params: { id: string } }) {
       isProfileOwner != null &&
       isProfileOwner === false
     ) {
-      console.log(isProfileOwner + " " + useUser.user.role)
+      //console.log(isProfileOwner + " " + useUser.user.role)
       router.push("/")
       return
     }
@@ -292,30 +316,6 @@ function Settings({ params }: { params: { id: string } }) {
     }
   }
 
-  const {
-    data: user,
-    isLoading: isLoadingUser,
-    refetch: refetchUser,
-  } = useQuery(
-    ["user_settings", params.id],
-    async () => {
-      const userAux = await getUserByID(params.id)
-      if (userAux?.email) setEmail(userAux.email)
-      if (userAux?.username) setUsername(userAux.username)
-      return userAux
-    },
-    {
-      enabled:
-        !checkAuth.isRenderLoader &&
-        (isProfileOwner === true ||
-          (isProfileOwner === false &&
-            useUser.user != null &&
-            useUser.user.role == UserRoleEnum.ADMIN)) &&
-        params.id != null,
-      refetchOnMount: "always",
-    }
-  )
-
   useEffect(() => {
     if (user) {
       setEmail(user.email)
@@ -343,7 +343,7 @@ function Settings({ params }: { params: { id: string } }) {
             <div className="flex flex-row">
               <span className=" text-lg font-bold w-16">Name:</span>
               <input
-                id ="username"
+                id="username"
                 disabled={!isProfileOwner}
                 type="text"
                 value={username}
@@ -415,12 +415,12 @@ function Settings({ params }: { params: { id: string } }) {
             <div className="flex flex-col gap-12 justify-center mb-12 xl:ml-40 lg:ml-32 md:ml-20 ml-0 mx-auto">
               <div className="flex flex-col ">
                 <div className="text-lg font-bold mb-4">Password Settings:</div>
-                <DarkBlueButton 
+                <DarkBlueButton
                   id="changePassword"
                   logoComponent={<FiLock />}
                   buttonText="Change Password"
                   onClick={() => setChangePassword(true)}
-                  />
+                />
               </div>
               {useUser.user?.role == UserRoleEnum.USER ? (
                 <>

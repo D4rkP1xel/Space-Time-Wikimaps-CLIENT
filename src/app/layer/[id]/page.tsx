@@ -22,7 +22,7 @@ import {
 import DarkBlueButton from "@/components/buttons/DarkBlueButton"
 import MapFullScreen from "@/components/maps/MapFullScreen"
 import SideMap from "@/components/maps/SideMap"
-import MobileMap from "@/components/maps/MobileMap"
+import HorizontalMap from "@/components/maps/HorizontalMap"
 import Paginator from "@/components/other/Paginator"
 
 function Layer({ params }: { params: { id: string } }) {
@@ -160,7 +160,7 @@ function Layer({ params }: { params: { id: string } }) {
             </div>
             <div className="mt-4 text-lg">{layer?.description}</div>
             {pageWidth > 1024 ? null : (
-              <MobileMap
+              <HorizontalMap
                 mapLocations={results}
                 center={center}
                 setFullscreen={setFullscreen}

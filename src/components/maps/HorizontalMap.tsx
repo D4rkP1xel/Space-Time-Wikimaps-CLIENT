@@ -1,9 +1,6 @@
 "use client"
 import { Icon } from "leaflet"
 import "leaflet/dist/leaflet.css"
-import { useEffect, useState } from "react"
-import Image from "next/image"
-import UnavailableImage from "./../../../public/icons/photo_unavailable.png"
 
 const customIcon = new Icon({
   // iconUrl: "https://cdn-icons-png.flaticon.com/512/447/447031.png",
@@ -19,7 +16,7 @@ import { GetMapLocationsOrganized } from "../../../utils/customFunctions/mapFunc
 import MapMarkerResult from "../main/MapMarkerResult"
 import { MdFullscreen } from "react-icons/md"
 
-function MobileMap({
+function HorizontalMap({
   mapLocations,
   center,
   setFullscreen,
@@ -82,4 +79,4 @@ function MobileMap({
   )
 }
 
-export default MobileMap
+export default HorizontalMap

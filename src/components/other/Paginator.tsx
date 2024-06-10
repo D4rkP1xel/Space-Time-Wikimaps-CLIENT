@@ -27,7 +27,6 @@ function Paginator({
     // Adjust the endPage if it exceeds the totalPages
     if (endPage > totalPages) {
       endPage = totalPages
-
       startPage = Math.max(1, endPage - numPagesToShow + 1)
     }
 

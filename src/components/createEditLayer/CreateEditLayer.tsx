@@ -14,7 +14,7 @@ import { useRouter } from "next/navigation"
 import PageCircleLoader from "../loaders/PageCircleLoader"
 import { useUserState } from "../../../utils/stateManagement/user"
 import toast from "react-hot-toast"
-import MobileMap from "../maps/MobileMap"
+import HorizontalMap from "../maps/HorizontalMap"
 import MapFullScreen from "../maps/MapFullScreen"
 function CreateEditLayer({ layerId }: { layerId: string | null }) {
   // When layerId is null, user is creating a layer
@@ -162,7 +162,7 @@ function CreateEditLayer({ layerId }: { layerId: string | null }) {
 
           <div className="text-lg font-bold mb-2">SparQL Query:</div>
           <div className=" flex justify-center items-center mb-6">
-            <MobileMap
+            <HorizontalMap
               center={[51.505, -0.09]}
               mapLocations={results}
               setFullscreen={setFullscreen}

@@ -14,7 +14,7 @@ import { LayerResult } from "../../../utils/customFunctions/layers"
 import ZoomHandler from "../main/ZoomHandler"
 import MapMarkerResult from "../main/MapMarkerResult"
 import { GetMapLocationsOrganized } from "../../../utils/customFunctions/mapFunctions"
-import MapFullScreen from "./MapFullScreen"
+
 function SideMap({
   mapLocations,
   center,
