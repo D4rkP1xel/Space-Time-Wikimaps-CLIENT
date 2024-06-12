@@ -267,6 +267,7 @@ function Settings({ params }: { params: { id: string } }) {
       await deleteUser()
       router.push("/")
       useUser.signOutUser()
+      toast.success("Account deleted successfully!")
     } catch (error) {
       console.error(error)
     }
