@@ -89,6 +89,7 @@ async function getUserByID(id: string): Promise<User | null> {
 async function changePasswordUser(id: string, oldPassword: string, newPassword: string): Promise<string | undefined> {
     if (oldPassword == null || oldPassword == "" || newPassword == "" || newPassword == null) throw ("One or more camps are empty.")
     if (newPassword.length < 6) throw ("New Password length has to be at least 6 characters long.")
+    if (oldPassword == newPassword) throw ("New password can't be the same as the old one.")
     try {
         const response = await axios.put("/users/password", { oldPassword, newPassword })
         return response.data;

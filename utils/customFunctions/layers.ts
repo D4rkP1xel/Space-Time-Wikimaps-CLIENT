@@ -137,11 +137,16 @@ async function editLayer(id: string, name: string, description: string, query: s
     await axios.put("/layers/" + id, { name, description, query })
 }
 
+async function deleteLayer(id: number): Promise<void> {
+    await axios.delete("/layers/" + id)
+}
+
+
 // async function getPhoto(itemLabel: string): Promise<GetPhotoResponse> {
 //     const response = await axios.get("/data/property-values/" + itemLabel + "/P18")
 //     //console.log(response)
 //     return response.data
 // }
 
-export { getLayers, getLayer, getLayerResults, createNewLayer, editLayer, getAllLayersByUserId, getLayerResultsByQuery }
+export { getLayers, getLayer, getLayerResults, createNewLayer, editLayer, getAllLayersByUserId, getLayerResultsByQuery, deleteLayer}
 export type { LayerResult, Layer }
