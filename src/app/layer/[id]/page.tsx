@@ -305,7 +305,7 @@ function Layer({ params }: { params: { id: string } }) {
         <MapFullScreen mapLocations={results} setFullscreen={setFullscreen} />
       ) : null}
 
-      {/* Delete Account Modal */}
+      {/* Delete Layer Modal */}
       {isDeleting === true ? (
           <div className="w-screen h-screen bg-gray-900 bg-opacity-50 z-50 fixed top-0 left-0 flex">
             <div
@@ -332,7 +332,7 @@ function Layer({ params }: { params: { id: string } }) {
             </div>
           </div>
         ) : null}
-        {/* End of Delete Account Modal*/}
+        {/* End of Delete Layer Modal*/}
     </> 
   )
 }
