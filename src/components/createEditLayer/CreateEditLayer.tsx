@@ -120,6 +120,7 @@ function CreateEditLayer({ layerId }: { layerId: string | null }) {
         return
       }
       await editLayer(layerId, nameParam, descriptionParam, queryParam)
+      toast.success("Layer edited successfully!")
       console.log("layer edited")
     } catch (error) {
       console.error(error)
@@ -203,6 +204,7 @@ function CreateEditLayer({ layerId }: { layerId: string | null }) {
           <div className="flex justify-center items-center mb-12">
             {layerId == null ? (
               <DarkBlueButton
+                id="createLayerButton"
                 onClick={() => createLayer(name, description, query)}
                 logoComponent={null}
                 buttonText="Create Layer"

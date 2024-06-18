@@ -321,10 +321,11 @@ function Layer({ params }: { params: { id: string } }) {
               </div>
               <div className="flex justify-center">
                 <DeclineButton
-                  id="deleteAccountButtonFinal"
+                  id="deleteLayerButtonFinal"
                   logoComponent={<FaRegTrashAlt size={20} />}
                   buttonText="Delete Layer"
                   onClick={() => {
+                  
                     DeleteLayer()
                   }}
                 />

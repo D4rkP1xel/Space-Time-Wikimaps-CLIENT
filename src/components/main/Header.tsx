@@ -77,10 +77,15 @@ function Header() {
         toast.error(error)
       } else if (
         error instanceof AxiosError &&
-        error?.response?.status == 403
-      ) {
-        toast.error("You have been blocked")
-      } else toast.error("Unknown Error. Try later.")
+        error?.response?.data?.message == "Invalid Password"
+      ) 
+      {
+        toast.error("Invalid Password")
+      } else if ( error instanceof AxiosError && error?.response?.data?.message == "User account is locked")          
+      {
+        toast.error("You've been blocked")
+      }  
+      else toast.error("Unknown Error. Try later.")
       // console.error(error)
     }
   }
