@@ -308,7 +308,7 @@ function Layer({ params }: { params: { id: string } }) {
       {/* Delete Layer Modal */}
       {isDeleting === true ? (
           <div className="w-screen h-screen bg-gray-900 bg-opacity-50 z-50 fixed top-0 left-0 flex">
-            <div
+            <div id="deleteLayerModal"
               className="fixed top-16 right-2 p-8 cursor-pointer"
               onClick={() => {
                 setDeleting(false)
