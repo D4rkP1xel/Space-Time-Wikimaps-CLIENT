@@ -12,7 +12,7 @@ import {
 } from "../../../utils/customFunctions/layers"
 import { useRouter } from "next/navigation"
 import PageCircleLoader from "../loaders/PageCircleLoader"
-import { useUserState } from "../../../utils/stateManagement/user"
+import { UserRoleEnum, useUserState } from "../../../utils/stateManagement/user"
 import toast from "react-hot-toast"
 import HorizontalMap from "../maps/HorizontalMap"
 import MapFullScreen from "../maps/MapFullScreen"
@@ -39,7 +39,7 @@ function CreateEditLayer({ layerId }: { layerId: string | null }) {
       try {
         if (layerId == null) return
         const data = await getLayer(Number.parseInt(layerId))
-        if (data.userDTO.id != useUser.user?.id) {
+        if (useUser.user?.role==UserRoleEnum.EDITOR && data.userDTO.id != useUser.user?.id)  {
           router.back()
           return
         }
