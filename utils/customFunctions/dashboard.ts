@@ -51,7 +51,7 @@ async function getAllEditorRequests(name: string | null, selectedStatus: string 
         let searchStatus = selectedStatus != null && selectedStatus != ""
         let searchName = name != null && name != ""
 
-        if (searchName) url += "&name=" + name
+        if (searchName) url += "&username=" + name
         if (searchStatus) url += "&status=" + selectedStatus
 
 

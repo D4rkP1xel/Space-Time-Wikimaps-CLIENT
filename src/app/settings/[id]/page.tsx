@@ -254,7 +254,7 @@ function Settings({ params }: { params: { id: string } }) {
       if (
         typeof error === "string" &&
         (error == "One or more camps are empty." ||
-          error == "New Password length has to be at least 6 characters long.")
+          error == "New Password length has to be at least 6 characters long."|| error == "New password can't be the same as the old one.")
       ) {
         toast.error(error)
       } else toast.error("Unknown Error.")
@@ -267,6 +267,7 @@ function Settings({ params }: { params: { id: string } }) {
       await deleteUser()
       router.push("/")
       useUser.signOutUser()
+      toast.success("Account deleted successfully!")
     } catch (error) {
       console.error(error)
     }
@@ -609,7 +610,7 @@ function Settings({ params }: { params: { id: string } }) {
             </div>
           </div>
         ) : null}
-        {/* End of Password Modal*/}
+        {/* End of Delete Account Modal*/}
       </>
     )
   }
