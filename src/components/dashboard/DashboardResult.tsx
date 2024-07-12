@@ -13,8 +13,6 @@ import { useRouter } from "next/navigation"
 import DeclineButton from "../buttons/DeclineButton"
 import { FiX } from "react-icons/fi"
 import {
-  blockUser,
-  unblockUser,
   deleteUserById,
   User,
   UserRoleEnum,
@@ -22,6 +20,10 @@ import {
 import toast from "react-hot-toast"
 import AcceptButton from "../buttons/AcceptButton"
 import { useMutation, useQueryClient } from "react-query"
+import {
+  blockUser,
+  unblockUser,
+} from "../../../utils/customFunctions/dashboard"
 
 function DashboardResult({
   user,

@@ -145,3 +145,4 @@ async function editLayer(id: string, name: string, description: string, query: s
 
 export { getLayers, getLayer, getLayerResults, createNewLayer, editLayer, getAllLayersByUserId, getLayerResultsByQuery }
 export type { LayerResult, Layer }
+

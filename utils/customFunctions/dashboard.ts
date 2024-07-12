@@ -77,5 +77,23 @@ async function updateEditorRequest(requestID: number, status: StatusEnum): Promi
     }
 
 }
-export { getAllUsers, getAllEditorRequests, updateEditorRequest, StatusEnum }
+
+async function blockUser(id: number) {
+    try {
+        const response = await axios.put("/admin/users/" + id + "/block")
+        console.log(response)
+    } catch (error) {
+        console.error(error)
+    }
+}
+
+async function unblockUser(id: number) {
+    try {
+        const response = await axios.put("/admin/users/" + id + "/unblock")
+        console.log(response)
+    } catch (error) {
+        console.error(error)
+    }
+}
+export { getAllUsers, getAllEditorRequests, updateEditorRequest, blockUser, unblockUser, StatusEnum }
 export type { EditorRequest }

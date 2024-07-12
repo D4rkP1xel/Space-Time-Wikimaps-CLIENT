@@ -120,23 +120,7 @@ async function deleteUserById(id: number) {
     }
 }
 
-async function blockUser(id: number) {
-    try {
-        const response = await axios.put("/admin/users/" + id + "/block")
-        console.log(response)
-    } catch (error) {
-        console.error(error)
-    }
-}
 
-async function unblockUser(id: number) {
-    try {
-        const response = await axios.put("/admin/users/" + id + "/unblock")
-        console.log(response)
-    } catch (error) {
-        console.error(error)
-    }
-}
 
 async function changeSettingsUser(obj: { username?: string, email?: string }): Promise<string | undefined> {
 
@@ -273,5 +257,5 @@ const useUserState = create<userState>((set, get) => ({
 
 }))
 
-export { UserRoleEnum, useUserState, getUserByID, changePasswordUser, askToBeEditorUser, changeSettingsUser, deleteUser, deleteUserById, blockUser, unblockUser }
+export { UserRoleEnum, useUserState, getUserByID, changePasswordUser, askToBeEditorUser, changeSettingsUser, deleteUser, deleteUserById }
 export type { User, Users }
